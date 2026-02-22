@@ -2,7 +2,7 @@ import { Percent, DollarSign, Calendar, Users, Pencil, Power } from 'lucide-reac
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
-import type { Promotion } from '@/integrations/supabase/types';
+import type { Promotion } from '@/lib/types';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 

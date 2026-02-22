@@ -1,51 +1,25 @@
-import { ArrowRight, Tag, Package, Wallet } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { ArrowRight, Tag, Package, Wallet, ShoppingBag } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function ClientDashboard() {
   const { profile } = useAuth();
 
   const quickLinks = [
-    {
-      to: '/client/promotions',
-      icon: Tag,
-      label: 'Ofertas Especiais',
-      description: 'Cupons e descontos disponíveis',
-      color: 'from-primary/10 to-miami-orange/10',
-      iconColor: 'text-primary',
-    },
-    {
-      to: '/client/orders',
-      icon: Package,
-      label: 'Meus Pedidos',
-      description: 'Acompanhe seus pedidos',
-      color: 'from-secondary/10 to-miami-blue/10',
-      iconColor: 'text-secondary',
-    },
-    {
-      to: '/client/profile',
-      icon: Wallet,
-      label: 'Minha Wallet',
-      description: `Saldo: R$ ${(profile?.wallet_balance ?? 0).toFixed(2)}`,
-      color: 'from-emerald-50 to-emerald-100/50',
-      iconColor: 'text-emerald-600',
-    },
+    { to: "/client/catalog", icon: ShoppingBag, label: "Vitrine", description: "Produtos disponíveis de Miami", color: "from-miami-sand/30 to-miami-orange/10", iconColor: "text-miami-orange" },
+    { to: "/client/orders", icon: Package, label: "Meus Pedidos", description: "Acompanhe seus pedidos", color: "from-secondary/10 to-miami-blue/10", iconColor: "text-secondary" },
+    { to: "/client/promotions", icon: Tag, label: "Ofertas Especiais", description: "Cupons e descontos", color: "from-primary/10 to-miami-orange/10", iconColor: "text-primary" },
+    { to: "/client/profile", icon: Wallet, label: "Minha Wallet", description: `Saldo: R$ ${(profile?.wallet_balance ?? 0).toFixed(2)}`, color: "from-emerald-50 to-emerald-100/50", iconColor: "text-emerald-600" },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Welcome */}
       <div className="pt-2">
-        <h1 className="font-display text-2xl font-bold">
-          Olá, {profile?.full_name.split(' ')[0] ?? 'Cliente'}!
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Bem-vindo(a) à MalaBridge. O que deseja fazer?
-        </p>
+        <h1 className="font-display text-2xl font-bold">Olá, {profile?.full_name?.split(" ")[0] ?? "Cliente"}!</h1>
+        <p className="text-sm text-muted-foreground mt-1">Bem-vindo(a) à MalaBridge. O que deseja fazer?</p>
       </div>
 
-      {/* Wallet card highlight */}
       <Card className="bg-gradient-to-r from-primary to-miami-orange text-white overflow-hidden">
         <CardContent className="py-5">
           <div className="flex items-center justify-between">
@@ -58,15 +32,12 @@ export default function ClientDashboard() {
         </CardContent>
       </Card>
 
-      {/* Quick links */}
       <div className="space-y-3">
         {quickLinks.map((link) => (
           <Link key={link.to} to={link.to}>
             <Card className={`bg-gradient-to-r ${link.color} hover:shadow-md transition-shadow`}>
               <CardContent className="py-4 flex items-center gap-4">
-                <div className={`p-2.5 rounded-lg bg-white/80 ${link.iconColor}`}>
-                  <link.icon className="h-5 w-5" />
-                </div>
+                <div className={`p-2.5 rounded-lg bg-white/80 ${link.iconColor}`}><link.icon className="h-5 w-5" /></div>
                 <div className="flex-1">
                   <p className="font-semibold text-sm">{link.label}</p>
                   <p className="text-xs text-muted-foreground">{link.description}</p>
