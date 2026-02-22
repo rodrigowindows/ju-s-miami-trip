@@ -2,9 +2,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import AdminLayout from "./components/admin/AdminLayout";
+import Trips from "./pages/admin/Trips";
+import TripDetail from "./pages/admin/TripDetail";
+import Messages from "./pages/admin/Messages";
+import Payments from "./pages/admin/Payments";
+import OrderDetail from "./pages/admin/OrderDetail";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +22,17 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+
+          {/* Admin panel */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="/admin/trips" replace />} />
+            <Route path="trips" element={<Trips />} />
+            <Route path="trips/:id" element={<TripDetail />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="payments" element={<Payments />} />
+            <Route path="orders/:id" element={<OrderDetail />} />
+          </Route>
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

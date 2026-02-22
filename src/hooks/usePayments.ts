@@ -1,0 +1,83 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import type { Payment, Order } from "@/integrations/supabase/types";
+
+export type PaymentWithOrder = Payment & {
+  order: Pick<Order, "order_number" | "customer_name"> | null;
+};
+
+export function usePayments() {
+  return useQuery({
+    queryKey: ["payments"],
+    queryFn: async (): Promise<PaymentWithOrder[]> => {
+      const { data: payments, error } = await supabase
+        .from("payments")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const orderIds = [...new Set((payments ?? []).map((p) => p.order_id))];
+      const { data: orders, error: ordersError } = await supabase
+        .from("orders")
+        .select("id, order_number, customer_name")
+        .in("id", orderIds);
+
+      if (ordersError) throw ordersError;
+
+      const orderMap = new Map(
+        (orders ?? []).map((o) => [o.id, o])
+      );
+
+      return (payments ?? []).map((p) => ({
+        ...p,
+        order: orderMap.get(p.order_id) ?? null,
+      })) as PaymentWithOrder[];
+    },
+  });
+}
+
+export function useOrderPayments(orderId: string) {
+  return useQuery({
+    queryKey: ["payments", "order", orderId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*")
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return (data ?? []) as Payment[];
+    },
+    enabled: !!orderId,
+  });
+}
+
+export function useCreatePayment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payment: {
+      order_id: string;
+      type: "deposit" | "balance" | "refund";
+      amount: number;
+      receipt_url?: string | null;
+      notes?: string | null;
+    }) => {
+      const { data, error } = await supabase
+        .from("payments")
+        .insert(payment)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["payments", "order", vars.order_id],
+      });
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
+}
