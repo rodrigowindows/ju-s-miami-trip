@@ -1,9 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { ExternalLink, Filter, DollarSign } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import StatusBadge from "@/components/shared/StatusBadge";
 import {
   Select,
   SelectContent,
@@ -20,18 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePayments } from "@/hooks/usePayments";
-
-const typeLabels: Record<string, string> = {
-  deposit: "Depósito Sinal",
-  balance: "Pagamento Saldo",
-  refund: "Reembolso",
-};
-
-const typeBadgeVariant: Record<string, "default" | "secondary" | "destructive"> = {
-  deposit: "default",
-  balance: "secondary",
-  refund: "destructive",
-};
+import { formatBRL, formatDate } from "@/lib/format";
 
 const Payments = () => {
   const navigate = useNavigate();
@@ -113,7 +100,7 @@ const Payments = () => {
               {filtered.map((payment) => (
                 <TableRow key={payment.id}>
                   <TableCell className="text-sm">
-                    {format(new Date(payment.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                    {formatDate(payment.created_at)}
                   </TableCell>
                   <TableCell>
                     <button
@@ -125,12 +112,10 @@ const Payments = () => {
                   </TableCell>
                   <TableCell className="text-sm">{payment.order?.client_name ?? "—"}</TableCell>
                   <TableCell>
-                    <Badge variant={typeBadgeVariant[payment.type] ?? "secondary"}>
-                      {typeLabels[payment.type] ?? payment.type}
-                    </Badge>
+                    <StatusBadge status={payment.type} />
                   </TableCell>
                   <TableCell className="text-right font-medium">
-                    {payment.type === "refund" ? "- " : ""}R$ {payment.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                    {payment.type === "refund" ? "- " : ""}{formatBRL(payment.amount)}
                   </TableCell>
                   <TableCell>
                     {payment.receipt_url ? (

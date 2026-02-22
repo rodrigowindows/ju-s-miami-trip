@@ -2,6 +2,7 @@ import { ArrowRight, Tag, Package, Wallet, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
+import { formatBRL } from "@/lib/format";
 
 export default function ClientDashboard() {
   const { profile } = useAuth();
@@ -10,7 +11,7 @@ export default function ClientDashboard() {
     { to: "/client/catalog", icon: ShoppingBag, label: "Vitrine", description: "Produtos disponíveis de Miami", color: "from-miami-sand/30 to-miami-orange/10", iconColor: "text-miami-orange" },
     { to: "/client/orders", icon: Package, label: "Meus Pedidos", description: "Acompanhe seus pedidos", color: "from-secondary/10 to-miami-blue/10", iconColor: "text-secondary" },
     { to: "/client/promotions", icon: Tag, label: "Ofertas Especiais", description: "Cupons e descontos", color: "from-primary/10 to-miami-orange/10", iconColor: "text-primary" },
-    { to: "/client/profile", icon: Wallet, label: "Minha Wallet", description: `Saldo: R$ ${(profile?.wallet_balance ?? 0).toFixed(2)}`, color: "from-emerald-50 to-emerald-100/50", iconColor: "text-emerald-600" },
+    { to: "/client/profile", icon: Wallet, label: "Minha Wallet", description: `Saldo: ${formatBRL(profile?.wallet_balance ?? 0)}`, color: "from-emerald-50 to-emerald-100/50", iconColor: "text-emerald-600" },
   ];
 
   return (
@@ -25,7 +26,7 @@ export default function ClientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm opacity-90">Saldo Wallet</p>
-              <p className="text-3xl font-bold mt-1">R$ {(profile?.wallet_balance ?? 0).toFixed(2)}</p>
+              <p className="text-3xl font-bold mt-1">{formatBRL(profile?.wallet_balance ?? 0)}</p>
             </div>
             <Wallet className="h-10 w-10 opacity-30" />
           </div>

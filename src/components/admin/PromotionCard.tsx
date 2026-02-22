@@ -2,9 +2,8 @@ import { Percent, DollarSign, Calendar, Users, Pencil, Power } from 'lucide-reac
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/shared/StatusBadge';
-import type { Promotion } from '@/lib/types';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import type { Promotion } from '@/types';
+import { formatBRL, formatDate } from '@/lib/format';
 
 interface PromotionCardProps {
   promotion: Promotion;
@@ -39,28 +38,28 @@ export default function PromotionCard({ promotion, onEdit, onToggle }: Promotion
           <span className="font-semibold text-primary">
             {promotion.discount_type === 'percent'
               ? `${promotion.discount_value}% de desconto`
-              : `R$ ${promotion.discount_value.toFixed(2)} de desconto`}
+              : `${formatBRL(promotion.discount_value)} de desconto`}
           </span>
         </div>
 
         {promotion.min_order_value && (
           <p className="text-xs text-muted-foreground">
-            Pedido mínimo: R$ {promotion.min_order_value.toFixed(2)}
+            Pedido minimo: {formatBRL(promotion.min_order_value)}
           </p>
         )}
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Calendar className="h-3.5 w-3.5" />
           <span>
-            {format(new Date(promotion.starts_at), "dd/MM/yy", { locale: ptBR })} -{' '}
-            {format(new Date(promotion.expires_at), "dd/MM/yy", { locale: ptBR })}
+            {formatDate(promotion.starts_at)} -{' '}
+            {formatDate(promotion.expires_at)}
           </span>
         </div>
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Users className="h-3.5 w-3.5" />
           <span>
-            Usos: {promotion.current_uses}/{promotion.max_uses ?? '∞'}
+            Usos: {promotion.current_uses}/{promotion.max_uses ?? '\u221E'}
           </span>
         </div>
 

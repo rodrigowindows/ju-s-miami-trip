@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
-import type { Referral } from "@/lib/types";
+import { supabase } from "@/integrations/supabase/client";
+import type { Referral } from "@/types";
 
 export function useReferrals() {
   return useQuery<Referral[]>({
