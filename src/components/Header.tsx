@@ -8,7 +8,10 @@ const Header = () => {
 
   const links = [
     { label: "Home", href: "#home" },
+    { label: "Como Funciona", href: "#como-funciona" },
     { label: "Produtos", href: "#produtos" },
+    { label: "Simulador", href: "#simulador" },
+    { label: "FAQ", href: "#faq" },
     { label: "Contato", href: "#contato" },
   ];
 
