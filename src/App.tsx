@@ -22,6 +22,7 @@ import TripDetail from "./pages/admin/TripDetail";
 import Messages from "./pages/admin/Messages";
 import Payments from "./pages/admin/Payments";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
+import Orders from "./pages/admin/Orders";
 
 // Client pages
 import ClientLayout from "./components/client/ClientLayout";
@@ -91,6 +92,7 @@ const App = () => (
               <Route path="promocoes" element={<AdminPromotions />} />
               <Route path="clientes" element={<AdminClients />} />
               <Route path="config" element={<AdminSettings />} />
+              <Route path="orders" element={<Orders />} />
               <Route path="orders/:id" element={<AdminOrderDetail />} />
             </Route>
 
