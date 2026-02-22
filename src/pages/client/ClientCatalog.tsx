@@ -10,7 +10,7 @@ import { useCatalogProducts } from "@/hooks/useCatalog";
 import { useCreateOrder, useCreateOrderItem } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
-import type { CatalogProduct } from "@/lib/types";
+import type { CatalogProduct } from "@/types";
 import { toast } from "sonner";
 
 const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion", "Lifestyle"];

@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
-import type { Payment, PaymentWithOrder } from "@/lib/types";
+import { supabase } from "@/integrations/supabase/client";
+import type { Payment, Order } from "@/types";
+
+export type PaymentWithOrder = Payment & {
+  order: Pick<Order, "order_number" | "customer_name"> | null;
+};
 
 export function usePayments() {
   return useQuery({

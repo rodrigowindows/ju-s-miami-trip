@@ -14,8 +14,8 @@ import { useOrder, useOrderItems, useOrderEvents, useUpdateOrderStatus } from "@
 import { useOrderPayments, useCreatePayment } from "@/hooks/usePayments";
 import { useTrips, useAllocateOrder } from "@/hooks/useTrips";
 import { useSettings } from "@/hooks/useSettings";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/types";
-import type { OrderStatus } from "@/lib/types";
+import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/constants";
+import type { OrderStatus } from "@/types";
 import { format } from "date-fns";
 import { toast } from "sonner";
 

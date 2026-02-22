@@ -8,7 +8,7 @@ import { TableSkeleton } from '@/components/shared/LoadingSkeleton';
 import ClientModal from '@/components/admin/ClientModal';
 import WalletAdjustDialog from '@/components/admin/WalletAdjustDialog';
 import { useClients, type ClientWithStats } from '@/hooks/useClients';
-import { format } from 'date-fns';
+import { formatBRL, formatDate } from '@/lib/format';
 
 export default function AdminClients() {
   const [search, setSearch] = useState('');
@@ -74,12 +74,12 @@ export default function AdminClients() {
                     {c.address || '-'}
                   </TableCell>
                   <TableCell className="text-center">{c.total_orders}</TableCell>
-                  <TableCell className="text-right text-sm">R$ {c.total_spent.toFixed(2)}</TableCell>
+                  <TableCell className="text-right text-sm">{formatBRL(c.total_spent)}</TableCell>
                   <TableCell className="text-right text-sm font-medium text-emerald-600">
-                    R$ {(c.wallet_balance ?? 0).toFixed(2)}
+                    {formatBRL(c.wallet_balance ?? 0)}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
-                    {format(new Date(c.created_at), 'dd/MM/yyyy')}
+                    {formatDate(c.created_at)}
                   </TableCell>
                 </TableRow>
               ))}

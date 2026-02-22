@@ -8,8 +8,7 @@ import { useActivePromotions } from '@/hooks/usePromotions';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMyReferrals } from '@/hooks/useReferrals';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { formatBRL, formatShortDate } from '@/lib/format';
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -68,7 +67,7 @@ export default function ClientPromotions() {
                       <p className="text-2xl font-bold text-primary mt-1">
                         {p.discount_type === 'percent'
                           ? `${p.discount_value}% OFF`
-                          : `R$ ${p.discount_value.toFixed(2)} OFF`}
+                          : `${formatBRL(p.discount_value)} OFF`}
                       </p>
                     </div>
                     <CopyButton text={p.coupon_code} />
@@ -81,9 +80,9 @@ export default function ClientPromotions() {
                   </div>
 
                   <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-                    {p.min_order_value && <span>Pedido mín: R$ {p.min_order_value.toFixed(2)}</span>}
+                    {p.min_order_value && <span>Pedido mín: {formatBRL(p.min_order_value)}</span>}
                     <span>
-                      Válido até {format(new Date(p.expires_at), "dd 'de' MMM", { locale: ptBR })}
+                      Válido até {formatShortDate(p.expires_at)}
                     </span>
                   </div>
                 </CardContent>
@@ -121,7 +120,7 @@ export default function ClientPromotions() {
                 <p className="text-xs text-muted-foreground">Amigos indicados</p>
               </div>
               <div className="rounded-lg bg-white p-3 text-center">
-                <p className="text-2xl font-bold text-emerald-600">R$ {totalCredits.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-emerald-600">{formatBRL(totalCredits)}</p>
                 <p className="text-xs text-muted-foreground">Créditos ganhos</p>
               </div>
             </div>

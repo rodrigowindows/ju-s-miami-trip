@@ -6,7 +6,7 @@ import EmptyState from '@/components/shared/EmptyState';
 import { useWalletTransactions } from '@/hooks/useWallet';
 import { useMyReferrals } from '@/hooks/useReferrals';
 import type { ClientWithStats } from '@/hooks/useClients';
-import { format } from 'date-fns';
+import { formatBRL, formatDate } from '@/lib/format';
 
 interface ClientModalProps {
   open: boolean;
@@ -45,7 +45,7 @@ export default function ClientModal({ open, onClose, client, onAdjustWallet }: C
             )}
             <div className="flex items-center gap-2 text-sm">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              Cliente desde {format(new Date(client.created_at), 'dd/MM/yyyy')}
+              Cliente desde {formatDate(client.created_at)}
             </div>
           </div>
 
@@ -57,12 +57,12 @@ export default function ClientModal({ open, onClose, client, onAdjustWallet }: C
               <p className="text-xs text-muted-foreground">Pedidos</p>
             </div>
             <div className="rounded-lg bg-muted p-3 text-center">
-              <span className="text-lg font-bold">R$ {client.total_spent.toFixed(0)}</span>
+              <span className="text-lg font-bold">{formatBRL(client.total_spent)}</span>
               <p className="text-xs text-muted-foreground">Total gasto</p>
             </div>
             <div className="rounded-lg bg-emerald-50 p-3 text-center">
               <Wallet className="h-4 w-4 mx-auto text-emerald-600 mb-1" />
-              <p className="text-lg font-bold text-emerald-700">R$ {(client.wallet_balance ?? 0).toFixed(2)}</p>
+              <p className="text-lg font-bold text-emerald-700">{formatBRL(client.wallet_balance ?? 0)}</p>
               <p className="text-xs text-muted-foreground">Saldo Wallet</p>
             </div>
           </div>
@@ -85,7 +85,7 @@ export default function ClientModal({ open, onClose, client, onAdjustWallet }: C
                   <div key={r.id} className="flex items-center justify-between text-xs bg-muted rounded px-2 py-1.5">
                     <span>{r.referral_code}</span>
                     <StatusBadge status={r.status} />
-                    <span>R$ {r.credit_amount.toFixed(2)}</span>
+                    <span>{formatBRL(r.credit_amount)}</span>
                   </div>
                 ))}
               </div>
@@ -108,7 +108,7 @@ export default function ClientModal({ open, onClose, client, onAdjustWallet }: C
                       <span className="text-muted-foreground">{t.description}</span>
                     </div>
                     <span className={`font-medium ${t.amount >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                      {t.amount >= 0 ? '+' : ''}R$ {Math.abs(t.amount).toFixed(2)}
+                      {t.amount >= 0 ? '+' : ''}{formatBRL(Math.abs(t.amount))}
                     </span>
                   </div>
                 ))}

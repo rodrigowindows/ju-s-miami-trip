@@ -22,7 +22,7 @@ import {
   useOrdersForMessages,
   fillTemplate,
 } from "@/hooks/useMessages";
-import type { WhatsAppTemplate, OrderWithClient } from "@/lib/types";
+import type { WhatsAppTemplate } from "@/types";
 
 const Messages = () => {
   const { data: templates, isLoading: templatesLoading } = useWhatsAppTemplates();

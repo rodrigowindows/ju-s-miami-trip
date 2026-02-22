@@ -1,6 +1,31 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
-import type { Order, OrderWithClient, OrderItem, OrderEvent } from "@/lib/types";
+import { supabase } from "@/integrations/supabase/client";
+import type { Order } from "@/types";
+
+export type OrderWithClient = Order & {
+  client: { full_name: string | null; phone: string | null; email: string } | null;
+};
+
+export type OrderItem = {
+  id: string;
+  order_id: string;
+  product_name: string;
+  product_url: string | null;
+  product_image_url: string | null;
+  quantity: number;
+  price_usd: number | null;
+  price_brl: number | null;
+  created_at: string;
+};
+
+export type OrderEvent = {
+  id: string;
+  order_id: string;
+  status: string;
+  title: string;
+  description: string | null;
+  created_at: string;
+};
 
 export function useOrders() {
   return useQuery({

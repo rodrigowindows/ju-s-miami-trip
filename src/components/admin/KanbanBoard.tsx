@@ -1,31 +1,40 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
-import { KANBAN_COLUMNS, type Order } from "@/types/database";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useEffect, useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
+import { KANBAN_COLUMNS, type OrderStatus } from '@/types';
+import { formatRelativeTime } from '@/lib/format';
+
+interface KanbanOrder {
+  id: string;
+  status: OrderStatus;
+  created_at: string;
+  order_number: string;
+  customer_name: string;
+  items: string;
+}
 
 export default function KanbanBoard() {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<KanbanOrder[]>([]);
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
-        .from("orders")
-        .select("*, client:profiles!client_id(id, name)")
-        .order("created_at", { ascending: false });
-      if (data) setOrders(data as Order[]);
+      const { data, error } = await supabase
+        .from('orders')
+        .select('id, status, created_at, order_number, customer_name, items')
+        .neq('status', 'cancelado')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error('Erro ao carregar pedidos:', error.message);
+        return;
+      }
+      setOrders((data ?? []) as KanbanOrder[]);
     }
     load();
 
     const channel = supabase
-      .channel("orders-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "orders" },
-        () => load()
-      )
+      .channel('orders-kanban')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => load())
       .subscribe();
 
     return () => {
@@ -67,22 +76,19 @@ export default function KanbanBoard() {
   );
 }
 
-function KanbanCard({ order }: { order: Order }) {
-  const timeAgo = formatDistanceToNow(new Date(order.created_at), {
-    addSuffix: true,
-    locale: ptBR,
-  });
-
+function KanbanCard({ order }: { order: KanbanOrder }) {
   return (
     <Card className="cursor-pointer transition-shadow hover:shadow-md">
       <CardContent className="p-3">
         <p className="font-medium text-sm leading-tight">
-          {order.product_name}
+          {order.items || order.order_number}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          {(order.client as any)?.name ?? "Cliente"}
+          {order.customer_name}
         </p>
-        <p className="mt-1 text-xs text-muted-foreground/70">{timeAgo}</p>
+        <p className="mt-1 text-xs text-muted-foreground/70">
+          {formatRelativeTime(order.created_at)}
+        </p>
       </CardContent>
     </Card>
   );
