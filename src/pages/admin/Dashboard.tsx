@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useOrders } from "@/hooks/useOrders";
 import { Loader2, ShoppingBag, DollarSign, Plane, Clock } from "lucide-react";
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 import type { OrderWithClient } from "@/types";
 import { KANBAN_COLUMNS } from "@/types";
-import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 import { formatBRL } from "@/lib/format";
 
 export default function Dashboard() {
