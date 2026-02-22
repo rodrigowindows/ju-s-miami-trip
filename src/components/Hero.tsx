@@ -13,17 +13,17 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 text-center relative z-10">
         <span className="inline-block font-body text-sm font-semibold tracking-widest uppercase text-miami-orange mb-4">
-          🌴 Sua experiência em Miami começa aqui
+          🌴 Sua ponte de compras para Miami
         </span>
         <h1 className="font-display text-5xl md:text-7xl font-black leading-tight mb-6 text-foreground">
-          A Ju vai para{" "}
+          Mala
           <span className="bg-gradient-to-r from-miami-pink via-miami-orange to-miami-blue bg-clip-text text-transparent">
-            Miami
+            Bridge
           </span>
         </h1>
         <p className="font-body text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Produtos exclusivos e experiências incríveis para a sua viagem dos sonhos. 
-          Tudo que você precisa, num só lugar.
+          Compre nos EUA e receba no Brasil. Personal shopper em Miami
+          com preços imbatíveis e entrega segura.
         </p>
         <Button
           size="lg"
