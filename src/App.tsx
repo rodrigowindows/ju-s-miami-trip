@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
+import PublicCatalog from "./pages/PublicCatalog";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 
@@ -84,6 +85,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/catalog" element={<PublicCatalog />} />
             <Route
               path="/login"
               element={

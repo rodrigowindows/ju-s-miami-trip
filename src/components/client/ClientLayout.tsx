@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const navItems = [
   { to: "/client/catalog", icon: ShoppingBag, label: "Vitrine", end: true },
   { to: "/client/orders", icon: Package, label: "Pedidos" },
-  { to: "/client/promotions", icon: Tag, label: "Ofertas" },
+  { to: "/client/promos", icon: Tag, label: "Ofertas" },
   { to: "/client/profile", icon: User, label: "Perfil" },
 ];
 
