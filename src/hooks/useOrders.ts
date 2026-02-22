@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { fetchProfileMapFull } from "@/lib/profileMap";
 import type { Order, TablesInsert } from "@/types";
 
 export type OrderWithClient = Order & {
@@ -39,16 +40,7 @@ export function useOrders() {
       if (error) throw error;
 
       const clientIds = [...new Set((orders ?? []).map((o: Order) => o.client_id))];
-      let profileMap = new Map<string, { full_name: string | null; phone: string | null; email: string }>();
-
-      if (clientIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, full_name, phone, email")
-          .in("id", clientIds);
-
-        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null; phone: string | null; email: string }) => [p.id, p]));
-      }
+      const profileMap = await fetchProfileMapFull(clientIds);
 
       return (orders ?? []).map((o: Order) => ({
         ...o,
