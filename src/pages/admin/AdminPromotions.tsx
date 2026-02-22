@@ -9,7 +9,7 @@ import PromotionCard from '@/components/admin/PromotionCard';
 import PromotionForm from '@/components/admin/PromotionForm';
 import ReferralConfig from '@/components/admin/ReferralConfig';
 import { usePromotions, useCreatePromotion, useUpdatePromotion, useTogglePromotion } from '@/hooks/usePromotions';
-import type { Promotion } from '@/integrations/supabase/types';
+import type { Promotion } from '@/lib/types';
 
 export default function AdminPromotions() {
   const { data: promotions, isLoading } = usePromotions();

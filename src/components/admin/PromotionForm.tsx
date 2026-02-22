@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import type { Promotion } from '@/integrations/supabase/types';
+import type { Promotion } from '@/lib/types';
 
 const schema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
