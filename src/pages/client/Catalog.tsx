@@ -119,7 +119,7 @@ export default function Catalog() {
     // Create initial event
     await supabase.from("order_events").insert({
       order_id: order.id,
-      status: "novo",
+      event_type: "novo",
       title: "Pedido criado",
       description: `Produto: ${product.name}`,
     });
@@ -184,7 +184,7 @@ export default function Catalog() {
     // Create initial event
     await supabase.from("order_events").insert({
       order_id: order.id,
-      status: "novo",
+      event_type: "novo",
       title: "Pedido criado via link/screenshot",
       description: linkUrl || "Produto enviado via imagem",
     });

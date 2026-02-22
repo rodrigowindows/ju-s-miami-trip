@@ -1,10 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import type { Payment, Order } from "@/integrations/supabase/types";
-
-export type PaymentWithOrder = Payment & {
-  order: Pick<Order, "order_number" | "customer_name"> | null;
-};
+import { supabase } from "@/lib/supabase";
+import type { Payment, PaymentWithOrder } from "@/lib/types";
 
 export function usePayments() {
   return useQuery({
@@ -17,19 +13,32 @@ export function usePayments() {
 
       if (error) throw error;
 
-      const orderIds = [...new Set((payments ?? []).map((p) => p.order_id))];
-      const { data: orders, error: ordersError } = await supabase
+      const orderIds = [...new Set((payments ?? []).map((p: Payment) => p.order_id))];
+      const { data: orders } = await supabase
         .from("orders")
-        .select("id, order_number, customer_name")
+        .select("id, order_number, client_id")
         .in("id", orderIds);
 
-      if (ordersError) throw ordersError;
+      const clientIds = [...new Set((orders ?? []).map((o: { client_id: string }) => o.client_id))];
+      let profileMap = new Map<string, string | null>();
+
+      if (clientIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", clientIds);
+
+        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
+      }
 
       const orderMap = new Map(
-        (orders ?? []).map((o) => [o.id, o])
+        (orders ?? []).map((o: { id: string; order_number: string; client_id: string }) => [
+          o.id,
+          { order_number: o.order_number, client_name: profileMap.get(o.client_id) ?? null },
+        ])
       );
 
-      return (payments ?? []).map((p) => ({
+      return (payments ?? []).map((p: Payment) => ({
         ...p,
         order: orderMap.get(p.order_id) ?? null,
       })) as PaymentWithOrder[];

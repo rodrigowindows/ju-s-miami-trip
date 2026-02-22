@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import type { TripWithAllocated, Order } from "@/integrations/supabase/types";
+import { supabase } from "@/lib/supabase";
+import type { TripWithAllocated, Order } from "@/lib/types";
 
 export function useTrips() {
   return useQuery({
@@ -13,24 +13,22 @@ export function useTrips() {
 
       if (error) throw error;
 
-      const { data: orders, error: ordersError } = await supabase
+      const { data: orders } = await supabase
         .from("orders")
         .select("trip_id, estimated_weight_kg")
         .not("trip_id", "is", null);
 
-      if (ordersError) throw ordersError;
-
       return (trips ?? []).map((trip) => {
-        const tripOrders = (orders ?? []).filter((o) => o.trip_id === trip.id);
+        const tripOrders = (orders ?? []).filter((o: { trip_id: string | null }) => o.trip_id === trip.id);
         return {
           ...trip,
           allocated_weight_kg: tripOrders.reduce(
-            (sum, o) => sum + (o.estimated_weight_kg ?? 0),
+            (sum: number, o: { estimated_weight_kg: number | null }) => sum + (o.estimated_weight_kg ?? 0),
             0
           ),
           allocated_items_count: tripOrders.length,
         };
-      });
+      }) as TripWithAllocated[];
     },
   });
 }
@@ -47,17 +45,33 @@ export function useTrip(id: string) {
 
       if (error) throw error;
 
-      const { data: orders, error: ordersError } = await supabase
+      const { data: orders } = await supabase
         .from("orders")
         .select("*")
         .eq("trip_id", id);
 
-      if (ordersError) throw ordersError;
+      // Get client names for each order
+      const clientIds = [...new Set((orders ?? []).map((o: Order) => o.client_id))];
+      let profileMap = new Map<string, string | null>();
+
+      if (clientIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", clientIds);
+
+        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
+      }
 
       const allocated_weight_kg = (orders ?? []).reduce(
-        (sum, o) => sum + (o.estimated_weight_kg ?? 0),
+        (sum: number, o: Order) => sum + (o.estimated_weight_kg ?? 0),
         0
       );
+
+      const ordersWithClient = (orders ?? []).map((o: Order) => ({
+        ...o,
+        client_name: profileMap.get(o.client_id) ?? null,
+      }));
 
       return {
         trip: {
@@ -65,7 +79,7 @@ export function useTrip(id: string) {
           allocated_weight_kg,
           allocated_items_count: (orders ?? []).length,
         } as TripWithAllocated,
-        orders: (orders ?? []) as Order[],
+        orders: ordersWithClient as (Order & { client_name: string | null })[],
       };
     },
     enabled: !!id,
@@ -76,14 +90,30 @@ export function useUnassignedOrders() {
   return useQuery({
     queryKey: ["orders", "unassigned"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: orders, error } = await supabase
         .from("orders")
         .select("*")
         .is("trip_id", null)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return (data ?? []) as Order[];
+
+      const clientIds = [...new Set((orders ?? []).map((o: Order) => o.client_id))];
+      let profileMap = new Map<string, string | null>();
+
+      if (clientIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", clientIds);
+
+        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
+      }
+
+      return (orders ?? []).map((o: Order) => ({
+        ...o,
+        client_name: profileMap.get(o.client_id) ?? null,
+      })) as (Order & { client_name: string | null })[];
     },
   });
 }

@@ -1,11 +1,42 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import type { Order } from "@/integrations/supabase/types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import type { Order, OrderWithClient, OrderItem, OrderEvent } from "@/lib/types";
+
+export function useOrders() {
+  return useQuery({
+    queryKey: ["orders"],
+    queryFn: async (): Promise<OrderWithClient[]> => {
+      const { data: orders, error } = await supabase
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const clientIds = [...new Set((orders ?? []).map((o: Order) => o.client_id))];
+      let profileMap = new Map<string, { full_name: string | null; phone: string | null; email: string }>();
+
+      if (clientIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name, phone, email")
+          .in("id", clientIds);
+
+        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null; phone: string | null; email: string }) => [p.id, p]));
+      }
+
+      return (orders ?? []).map((o: Order) => ({
+        ...o,
+        client: profileMap.get(o.client_id) ?? null,
+      })) as OrderWithClient[];
+    },
+  });
+}
 
 export function useOrder(id: string) {
   return useQuery({
     queryKey: ["orders", id],
-    queryFn: async () => {
+    queryFn: async (): Promise<OrderWithClient> => {
       const { data, error } = await supabase
         .from("orders")
         .select("*")
@@ -13,23 +44,85 @@ export function useOrder(id: string) {
         .single();
 
       if (error) throw error;
-      return data as Order;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, phone, email")
+        .eq("id", (data as Order).client_id)
+        .single();
+
+      return {
+        ...data,
+        client: profile ?? null,
+      } as OrderWithClient;
     },
     enabled: !!id,
   });
 }
 
-export function useOrders() {
+export function useOrderItems(orderId: string) {
   return useQuery({
-    queryKey: ["orders"],
+    queryKey: ["order_items", orderId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("orders")
+        .from("order_items")
         .select("*")
-        .order("created_at", { ascending: false });
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: true });
 
       if (error) throw error;
-      return (data ?? []) as Order[];
+      return (data ?? []) as OrderItem[];
+    },
+    enabled: !!orderId,
+  });
+}
+
+export function useOrderEvents(orderId: string) {
+  return useQuery({
+    queryKey: ["order_events", orderId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("order_events")
+        .select("*")
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      return (data ?? []) as OrderEvent[];
+    },
+    enabled: !!orderId,
+  });
+}
+
+export function useUpdateOrderStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ orderId, status, title, description }: {
+      orderId: string;
+      status: string;
+      title: string;
+      description?: string;
+    }) => {
+      const { error: updateError } = await supabase
+        .from("orders")
+        .update({ status })
+        .eq("id", orderId);
+      if (updateError) throw updateError;
+
+      const { error: eventError } = await supabase
+        .from("order_events")
+        .insert({
+          order_id: orderId,
+          event_type: status,
+          title,
+          description: description ?? null,
+        });
+      if (eventError) throw eventError;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["orders", vars.orderId] });
+      queryClient.invalidateQueries({ queryKey: ["order_events", vars.orderId] });
     },
   });
 }

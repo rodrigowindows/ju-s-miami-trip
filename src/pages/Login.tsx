@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,19 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, profile, user } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect based on role once profile is loaded
+  useEffect(() => {
+    if (user && profile) {
+      if (profile.role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/client/catalog", { replace: true });
+      }
+    }
+  }, [user, profile, navigate]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,7 +39,8 @@ export default function Login() {
       return;
     }
 
-    navigate("/client/catalog");
+    // The useEffect above will handle redirect once profile loads
+    setLoading(false);
   }
 
   return (
@@ -36,10 +48,10 @@ export default function Login() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle className="font-display text-2xl">
-            A Ju vai para Miami
+            MalaBridge
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
-            Entre na sua conta para acessar a vitrine
+            Entre na sua conta para acessar
           </p>
         </CardHeader>
         <CardContent>

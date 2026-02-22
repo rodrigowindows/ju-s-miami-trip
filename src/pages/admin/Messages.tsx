@@ -22,15 +22,13 @@ import {
   useOrdersForMessages,
   fillTemplate,
 } from "@/hooks/useMessages";
-import type { WhatsAppTemplate, Order } from "@/integrations/supabase/types";
+import type { WhatsAppTemplate, OrderWithClient } from "@/lib/types";
 
 const Messages = () => {
-  const { data: templates, isLoading: templatesLoading } =
-    useWhatsAppTemplates();
+  const { data: templates, isLoading: templatesLoading } = useWhatsAppTemplates();
   const { data: orders, isLoading: ordersLoading } = useOrdersForMessages();
 
-  const [selectedTemplate, setSelectedTemplate] =
-    useState<WhatsAppTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<WhatsAppTemplate | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string>("");
   const [open, setOpen] = useState(false);
 
@@ -49,7 +47,8 @@ const Messages = () => {
 
   const handleSendWhatsApp = () => {
     if (!selectedOrder) return;
-    const phone = selectedOrder.customer_phone.replace(/\D/g, "");
+    const phone = (selectedOrder.client?.phone ?? "").replace(/\D/g, "");
+    if (!phone) return;
     const encoded = encodeURIComponent(filledMessage);
     window.open(`https://wa.me/${phone}?text=${encoded}`, "_blank");
   };
@@ -61,7 +60,7 @@ const Messages = () => {
       <div className="mb-8">
         <h1 className="font-display text-2xl font-bold">Mensagens</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Templates de mensagens WhatsApp para comunicacao com clientes
+          Templates de mensagens WhatsApp para comunicação com clientes
         </p>
       </div>
 
@@ -69,12 +68,8 @@ const Messages = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-5 w-32 bg-muted rounded" />
-              </CardHeader>
-              <CardContent>
-                <div className="h-16 bg-muted rounded" />
-              </CardContent>
+              <CardHeader><div className="h-5 w-32 bg-muted rounded" /></CardHeader>
+              <CardContent><div className="h-16 bg-muted rounded" /></CardContent>
             </Card>
           ))}
         </div>
@@ -89,9 +84,7 @@ const Messages = () => {
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{template.icon}</span>
-                  <CardTitle className="font-body text-base">
-                    {template.title}
-                  </CardTitle>
+                  <CardTitle className="text-base">{template.title}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -103,14 +96,14 @@ const Messages = () => {
           ))}
 
           {templates?.length === 0 && (
-            <div className="col-span-full text-center py-12 text-muted-foreground">
-              Nenhum template de mensagem encontrado.
+            <div className="col-span-full text-center py-12">
+              <MessageSquare size={48} className="mx-auto text-muted-foreground/30 mb-4" />
+              <p className="text-muted-foreground">Nenhum template de mensagem encontrado.</p>
             </div>
           )}
         </div>
       )}
 
-      {/* Template detail + send modal */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
@@ -128,45 +121,34 @@ const Messages = () => {
           </DialogHeader>
 
           <div className="space-y-4">
-            {/* Order selector */}
             <div>
               <label className="text-sm font-medium mb-1.5 block">Pedido</label>
-              <Select
-                value={selectedOrderId}
-                onValueChange={setSelectedOrderId}
-              >
+              <Select value={selectedOrderId} onValueChange={setSelectedOrderId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um pedido..." />
                 </SelectTrigger>
                 <SelectContent>
                   {orders?.map((order) => (
                     <SelectItem key={order.id} value={order.id}>
-                      {order.order_number} - {order.customer_name}
+                      {order.order_number} - {order.client?.full_name ?? "Cliente"}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Message preview */}
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
-                Preview da mensagem
-              </label>
+              <label className="text-sm font-medium mb-1.5 block">Preview da mensagem</label>
               <div className="bg-muted/50 border rounded-lg p-4 text-sm whitespace-pre-wrap min-h-[120px]">
                 {filledMessage || (
-                  <span className="text-muted-foreground italic">
-                    Selecione um pedido para visualizar
-                  </span>
+                  <span className="text-muted-foreground italic">Selecione um pedido para visualizar</span>
                 )}
               </div>
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Fechar
-            </Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>Fechar</Button>
             <Button
               onClick={handleSendWhatsApp}
               disabled={!selectedOrder}
