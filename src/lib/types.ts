@@ -9,39 +9,54 @@ export type OrderStatus =
   | "entregue"
   | "cancelado";
 
-export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  novo: "Novo / Orçar",
-  orcamento: "Orçamento Enviado",
-  aprovado: "Aprovado",
-  comprando: "Comprando",
-  comprado: "Comprado",
-  em_transito: "Em Trânsito",
-  chegou_brasil: "Chegou no Brasil",
-  entregue: "Entregue",
-  cancelado: "Cancelado",
-};
-
-export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
-  novo: "bg-blue-100 text-blue-700 border-blue-200",
-  orcamento: "bg-amber-100 text-amber-700 border-amber-200",
-  aprovado: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  comprando: "bg-purple-100 text-purple-700 border-purple-200",
-  comprado: "bg-indigo-100 text-indigo-700 border-indigo-200",
-  em_transito: "bg-sky-100 text-sky-700 border-sky-200",
-  chegou_brasil: "bg-orange-100 text-orange-700 border-orange-200",
-  entregue: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  cancelado: "bg-red-100 text-red-700 border-red-200",
-};
-
 export interface Profile {
   id: string;
   email: string;
-  full_name: string;
+  full_name: string | null;
   phone: string | null;
   address: string | null;
   role: "admin" | "cliente";
   referral_code: string | null;
   wallet_balance: number;
+  created_at: string;
+}
+
+export interface Order {
+  id: string;
+  order_number: string;
+  client_id: string;
+  status: OrderStatus;
+  items: string | null;
+  total_brl: number | null;
+  total_usd: number | null;
+  deposit_paid: number;
+  trip_id: string | null;
+  estimated_weight_kg: number | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  product_name: string;
+  product_url: string | null;
+  product_image_url: string | null;
+  price_usd: number | null;
+  price_brl: number | null;
+  quantity: number;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface OrderEvent {
+  id: string;
+  order_id: string;
+  event_type: string;
+  title: string;
+  description: string | null;
+  photo_url: string | null;
   created_at: string;
 }
 
@@ -54,51 +69,6 @@ export interface CatalogProduct {
   image_url: string;
   description: string | null;
   active: boolean;
-  created_at: string;
-}
-
-export interface Order {
-  id: string;
-  order_number: string;
-  client_id: string;
-  customer_name: string;
-  customer_phone: string | null;
-  status: OrderStatus;
-  items: string;
-  total_usd: number;
-  total_brl: number;
-  total_amount: number;
-  deposit_amount: number;
-  deposit_paid: boolean;
-  trip_id: string | null;
-  estimated_weight_kg: number;
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface OrderItem {
-  id: string;
-  order_id: string;
-  product_name: string;
-  store: string | null;
-  product_url: string | null;
-  product_image_url: string | null;
-  price_usd: number;
-  price_brl: number;
-  quantity: number;
-  notes: string | null;
-  created_at: string;
-}
-
-export interface OrderEvent {
-  id: string;
-  order_id: string;
-  event_type: string;
-  status: OrderStatus | null;
-  title: string;
-  description: string | null;
-  photo_url: string | null;
   created_at: string;
 }
 
@@ -132,7 +102,7 @@ export interface Promotion {
   id: string;
   name: string;
   coupon_code: string;
-  discount_type: "percent" | "fixed";
+  discount_type: "percentage" | "fixed";
   discount_value: number;
   min_order_value: number | null;
   starts_at: string;
@@ -156,11 +126,18 @@ export interface Referral {
 export interface WalletTransaction {
   id: string;
   client_id: string;
-  type: "referral_credit" | "order_debit" | "admin_adjust" | "refund";
+  type: "credit" | "debit" | "referral_bonus";
   amount: number;
-  description: string;
+  description: string | null;
   order_id: string | null;
   created_at: string;
+}
+
+export interface Settings {
+  id: string;
+  key: string;
+  value: string;
+  updated_at: string;
 }
 
 export interface WhatsAppTemplate {
@@ -172,9 +149,11 @@ export interface WhatsAppTemplate {
   created_at: string;
 }
 
-export interface Settings {
-  id: string;
-  key: string;
-  value: string;
-  updated_at: string;
-}
+// Joined types for admin views
+export type OrderWithClient = Order & {
+  client: Pick<Profile, "full_name" | "phone" | "email"> | null;
+};
+
+export type PaymentWithOrder = Payment & {
+  order: (Pick<Order, "order_number"> & { client_name: string | null }) | null;
+};

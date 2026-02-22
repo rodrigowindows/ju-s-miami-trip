@@ -1,13 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import type { Order } from "@/types/app-types";
-
-export interface WhatsAppTemplate {
-  id: string;
-  name: string;
-  template: string;
-  created_at: string;
-}
+import { supabase } from "@/lib/supabase";
+import type { WhatsAppTemplate, Order, OrderWithClient } from "@/lib/types";
 
 export function useWhatsAppTemplates() {
   return useQuery({
@@ -35,11 +28,25 @@ export function useOrdersForMessages() {
 
       if (error) throw error;
 
+      // Fetch client info
+      const clientIds = [...new Set((orders ?? []).map((o: Order) => o.client_id))];
+      let profileMap = new Map<string, { full_name: string | null; phone: string | null; email: string }>();
+
+      if (clientIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name, phone, email")
+          .in("id", clientIds);
+
+        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null; phone: string | null; email: string }) => [p.id, p]));
+      }
+
+      // Fetch trip codes
       const tripIds = [
         ...new Set(
           (orders ?? [])
-            .filter((o) => o.trip_id)
-            .map((o) => o.trip_id as string)
+            .filter((o: Order) => o.trip_id)
+            .map((o: Order) => o.trip_id as string)
         ),
       ];
 
@@ -50,27 +57,54 @@ export function useOrdersForMessages() {
           .select("id, code")
           .in("id", tripIds);
 
-        tripMap = new Map((trips ?? []).map((t) => [t.id, t.code]));
+        tripMap = new Map((trips ?? []).map((t: { id: string; code: string }) => [t.id, t.code]));
       }
 
-      return (orders ?? []).map((o) => ({
+      // Fetch order items for summary
+      const orderIds = (orders ?? []).map((o: Order) => o.id);
+      let itemsMap = new Map<string, string>();
+      if (orderIds.length > 0) {
+        const { data: items } = await supabase
+          .from("order_items")
+          .select("order_id, product_name")
+          .in("order_id", orderIds);
+
+        const grouped = new Map<string, string[]>();
+        for (const item of (items ?? []) as { order_id: string; product_name: string }[]) {
+          const list = grouped.get(item.order_id) ?? [];
+          list.push(item.product_name);
+          grouped.set(item.order_id, list);
+        }
+        for (const [orderId, names] of grouped) {
+          itemsMap.set(orderId, names.join(", "));
+        }
+      }
+
+      return (orders ?? []).map((o: Order) => ({
         ...o,
+        client: profileMap.get(o.client_id) ?? null,
         trip_code: o.trip_id ? tripMap.get(o.trip_id) ?? "" : "",
-      })) as (Order & { trip_code: string })[];
+        items_summary: itemsMap.get(o.id) ?? o.items ?? "",
+      })) as (OrderWithClient & { trip_code: string; items_summary: string })[];
     },
   });
 }
 
 export function fillTemplate(
   template: string,
-  order: Order & { trip_code?: string }
+  order: OrderWithClient & { trip_code?: string; items_summary?: string }
 ): string {
+  const clientName = order.client?.full_name ?? "Cliente";
+  const itemsSummary = (order as { items_summary?: string }).items_summary ?? order.items ?? "";
+  const totalBrl = order.total_brl ?? 0;
+  const depositPaid = order.deposit_paid ?? 0;
+
   return template
-    .replace(/{nome_cliente}/g, order.customer_name)
+    .replace(/{nome_cliente}/g, clientName)
     .replace(/{numero_pedido}/g, order.order_number)
-    .replace(/{itens}/g, order.items)
-    .replace(/{valor_total}/g, (order.total_amount || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 }))
-    .replace(/{valor_sinal}/g, (order.deposit_amount || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 }))
-    .replace(/{codigo_viagem}/g, order.trip_code ?? "")
-    .replace(/{item}/g, order.items);
+    .replace(/{itens}/g, itemsSummary)
+    .replace(/{item}/g, itemsSummary)
+    .replace(/{valor_total}/g, totalBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2 }))
+    .replace(/{valor_sinal}/g, depositPaid.toLocaleString("pt-BR", { minimumFractionDigits: 2 }))
+    .replace(/{codigo_viagem}/g, (order as { trip_code?: string }).trip_code ?? "");
 }

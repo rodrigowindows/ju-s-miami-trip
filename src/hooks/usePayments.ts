@@ -1,26 +1,44 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import type { Payment, Order } from "@/lib/types";
-import { toast } from "sonner";
-
-export type PaymentWithOrder = Payment & {
-  order: Pick<Order, "order_number" | "customer_name"> | null;
-};
+import type { Payment, PaymentWithOrder } from "@/lib/types";
 
 export function usePayments() {
   return useQuery({
     queryKey: ["payments"],
     queryFn: async (): Promise<PaymentWithOrder[]> => {
-      const { data: payments, error } = await supabase.from("payments").select("*").order("created_at", { ascending: false });
+      const { data: payments, error } = await supabase
+        .from("payments")
+        .select("*")
+        .order("created_at", { ascending: false });
+
       if (error) throw error;
 
-      const orderIds = [...new Set((payments ?? []).map((p) => p.order_id))];
-      if (orderIds.length === 0) return [];
+      const orderIds = [...new Set((payments ?? []).map((p: Payment) => p.order_id))];
+      const { data: orders } = await supabase
+        .from("orders")
+        .select("id, order_number, client_id")
+        .in("id", orderIds);
 
-      const { data: orders } = await supabase.from("orders").select("id, order_number, customer_name").in("id", orderIds);
-      const orderMap = new Map((orders ?? []).map((o) => [o.id, o]));
+      const clientIds = [...new Set((orders ?? []).map((o: { client_id: string }) => o.client_id))];
+      let profileMap = new Map<string, string | null>();
 
-      return (payments ?? []).map((p) => ({
+      if (clientIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", clientIds);
+
+        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
+      }
+
+      const orderMap = new Map(
+        (orders ?? []).map((o: { id: string; order_number: string; client_id: string }) => [
+          o.id,
+          { order_number: o.order_number, client_name: profileMap.get(o.client_id) ?? null },
+        ])
+      );
+
+      return (payments ?? []).map((p: Payment) => ({
         ...p,
         order: orderMap.get(p.order_id) ?? null,
       })) as PaymentWithOrder[];
@@ -32,7 +50,12 @@ export function useOrderPayments(orderId: string) {
   return useQuery({
     queryKey: ["payments", "order", orderId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("payments").select("*").eq("order_id", orderId).order("created_at", { ascending: false });
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*")
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: false });
+
       if (error) throw error;
       return (data ?? []) as Payment[];
     },
@@ -41,19 +64,29 @@ export function useOrderPayments(orderId: string) {
 }
 
 export function useCreatePayment() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (payment: { order_id: string; type: "deposit" | "balance" | "refund"; amount: number; receipt_url?: string | null; notes?: string | null }) => {
-      const { data, error } = await supabase.from("payments").insert(payment).select().single();
+    mutationFn: async (payment: {
+      order_id: string;
+      type: "deposit" | "balance" | "refund";
+      amount: number;
+      receipt_url?: string | null;
+      notes?: string | null;
+    }) => {
+      const { data, error } = await supabase
+        .from("payments")
+        .insert(payment)
+        .select()
+        .single();
       if (error) throw error;
       return data;
     },
     onSuccess: (_, vars) => {
-      qc.invalidateQueries({ queryKey: ["payments"] });
-      qc.invalidateQueries({ queryKey: ["payments", "order", vars.order_id] });
-      qc.invalidateQueries({ queryKey: ["orders"] });
-      toast.success("Pagamento registrado!");
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["payments", "order", vars.order_id],
+      });
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-    onError: () => toast.error("Erro ao registrar pagamento."),
   });
 }
