@@ -61,7 +61,7 @@ export default function Orders() {
   });
 
   return (
-    <AdminLayout>
+    <>
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold font-display">Pedidos</h1>
@@ -157,6 +157,6 @@ export default function Orders() {
       </div>
 
       <NewOrderDialog open={newOrderOpen} onOpenChange={setNewOrderOpen} />
-    </AdminLayout>
+    </>
   );
 }
