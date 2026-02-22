@@ -21,8 +21,9 @@ import {
   useWhatsAppTemplates,
   useOrdersForMessages,
   fillTemplate,
+  type WhatsAppTemplate,
 } from "@/hooks/useMessages";
-import type { WhatsAppTemplate, Order } from "@/integrations/supabase/types";
+import type { Order } from "@/types/app-types";
 
 const Messages = () => {
   const { data: templates, isLoading: templatesLoading } =
@@ -38,8 +39,8 @@ const Messages = () => {
 
   const filledMessage =
     selectedTemplate && selectedOrder
-      ? fillTemplate(selectedTemplate.template_text, selectedOrder)
-      : selectedTemplate?.template_text ?? "";
+      ? fillTemplate(selectedTemplate.template, selectedOrder)
+      : selectedTemplate?.template ?? "";
 
   const handleOpenTemplate = (template: WhatsAppTemplate) => {
     setSelectedTemplate(template);
@@ -49,7 +50,7 @@ const Messages = () => {
 
   const handleSendWhatsApp = () => {
     if (!selectedOrder) return;
-    const phone = selectedOrder.customer_phone.replace(/\D/g, "");
+    const phone = (selectedOrder.customer_phone || "").replace(/\D/g, "");
     const encoded = encodeURIComponent(filledMessage);
     window.open(`https://wa.me/${phone}?text=${encoded}`, "_blank");
   };
@@ -88,15 +89,15 @@ const Messages = () => {
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">{template.icon}</span>
+                  <MessageSquare className="h-5 w-5 text-muted-foreground" />
                   <CardTitle className="font-body text-base">
-                    {template.title}
+                    {template.name}
                   </CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground line-clamp-3 font-mono">
-                  {template.template_text}
+                  {template.template}
                 </p>
               </CardContent>
             </Card>
@@ -110,15 +111,14 @@ const Messages = () => {
         </div>
       )}
 
-      {/* Template detail + send modal */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {selectedTemplate && (
                 <>
-                  <span className="text-xl">{selectedTemplate.icon}</span>
-                  {selectedTemplate.title}
+                  <MessageSquare className="h-5 w-5" />
+                  {selectedTemplate.name}
                 </>
               )}
             </DialogTitle>
@@ -128,7 +128,6 @@ const Messages = () => {
           </DialogHeader>
 
           <div className="space-y-4">
-            {/* Order selector */}
             <div>
               <label className="text-sm font-medium mb-1.5 block">Pedido</label>
               <Select
@@ -148,7 +147,6 @@ const Messages = () => {
               </Select>
             </div>
 
-            {/* Message preview */}
             <div>
               <label className="text-sm font-medium mb-1.5 block">
                 Preview da mensagem
