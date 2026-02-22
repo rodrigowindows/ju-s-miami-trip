@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Payment, Order } from "@/types";
 
 export type PaymentWithOrder = Payment & {
-  order: Pick<Order, "order_number" | "customer_name"> | null;
+  order: { order_number: string; customer_name: string } | null;
 };
 
 export function usePayments() {
@@ -38,7 +38,7 @@ export function usePayments() {
       const orderMap = new Map(
         (orders ?? []).map((o: { id: string; order_number: string; client_id: string }) => [
           o.id,
-          { order_number: o.order_number, client_name: profileMap.get(o.client_id) ?? null },
+          { order_number: o.order_number, customer_name: profileMap.get(o.client_id) ?? "—" },
         ])
       );
 
