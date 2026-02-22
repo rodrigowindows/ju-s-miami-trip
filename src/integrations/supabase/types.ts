@@ -1,75 +1,173 @@
 export interface Database {
   public: {
     Tables: {
-      orders: {
+      profiles: {
         Row: {
           id: string;
-          order_number: string;
-          customer_name: string;
-          customer_phone: string;
-          items: string;
-          total_amount: number;
-          deposit_amount: number;
-          status: string;
-          trip_id: string | null;
-          estimated_weight_kg: number | null;
+          email: string;
+          full_name: string;
+          phone: string | null;
+          address: string | null;
+          role: 'admin' | 'client';
+          referral_code: string | null;
+          wallet_balance: number;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["orders"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
+        Insert: {
+          id?: string;
+          email: string;
+          full_name: string;
+          phone?: string | null;
+          address?: string | null;
+          role?: 'admin' | 'client';
+          referral_code?: string | null;
+          wallet_balance?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          full_name?: string;
+          phone?: string | null;
+          address?: string | null;
+          role?: 'admin' | 'client';
+          referral_code?: string | null;
+          wallet_balance?: number;
+          created_at?: string;
+        };
       };
-      trips: {
+      promotions: {
         Row: {
           id: string;
-          code: string;
-          traveler_name: string;
-          flight_number: string;
-          departure_date: string;
-          arrival_date: string;
-          max_weight_kg: number;
+          name: string;
+          coupon_code: string;
+          discount_type: 'percent' | 'fixed';
+          discount_value: number;
+          min_order_value: number | null;
+          starts_at: string;
+          expires_at: string;
+          max_uses: number | null;
+          current_uses: number;
+          active: boolean;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["trips"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["trips"]["Insert"]>;
+        Insert: {
+          id?: string;
+          name: string;
+          coupon_code: string;
+          discount_type: 'percent' | 'fixed';
+          discount_value: number;
+          min_order_value?: number | null;
+          starts_at: string;
+          expires_at: string;
+          max_uses?: number | null;
+          current_uses?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          coupon_code?: string;
+          discount_type?: 'percent' | 'fixed';
+          discount_value?: number;
+          min_order_value?: number | null;
+          starts_at?: string;
+          expires_at?: string;
+          max_uses?: number | null;
+          current_uses?: number;
+          active?: boolean;
+          created_at?: string;
+        };
       };
-      payments: {
+      referrals: {
         Row: {
           id: string;
-          order_id: string;
-          type: "deposit" | "balance" | "refund";
+          referrer_id: string;
+          referred_id: string;
+          referral_code: string;
+          status: 'pending' | 'completed';
+          credit_amount: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          referrer_id: string;
+          referred_id: string;
+          referral_code: string;
+          status?: 'pending' | 'completed';
+          credit_amount: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          referrer_id?: string;
+          referred_id?: string;
+          referral_code?: string;
+          status?: 'pending' | 'completed';
+          credit_amount?: number;
+          created_at?: string;
+        };
+      };
+      wallet_transactions: {
+        Row: {
+          id: string;
+          client_id: string;
+          type: 'referral_credit' | 'order_debit' | 'admin_adjust' | 'refund';
           amount: number;
-          receipt_url: string | null;
-          notes: string | null;
+          description: string;
+          order_id: string | null;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["payments"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["payments"]["Insert"]>;
+        Insert: {
+          id?: string;
+          client_id: string;
+          type: 'referral_credit' | 'order_debit' | 'admin_adjust' | 'refund';
+          amount: number;
+          description: string;
+          order_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          client_id?: string;
+          type?: 'referral_credit' | 'order_debit' | 'admin_adjust' | 'refund';
+          amount?: number;
+          description?: string;
+          order_id?: string | null;
+          created_at?: string;
+        };
       };
-      whatsapp_templates: {
+      settings: {
         Row: {
           id: string;
-          slug: string;
-          title: string;
-          icon: string;
-          template_text: string;
-          created_at: string;
+          key: string;
+          value: string;
+          updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["whatsapp_templates"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["whatsapp_templates"]["Insert"]>;
+        Insert: {
+          id?: string;
+          key: string;
+          value: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          key?: string;
+          value?: string;
+          updated_at?: string;
+        };
       };
     };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
   };
 }
 
-export type Order = Database["public"]["Tables"]["orders"]["Row"];
-export type Trip = Database["public"]["Tables"]["trips"]["Row"];
-export type Payment = Database["public"]["Tables"]["payments"]["Row"];
-export type WhatsAppTemplate = Database["public"]["Tables"]["whatsapp_templates"]["Row"];
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
+export type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
+export type UpdateTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
 
-export type TripWithAllocated = Trip & {
-  allocated_weight_kg: number;
-  allocated_items_count: number;
-};
+export type Profile = Tables<'profiles'>;
+export type Promotion = Tables<'promotions'>;
+export type Referral = Tables<'referrals'>;
+export type WalletTransaction = Tables<'wallet_transactions'>;
+export type Setting = Tables<'settings'>;

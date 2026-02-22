@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
             <span className="font-display text-lg font-bold">
-              A Ju vai para Miami ✈️
+              MalaBridge ✈️
             </span>
             <p className="font-body text-sm text-background/60 mt-1">
               Sua experiência em Miami começa aqui
@@ -29,7 +29,7 @@ const Footer = () => {
 
         <div className="border-t border-background/10 mt-8 pt-8 text-center">
           <p className="font-body text-sm text-background/50 flex items-center justify-center gap-1">
-            Feito com <Heart size={14} className="text-primary" /> A Ju vai para Miami © {new Date().getFullYear()}
+            Feito com <Heart size={14} className="text-primary" /> MalaBridge © {new Date().getFullYear()}
           </p>
         </div>
       </div>
