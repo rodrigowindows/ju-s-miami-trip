@@ -5,10 +5,13 @@ import {
   DollarSign,
   LayoutDashboard,
   ArrowLeft,
+  ShoppingBag,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
+  { to: "/admin/orders", label: "Pedidos", icon: ShoppingBag },
   { to: "/admin/trips", label: "Viagens", icon: Plane },
   { to: "/admin/messages", label: "Mensagens", icon: MessageSquare },
   { to: "/admin/payments", label: "Pagamentos", icon: DollarSign },

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Dashboard from "./pages/admin/Dashboard";
 import Login from "./pages/Login";
 import ClientLayout from "./components/client/ClientLayout";
 import Catalog from "./pages/client/Catalog";
@@ -14,6 +15,7 @@ import ClientOrderDetail from "./pages/client/OrderDetail";
 import Promos from "./pages/client/Promos";
 import Profile from "./pages/client/Profile";
 import AdminLayout from "./components/admin/AdminLayout";
+import AdminOrders from "./pages/admin/Orders";
 import Trips from "./pages/admin/Trips";
 import TripDetail from "./pages/admin/TripDetail";
 import Messages from "./pages/admin/Messages";
@@ -97,6 +99,8 @@ const App = () => (
             {/* Admin panel */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/trips" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="orders" element={<AdminOrders />} />
               <Route path="trips" element={<Trips />} />
               <Route path="trips/:id" element={<TripDetail />} />
               <Route path="messages" element={<Messages />} />

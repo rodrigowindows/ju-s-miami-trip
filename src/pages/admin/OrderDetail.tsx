@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { ArrowLeft, Plus, Upload, Plane } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import StatusBadge from "@/components/admin/StatusBadge";
+import OrderTimeline from "@/components/admin/OrderTimeline";
+import UploadFileDialog from "@/components/admin/UploadFileDialog";
+import AssignTripDialog from "@/components/admin/AssignTripDialog";
+import ChangeStatusDropdown from "@/components/admin/ChangeStatusDropdown";
 import { useOrder } from "@/hooks/useOrders";
 import { useOrderPayments, useCreatePayment } from "@/hooks/usePayments";
 import { useToast } from "@/hooks/use-toast";
@@ -60,6 +66,8 @@ const OrderDetail = () => {
   const createPayment = useCreatePayment();
 
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [tripOpen, setTripOpen] = useState(false);
   const [paymentForm, setPaymentForm] = useState({
     type: "deposit" as "deposit" | "balance" | "refund",
     amount: "",
@@ -126,21 +134,49 @@ const OrderDetail = () => {
 
   return (
     <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-6">
-      <Button
-        variant="ghost"
-        className="gap-2"
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeft size={16} />
-        Voltar
-      </Button>
+      {/* Header with back button and actions */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft size={16} />
+          </Button>
+          <div>
+            <div className="flex items-center gap-3">
+              <CardTitle className="font-body text-xl">
+                Pedido {order.order_number}
+              </CardTitle>
+              <StatusBadge status={order.status} />
+            </div>
+            <p className="text-sm text-muted-foreground">{order.customer_name}</p>
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setUploadOpen(true)}>
+            <Upload className="mr-2 h-4 w-4" />
+            Upload Foto/Nota
+          </Button>
+          <Button variant="outline" onClick={() => setTripOpen(true)}>
+            <Plane className="mr-2 h-4 w-4" />
+            Atribuir a Viagem
+          </Button>
+          <ChangeStatusDropdown orderId={order.id} currentStatus={order.status} />
+        </div>
+      </div>
+
+      <Separator />
 
       {/* Order info */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="font-body text-xl">
-              Pedido {order.order_number}
+              Detalhes do Pedido
             </CardTitle>
             <Badge variant="secondary">
               {statusLabels[order.status] ?? order.status}
@@ -372,6 +408,15 @@ const OrderDetail = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Modals from admin branch */}
+      <UploadFileDialog orderId={order.id} open={uploadOpen} onOpenChange={setUploadOpen} />
+      <AssignTripDialog
+        orderId={order.id}
+        currentTripId={order.trip_id}
+        open={tripOpen}
+        onOpenChange={setTripOpen}
+      />
     </div>
   );
 };
