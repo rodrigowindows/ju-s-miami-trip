@@ -54,7 +54,7 @@ const Payments = () => {
         <div className="flex items-center gap-2">
           <Filter size={16} className="text-muted-foreground" />
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[180px]"><SelectValue placeholder="Tipo" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Tipo" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos os tipos</SelectItem>
               <SelectItem value="deposit">Depósito Sinal</SelectItem>
@@ -64,7 +64,7 @@ const Payments = () => {
           </Select>
         </div>
         <Select value={clientFilter} onValueChange={setClientFilter}>
-          <SelectTrigger className="w-[200px]"><SelectValue placeholder="Cliente" /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[200px]"><SelectValue placeholder="Cliente" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos os clientes</SelectItem>
             {clients.map((name) => (
@@ -88,18 +88,18 @@ const Payments = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Data</TableHead>
+                <TableHead className="hidden sm:table-cell">Data</TableHead>
                 <TableHead>Pedido</TableHead>
-                <TableHead>Cliente</TableHead>
+                <TableHead className="hidden md:table-cell">Cliente</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead className="text-right">Valor</TableHead>
-                <TableHead>Comprovante</TableHead>
+                <TableHead className="hidden sm:table-cell">Comprovante</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((payment) => (
                 <TableRow key={payment.id}>
-                  <TableCell className="text-sm">
+                  <TableCell className="text-sm hidden sm:table-cell">
                     {formatDate(payment.created_at)}
                   </TableCell>
                   <TableCell>
@@ -110,14 +110,14 @@ const Payments = () => {
                       {payment.order?.order_number ?? "—"}
                     </button>
                   </TableCell>
-                  <TableCell className="text-sm">{payment.order?.customer_name ?? "—"}</TableCell>
+                  <TableCell className="text-sm hidden md:table-cell">{payment.order?.customer_name ?? "—"}</TableCell>
                   <TableCell>
                     <StatusBadge status={payment.type} />
                   </TableCell>
                   <TableCell className="text-right font-medium">
                     {payment.type === "refund" ? "- " : ""}{formatBRL(payment.amount)}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     {payment.receipt_url ? (
                       <a href={payment.receipt_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1 text-sm">
                         <ExternalLink size={14} /> Ver

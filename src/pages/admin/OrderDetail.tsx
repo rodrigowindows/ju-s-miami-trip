@@ -270,7 +270,7 @@ const OrderDetail = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 p-3 sm:p-4 bg-muted/50 rounded-lg">
             <div className="text-center">
               <span className="text-xs text-muted-foreground block">Total</span>
               <span className="font-bold text-sm">
