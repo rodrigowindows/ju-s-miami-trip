@@ -6,8 +6,10 @@ import type { Profile } from "@/lib/types";
 interface AuthContextType {
   user: User | null;
   profile: Profile | null;
+  role: "admin" | "cliente" | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, name: string, role?: "admin" | "cliente") => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -56,14 +58,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   }
 
+  async function signUp(
+    email: string,
+    password: string,
+    name: string,
+    role: "admin" | "cliente" = "cliente"
+  ) {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name, role } },
+    });
+    return { error: error?.message ?? null };
+  }
+
   async function signOut() {
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
   }
 
+  const role = profile?.role ?? null;
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, profile, role, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

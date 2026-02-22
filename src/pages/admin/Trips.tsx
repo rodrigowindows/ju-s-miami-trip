@@ -107,7 +107,7 @@ const Trips = () => {
             <Card
               key={trip.id}
               className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => navigate(`/admin/trips/${trip.id}`)}
+              onClick={() => navigate(`/admin/viagens/${trip.id}`)}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
