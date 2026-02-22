@@ -43,7 +43,7 @@ export default function KanbanBoard() {
   }, []);
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4">
+    <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 snap-x snap-mandatory">
       {KANBAN_COLUMNS.map((col) => {
         const colOrders = orders.filter((o) =>
           col.statuses.includes(o.status)
@@ -51,7 +51,7 @@ export default function KanbanBoard() {
         return (
           <div
             key={col.id}
-            className="flex w-64 min-w-[16rem] flex-col rounded-lg border bg-muted/50"
+            className="flex w-56 min-w-[14rem] sm:w-64 sm:min-w-[16rem] flex-col rounded-lg border bg-muted/50 snap-start"
           >
             <div className="flex items-center justify-between p-3 border-b">
               <h3 className="text-sm font-semibold">{col.title}</h3>
