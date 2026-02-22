@@ -611,18 +611,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
-export type Order = Tables<'orders'>;
-export type Payment = Tables<'payments'>;
-export type Profile = Tables<'profiles'>;
-export type Promotion = Tables<'promotions'>;
-export type Referral = Tables<'referrals'>;
-export type Trip = Tables<'trips'>;
-export type WalletTransaction = Tables<'wallet_transactions'>;
-export type WhatsAppTemplate = Tables<'whatsapp_templates'>;
-export type Setting = Tables<'settings'>;
-
-export interface TripWithAllocated extends Trip {
-  allocated_weight_kg: number;
-  allocated_items_count: number;
-}

@@ -9,6 +9,7 @@ export const ORDER_STATUS_CONFIG: Record<
   orcamento: { label: 'Orçamento', color: 'bg-yellow-100 text-yellow-800' },
   aprovado: { label: 'Aprovado', color: 'bg-blue-100 text-blue-800' },
   comprando: { label: 'Comprando', color: 'bg-orange-100 text-orange-800' },
+  comprado: { label: 'Comprado', color: 'bg-teal-100 text-teal-800' },
   em_transito: { label: 'Em Trânsito', color: 'bg-purple-100 text-purple-800' },
   chegou_brasil: { label: 'Chegou no Brasil', color: 'bg-green-100 text-green-800' },
   entregue: { label: 'Entregue', color: 'bg-emerald-100 text-emerald-800' },

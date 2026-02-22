@@ -1,16 +1,13 @@
-// ═══════════════════════════════════════════════
 // Centralized TypeScript types for MalaBridge
-// ═══════════════════════════════════════════════
 
 // Re-export Supabase-generated types
+export type { Database, Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
+
+// Re-export app-level types
 export type {
-  Database,
-  Tables,
-  InsertTables,
-  UpdateTables,
+  Profile,
   Order,
   Payment,
-  Profile,
   Promotion,
   Referral,
   Trip,
@@ -18,7 +15,7 @@ export type {
   WalletTransaction,
   WhatsAppTemplate,
   Setting,
-} from '@/integrations/supabase/types';
+} from '@/types/app-types';
 
 // ── Order Status ─────────────────────────────
 export type OrderStatus =
@@ -26,6 +23,7 @@ export type OrderStatus =
   | 'orcamento'
   | 'aprovado'
   | 'comprando'
+  | 'comprado'
   | 'em_transito'
   | 'chegou_brasil'
   | 'entregue'
@@ -77,7 +75,7 @@ export const KANBAN_COLUMNS: KanbanColumn[] = [
 ];
 
 // ── Catalog Product ────────────────────────
-export type CatalogProduct = Tables<'catalog_products'>;
+export type CatalogProduct = import('@/integrations/supabase/types').Tables<'catalog_products'>;
 
 // ── Order with Client (joined) ─────────────
 export type OrderWithClient = Order & {
@@ -86,3 +84,6 @@ export type OrderWithClient = Order & {
 
 // ── Settings alias (plural) ────────────────
 export type Settings = Setting;
+
+// Import types for aliases
+import type { Order, Setting } from '@/types/app-types';

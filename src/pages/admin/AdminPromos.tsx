@@ -67,7 +67,7 @@ export default function AdminPromos() {
     setForm({
       name: promo.name,
       coupon_code: promo.coupon_code,
-      discount_type: promo.discount_type,
+      discount_type: promo.discount_type as "percent" | "fixed",
       discount_value: String(promo.discount_value),
       min_order_value: promo.min_order_value ? String(promo.min_order_value) : "",
       starts_at: promo.starts_at?.split("T")[0] ?? "",

@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Erro ao buscar perfil:', error.message);
       return;
     }
-    setProfile(data);
+    setProfile(data as Profile);
   };
 
   useEffect(() => {

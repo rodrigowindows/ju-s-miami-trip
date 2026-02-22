@@ -42,7 +42,7 @@ export default function PromotionForm({ open, onClose, onSubmit, promotion, load
       ? {
           name: promotion.name,
           coupon_code: promotion.coupon_code,
-          discount_type: promotion.discount_type,
+          discount_type: promotion.discount_type as 'percent' | 'fixed',
           discount_value: promotion.discount_value,
           min_order_value: promotion.min_order_value,
           starts_at: promotion.starts_at?.slice(0, 16),

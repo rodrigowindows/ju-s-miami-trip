@@ -28,7 +28,7 @@ const Payments = () => {
 
   const clients = useMemo(() => {
     if (!payments) return [];
-    const names = [...new Set(payments.map((p) => p.order?.client_name).filter(Boolean))];
+    const names = [...new Set(payments.map((p) => p.order?.customer_name).filter(Boolean))];
     return names.sort() as string[];
   }, [payments]);
 
@@ -36,7 +36,7 @@ const Payments = () => {
     if (!payments) return [];
     return payments.filter((p) => {
       if (typeFilter !== "all" && p.type !== typeFilter) return false;
-      if (clientFilter !== "all" && p.order?.client_name !== clientFilter) return false;
+      if (clientFilter !== "all" && p.order?.customer_name !== clientFilter) return false;
       return true;
     });
   }, [payments, typeFilter, clientFilter]);
@@ -110,7 +110,7 @@ const Payments = () => {
                       {payment.order?.order_number ?? "—"}
                     </button>
                   </TableCell>
-                  <TableCell className="text-sm">{payment.order?.client_name ?? "—"}</TableCell>
+                  <TableCell className="text-sm">{payment.order?.customer_name ?? "—"}</TableCell>
                   <TableCell>
                     <StatusBadge status={payment.type} />
                   </TableCell>
