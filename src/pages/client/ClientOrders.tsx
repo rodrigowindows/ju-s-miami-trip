@@ -9,7 +9,7 @@ import { useClientOrders } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/constants";
-import { format } from "date-fns";
+import { formatBRL, formatShortDate } from "@/lib/format";
 
 export default function ClientOrders() {
   const { user } = useAuth();
@@ -40,8 +40,8 @@ export default function ClientOrders() {
                 </div>
                 <p className="text-sm text-muted-foreground">{o.items}</p>
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold">R$ {(o.total_amount ?? 0).toFixed(2)}</span>
-                  <span className="text-xs text-muted-foreground">{format(new Date(o.created_at), "dd/MM/yy")}</span>
+                  <span className="font-semibold">{formatBRL(o.total_amount ?? 0)}</span>
+                  <span className="text-xs text-muted-foreground">{formatShortDate(o.created_at)}</span>
                 </div>
                 <div className="flex gap-2">
                   <a
