@@ -96,9 +96,9 @@ export default function OrderDetail() {
   const currentStepIndex = STATUS_ORDER.indexOf(order.status);
   const productImages = items.map((i) => i.product_image_url).filter(Boolean) as string[];
 
-  // Match events by event_type field
+  // Match events by status field
   function getEventForStatus(status: string) {
-    return events.find((e) => e.event_type === status);
+    return events.find((e) => e.status === status);
   }
 
   async function handleScheduleDelivery() {
@@ -107,7 +107,7 @@ export default function OrderDetail() {
 
     await supabase.from("order_events").insert({
       order_id: order!.id,
-      event_type: "chegou_brasil",
+      status: "chegou_brasil",
       title: "Entrega agendada",
       description: `Data: ${new Date(scheduleDate).toLocaleDateString("pt-BR")} - Turno: ${periodLabels[schedulePeriod]}`,
     });
@@ -223,11 +223,7 @@ export default function OrderDetail() {
                       </p>
                     )}
                     {event?.description && <p className="text-xs text-muted-foreground mt-0.5">{event.description}</p>}
-                    {event?.photo_url && (
-                      <a href={event.photo_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline mt-0.5 block">
-                        Ver foto
-                      </a>
-                    )}
+                    
                     {isDone && isCurrent && (
                       <div className="flex items-center gap-1 mt-1">
                         <Clock size={10} className="text-violet-600" />
@@ -258,10 +254,10 @@ export default function OrderDetail() {
                   <span className="font-bold text-violet-600">R$ {order.total_brl.toFixed(2).replace(".", ",")}</span>
                 </div>
               )}
-              {order.deposit_paid > 0 && (
+              {order.deposit_paid && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Sinal pago</span>
-                  <span className="font-medium text-green-600">R$ {order.deposit_paid.toFixed(2).replace(".", ",")}</span>
+                  <span className="font-medium text-green-600">Sim</span>
                 </div>
               )}
             </div>

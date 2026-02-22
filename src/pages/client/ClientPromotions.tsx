@@ -39,7 +39,6 @@ export default function ClientPromotions() {
 
   return (
     <div className="space-y-8">
-      {/* Ofertas Especiais */}
       <section>
         <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
           <Gift className="h-5 w-5 text-primary" />
@@ -94,7 +93,6 @@ export default function ClientPromotions() {
         )}
       </section>
 
-      {/* Indique e Ganhe */}
       <section>
         <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
           <Users className="h-5 w-5 text-secondary" />

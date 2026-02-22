@@ -6,8 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import EmptyState from "@/components/shared/EmptyState";
 import { CardSkeleton } from "@/components/shared/LoadingSkeleton";
-import { useWhatsAppTemplates, useOrdersForMessages, fillTemplate, type WhatsAppTemplate } from "@/hooks/useMessages";
+import { useWhatsAppTemplates, useOrdersForMessages, fillTemplate } from "@/hooks/useMessages";
 import { useSettings } from "@/hooks/useSettings";
+import type { WhatsAppTemplate } from "@/lib/types";
 
 export default function AdminMessages() {
   const { data: templates, isLoading } = useWhatsAppTemplates();
@@ -64,7 +65,7 @@ export default function AdminMessages() {
                 <SelectTrigger><SelectValue placeholder="Escolha um pedido..." /></SelectTrigger>
                 <SelectContent>
                   {(orders ?? []).map((o) => (
-                    <SelectItem key={o.id} value={o.id}>{o.order_number} — {o.customer_name}</SelectItem>
+                    <SelectItem key={o.id} value={o.id}>{o.order_number} — {o.client?.full_name ?? "Cliente"}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

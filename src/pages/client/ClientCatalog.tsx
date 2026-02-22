@@ -53,7 +53,6 @@ export default function ClientCatalog() {
       await createOrderItem.mutateAsync({
         order_id: order.id,
         product_name: selected.name,
-        store: selected.brand,
         product_image_url: selected.image_url,
         price_usd: totalUsd,
         price_brl: totalBrl,

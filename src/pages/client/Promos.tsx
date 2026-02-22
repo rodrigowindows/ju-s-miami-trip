@@ -129,7 +129,7 @@ export default function Promos() {
                     <div>
                       <h3 className="font-semibold text-sm">{promo.name}</h3>
                       <p className="text-sm text-violet-600 font-bold mt-1">
-                        {promo.discount_type === "percentage"
+                        {promo.discount_type === "percent"
                           ? `${promo.discount_value}% OFF`
                           : `R$ ${promo.discount_value.toFixed(2)} OFF`}
                       </p>
