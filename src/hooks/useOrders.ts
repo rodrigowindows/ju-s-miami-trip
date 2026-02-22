@@ -33,6 +33,23 @@ export function useOrders() {
   });
 }
 
+export function useClientOrders(clientId: string) {
+  return useQuery({
+    queryKey: ["orders", "client", clientId],
+    queryFn: async (): Promise<Order[]> => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("client_id", clientId)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return (data ?? []) as Order[];
+    },
+    enabled: !!clientId,
+  });
+}
+
 export function useOrder(id: string) {
   return useQuery({
     queryKey: ["orders", id],
@@ -113,7 +130,7 @@ export function useUpdateOrderStatus() {
         .from("order_events")
         .insert({
           order_id: orderId,
-          event_type: status,
+          status,
           title,
           description: description ?? null,
         });
@@ -123,6 +140,42 @@ export function useUpdateOrderStatus() {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["orders", vars.orderId] });
       queryClient.invalidateQueries({ queryKey: ["order_events", vars.orderId] });
+    },
+  });
+}
+
+export function useCreateOrder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (order: Partial<Order>) => {
+      const { data, error } = await supabase
+        .from("orders")
+        .insert(order as any)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Order;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
+}
+
+export function useCreateOrderItem() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (item: Partial<OrderItem>) => {
+      const { data, error } = await supabase
+        .from("order_items")
+        .insert(item as any)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as OrderItem;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["order_items", vars.order_id] });
     },
   });
 }

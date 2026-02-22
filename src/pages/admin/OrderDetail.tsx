@@ -276,11 +276,7 @@ const OrderDetail = () => {
                     {event.description && (
                       <p className="text-xs text-muted-foreground">{event.description}</p>
                     )}
-                    {event.photo_url && (
-                      <a href={event.photo_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
-                        Ver foto
-                      </a>
-                    )}
+                    
                     <p className="text-[10px] text-muted-foreground mt-0.5">
                       {format(new Date(event.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
                     </p>

@@ -7,7 +7,7 @@ import { useClients } from "@/hooks/useClients";
 import { usePromotions } from "@/hooks/usePromotions";
 import { useTrips } from "@/hooks/useTrips";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/types";
-import type { Order, OrderStatus } from "@/lib/types";
+import type { OrderWithClient, OrderStatus } from "@/lib/types";
 import { format } from "date-fns";
 
 const KANBAN_COLS: OrderStatus[] = ["novo", "orcamento", "aprovado", "comprando", "comprado", "em_transito", "chegou_brasil", "entregue"];
@@ -32,7 +32,7 @@ export default function AdminDashboard() {
   const ordersByStatus = KANBAN_COLS.reduce((acc, status) => {
     acc[status] = (orders ?? []).filter((o) => o.status === status);
     return acc;
-  }, {} as Record<OrderStatus, Order[]>);
+  }, {} as Record<OrderStatus, OrderWithClient[]>);
 
   return (
     <div>
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
                   <Card className="hover:shadow-sm transition-shadow">
                     <CardContent className="p-3">
                       <p className="text-xs font-mono font-semibold">{o.order_number}</p>
-                      <p className="text-xs text-muted-foreground truncate">{o.customer_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{o.client?.full_name ?? o.customer_name}</p>
                       <p className="text-xs font-semibold mt-1">R$ {(o.total_amount ?? 0).toFixed(2)}</p>
                     </CardContent>
                   </Card>

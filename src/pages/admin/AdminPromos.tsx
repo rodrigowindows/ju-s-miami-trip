@@ -34,7 +34,7 @@ export default function AdminPromos() {
   const [form, setForm] = useState({
     name: "",
     coupon_code: "",
-    discount_type: "percentage" as "percentage" | "fixed",
+    discount_type: "percent" as "percent" | "fixed",
     discount_value: "",
     min_order_value: "",
     starts_at: "",
@@ -58,7 +58,7 @@ export default function AdminPromos() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ name: "", coupon_code: "", discount_type: "percentage", discount_value: "", min_order_value: "", starts_at: "", expires_at: "", max_uses: "", active: true });
+    setForm({ name: "", coupon_code: "", discount_type: "percent", discount_value: "", min_order_value: "", starts_at: "", expires_at: "", max_uses: "", active: true });
     setOpen(true);
   }
 
@@ -163,7 +163,7 @@ export default function AdminPromos() {
                   </Badge>
                 </div>
                 <p className="text-sm">
-                  {promo.discount_type === "percentage" ? `${promo.discount_value}% de desconto` : `R$ ${promo.discount_value.toFixed(2)} de desconto`}
+                  {promo.discount_type === "percent" ? `${promo.discount_value}% de desconto` : `R$ ${promo.discount_value.toFixed(2)} de desconto`}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Usos: {promo.current_uses}{promo.max_uses ? ` / ${promo.max_uses}` : ""}
@@ -198,10 +198,10 @@ export default function AdminPromos() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Tipo de desconto</Label>
-                <Select value={form.discount_type} onValueChange={(v) => setForm({ ...form, discount_type: v as "percentage" | "fixed" })}>
+                <Select value={form.discount_type} onValueChange={(v) => setForm({ ...form, discount_type: v as "percent" | "fixed" })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="percentage">Porcentagem (%)</SelectItem>
+                    <SelectItem value="percent">Porcentagem (%)</SelectItem>
                     <SelectItem value="fixed">Valor fixo (R$)</SelectItem>
                   </SelectContent>
                 </Select>

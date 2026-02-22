@@ -75,9 +75,7 @@ export default function AdminOrderDetail() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Items */}
           <Card>
             <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Package className="h-5 w-5" /> Itens</CardTitle></CardHeader>
             <CardContent>
@@ -90,11 +88,10 @@ export default function AdminOrderDetail() {
                       {item.product_image_url && <img src={item.product_image_url} alt={item.product_name} className="h-12 w-12 rounded object-cover" />}
                       <div className="flex-1">
                         <p className="font-semibold text-sm">{item.product_name}</p>
-                        {item.store && <p className="text-xs text-muted-foreground">{item.store}</p>}
                       </div>
                       <div className="text-right text-sm">
-                        <p>US$ {item.price_usd.toFixed(2)}</p>
-                        <p className="text-muted-foreground">R$ {item.price_brl.toFixed(2)}</p>
+                        <p>US$ {(item.price_usd ?? 0).toFixed(2)}</p>
+                        <p className="text-muted-foreground">R$ {(item.price_brl ?? 0).toFixed(2)}</p>
                       </div>
                     </div>
                   ))}
@@ -103,7 +100,6 @@ export default function AdminOrderDetail() {
             </CardContent>
           </Card>
 
-          {/* Financeiro */}
           <Card>
             <CardHeader><CardTitle className="text-lg flex items-center gap-2"><DollarSign className="h-5 w-5" /> Financeiro</CardTitle></CardHeader>
             <CardContent className="space-y-3">
@@ -153,7 +149,6 @@ export default function AdminOrderDetail() {
             </CardContent>
           </Card>
 
-          {/* Timeline */}
           <Card>
             <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Clock className="h-5 w-5" /> Timeline</CardTitle></CardHeader>
             <CardContent>
@@ -170,7 +165,6 @@ export default function AdminOrderDetail() {
                       <div className="pb-4">
                         <p className="font-semibold text-sm">{ev.title}</p>
                         {ev.description && <p className="text-xs text-muted-foreground">{ev.description}</p>}
-                        {ev.photo_url && <img src={ev.photo_url} alt="" className="mt-2 h-32 rounded-lg object-cover" />}
                         <p className="text-xs text-muted-foreground mt-1">{format(new Date(ev.created_at), "dd/MM/yy HH:mm")}</p>
                       </div>
                     </div>
@@ -181,9 +175,7 @@ export default function AdminOrderDetail() {
           </Card>
         </div>
 
-        {/* Right column */}
         <div className="space-y-6">
-          {/* Status */}
           <Card>
             <CardHeader><CardTitle className="text-sm">Alterar Status</CardTitle></CardHeader>
             <CardContent>
@@ -198,11 +190,10 @@ export default function AdminOrderDetail() {
             </CardContent>
           </Card>
 
-          {/* Cliente */}
           <Card>
             <CardHeader><CardTitle className="text-sm">Cliente</CardTitle></CardHeader>
             <CardContent className="space-y-1 text-sm">
-              <p className="font-semibold">{order.customer_name}</p>
+              <p className="font-semibold">{order.client?.full_name ?? order.customer_name}</p>
               {order.customer_phone && <p className="text-muted-foreground">{order.customer_phone}</p>}
               <a
                 href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Olá! Sobre o pedido ${order.order_number}`)}`}
@@ -215,7 +206,6 @@ export default function AdminOrderDetail() {
             </CardContent>
           </Card>
 
-          {/* Viagem */}
           <Card>
             <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Plane className="h-4 w-4" /> Viagem</CardTitle></CardHeader>
             <CardContent>
@@ -246,7 +236,6 @@ export default function AdminOrderDetail() {
             </CardContent>
           </Card>
 
-          {/* Info */}
           <Card>
             <CardHeader><CardTitle className="text-sm">Info</CardTitle></CardHeader>
             <CardContent className="space-y-2 text-sm text-muted-foreground">

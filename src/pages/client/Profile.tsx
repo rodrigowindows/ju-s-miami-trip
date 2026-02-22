@@ -132,8 +132,8 @@ export default function Profile() {
                       {new Date(tx.created_at).toLocaleDateString("pt-BR")}
                     </p>
                   </div>
-                  <Badge className={tx.type === "debit" ? "bg-red-100 text-red-700 border-0" : "bg-green-100 text-green-700 border-0"}>
-                    {tx.type === "debit" ? "-" : "+"}R$ {tx.amount.toFixed(2)}
+                  <Badge className={tx.type === "order_debit" ? "bg-red-100 text-red-700 border-0" : "bg-green-100 text-green-700 border-0"}>
+                    {tx.type === "order_debit" ? "-" : "+"}R$ {tx.amount.toFixed(2)}
                   </Badge>
                 </div>
               ))}
