@@ -89,7 +89,7 @@ const TripDetail = () => {
     return (
       <div className="p-6 md:p-8 max-w-5xl mx-auto text-center">
         <p className="text-muted-foreground">Viagem nao encontrada.</p>
-        <Button variant="link" onClick={() => navigate("/admin/trips")}>
+        <Button variant="link" onClick={() => navigate("/admin/viagens")}>
           Voltar
         </Button>
       </div>
@@ -138,7 +138,7 @@ const TripDetail = () => {
     try {
       await deleteTrip.mutateAsync(trip.id);
       toast({ title: "Viagem excluida!" });
-      navigate("/admin/trips");
+      navigate("/admin/viagens");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro ao excluir";
       toast({ title: "Erro", description: message, variant: "destructive" });
@@ -163,7 +163,7 @@ const TripDetail = () => {
         <Button
           variant="ghost"
           className="gap-2"
-          onClick={() => navigate("/admin/trips")}
+          onClick={() => navigate("/admin/viagens")}
         >
           <ArrowLeft size={16} />
           Voltar
