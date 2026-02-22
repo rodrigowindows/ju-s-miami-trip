@@ -1,68 +1,85 @@
-import { Link, useLocation } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import {
-  SidebarProvider,
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
-import { ShoppingBag, LayoutDashboard, Users, Plane } from "lucide-react";
+  Plane,
+  MessageSquare,
+  DollarSign,
+  LayoutDashboard,
+  ArrowLeft,
+  ShoppingBag,
+  Users,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const navItems = [
-  { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { title: "Pedidos", href: "/admin/orders", icon: ShoppingBag },
-  { title: "Clientes", href: "/admin/clients", icon: Users },
-  { title: "Viagens", href: "/admin/trips", icon: Plane },
+  { to: "/admin/orders", label: "Pedidos", icon: ShoppingBag },
+  { to: "/admin/trips", label: "Viagens", icon: Plane },
+  { to: "/admin/messages", label: "Mensagens", icon: MessageSquare },
+  { to: "/admin/payments", label: "Pagamentos", icon: DollarSign },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const location = useLocation();
-
+const AdminLayout = () => {
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <Sidebar>
-          <SidebarHeader className="p-4">
-            <Link to="/admin" className="flex items-center gap-2">
-              <ShoppingBag className="h-6 w-6 text-miami-pink" />
-              <span className="text-lg font-bold font-display">Ju's Miami</span>
-            </Link>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
-              {navItems.map((item) => {
-                const isActive =
-                  item.href === "/admin"
-                    ? location.pathname === "/admin"
-                    : location.pathname.startsWith(item.href);
-                return (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={isActive}>
-                      <Link to={item.href}>
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarContent>
-        </Sidebar>
-        <SidebarInset>
-          <header className="flex h-14 items-center gap-2 border-b px-4">
-            <SidebarTrigger />
-            <Separator orientation="vertical" className="h-6" />
-            <span className="text-sm text-muted-foreground">Painel Admin</span>
-          </header>
-          <main className="flex-1 p-4 md:p-6">{children}</main>
-        </SidebarInset>
+    <div className="min-h-screen flex bg-muted/30">
+      {/* Sidebar */}
+      <aside className="w-64 border-r bg-card hidden md:flex flex-col">
+        <div className="p-6 border-b">
+          <a href="/" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft size={16} />
+            Voltar ao site
+          </a>
+          <h1 className="font-display text-lg font-bold mt-3 flex items-center gap-2">
+            <LayoutDashboard size={20} />
+            Painel Admin
+          </h1>
+        </div>
+        <nav className="flex-1 p-4 space-y-1">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )
+              }
+            >
+              <item.icon size={18} />
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Mobile nav */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t flex">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              cn(
+                "flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition-colors",
+                isActive
+                  ? "text-primary"
+                  : "text-muted-foreground"
+              )
+            }
+          >
+            <item.icon size={20} />
+            {item.label}
+          </NavLink>
+        ))}
       </div>
-    </SidebarProvider>
+
+      {/* Main content */}
+      <main className="flex-1 overflow-auto pb-20 md:pb-0">
+        <Outlet />
+      </main>
+    </div>
   );
-}
+};
+
+export default AdminLayout;

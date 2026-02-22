@@ -1,19 +1,28 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { ArrowLeft, Plus, Upload, Plane } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ArrowLeft, Upload, Plane } from "lucide-react";
-
-import AdminLayout from "@/components/admin/AdminLayout";
-import StatusBadge from "@/components/admin/StatusBadge";
-import OrderTimeline from "@/components/admin/OrderTimeline";
-import UploadFileDialog from "@/components/admin/UploadFileDialog";
-import AssignTripDialog from "@/components/admin/AssignTripDialog";
-import ChangeStatusDropdown from "@/components/admin/ChangeStatusDropdown";
-import { useOrder } from "@/hooks/use-orders-store";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -23,186 +32,384 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import StatusBadge from "@/components/admin/StatusBadge";
+import OrderTimeline from "@/components/admin/OrderTimeline";
+import UploadFileDialog from "@/components/admin/UploadFileDialog";
+import AssignTripDialog from "@/components/admin/AssignTripDialog";
+import ChangeStatusDropdown from "@/components/admin/ChangeStatusDropdown";
+import { useOrder } from "@/hooks/useOrders";
+import { useOrderPayments, useCreatePayment } from "@/hooks/usePayments";
+import { useToast } from "@/hooks/use-toast";
 
-function formatBRL(v: number) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
-}
+const statusLabels: Record<string, string> = {
+  pending: "Pendente",
+  confirmed: "Confirmado",
+  purchased: "Comprado",
+  in_transit: "Em Transito",
+  delivered: "Entregue",
+};
 
-function formatUSD(v: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(v);
-}
+const typeLabels: Record<string, string> = {
+  deposit: "Deposito Sinal",
+  balance: "Pagamento Saldo",
+  refund: "Reembolso",
+};
 
-export default function OrderDetail() {
+const OrderDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const order = useOrder(id!);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { data: order, isLoading: orderLoading } = useOrder(id!);
+  const { data: payments, isLoading: paymentsLoading } = useOrderPayments(
+    id!
+  );
+  const createPayment = useCreatePayment();
 
+  const [paymentOpen, setPaymentOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [tripOpen, setTripOpen] = useState(false);
+  const [paymentForm, setPaymentForm] = useState({
+    type: "deposit" as "deposit" | "balance" | "refund",
+    amount: "",
+    receipt_url: "",
+    notes: "",
+  });
 
-  if (!order) {
+  const isLoading = orderLoading || paymentsLoading;
+
+  if (isLoading) {
     return (
-      <AdminLayout>
-        <div className="flex flex-col items-center justify-center py-20 space-y-4">
-          <p className="text-muted-foreground">Pedido não encontrado.</p>
-          <Button asChild variant="outline">
-            <Link to="/admin/orders">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar aos pedidos
-            </Link>
-          </Button>
+      <div className="p-6 md:p-8 max-w-5xl mx-auto">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 w-48 bg-muted rounded" />
+          <div className="h-48 bg-muted rounded" />
+          <div className="h-48 bg-muted rounded" />
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
-  const totalPaid = order.payments.reduce((s, p) => s + p.amount, 0);
-  const remaining = order.total_brl - totalPaid;
+  if (!order) {
+    return (
+      <div className="p-6 md:p-8 max-w-5xl mx-auto text-center">
+        <p className="text-muted-foreground">Pedido nao encontrado.</p>
+        <Button variant="link" onClick={() => navigate(-1)}>
+          Voltar
+        </Button>
+      </div>
+    );
+  }
+
+  const totalPaid =
+    payments?.reduce((sum, p) => {
+      if (p.type === "refund") return sum - p.amount;
+      return sum + p.amount;
+    }, 0) ?? 0;
+
+  const remaining = order.total_amount - totalPaid;
+
+  const handleCreatePayment = async () => {
+    try {
+      await createPayment.mutateAsync({
+        order_id: order.id,
+        type: paymentForm.type,
+        amount: Number(paymentForm.amount),
+        receipt_url: paymentForm.receipt_url || null,
+        notes: paymentForm.notes || null,
+      });
+      toast({ title: "Pagamento registrado!" });
+      setPaymentOpen(false);
+      setPaymentForm({
+        type: "deposit",
+        amount: "",
+        receipt_url: "",
+        notes: "",
+      });
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao registrar pagamento";
+      toast({ title: "Erro", description: message, variant: "destructive" });
+    }
+  };
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <Button asChild variant="ghost" size="icon">
-              <Link to="/admin/orders">
-                <ArrowLeft className="h-4 w-4" />
-              </Link>
-            </Button>
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold font-display">{order.order_number}</h1>
-                <StatusBadge status={order.status} />
-              </div>
-              <p className="text-sm text-muted-foreground">{order.client.name}</p>
+    <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-6">
+      {/* Header with back button and actions */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft size={16} />
+          </Button>
+          <div>
+            <div className="flex items-center gap-3">
+              <CardTitle className="font-body text-xl">
+                Pedido {order.order_number}
+              </CardTitle>
+              <StatusBadge status={order.status} />
             </div>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => setUploadOpen(true)}>
-              <Upload className="mr-2 h-4 w-4" />
-              Upload Foto/Nota
-            </Button>
-            <Button variant="outline" onClick={() => setTripOpen(true)}>
-              <Plane className="mr-2 h-4 w-4" />
-              Atribuir a Viagem
-            </Button>
-            <ChangeStatusDropdown orderId={order.id} currentStatus={order.status} />
+            <p className="text-sm text-muted-foreground">{order.customer_name}</p>
           </div>
         </div>
 
-        <Separator />
+        {/* Action buttons */}
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setUploadOpen(true)}>
+            <Upload className="mr-2 h-4 w-4" />
+            Upload Foto/Nota
+          </Button>
+          <Button variant="outline" onClick={() => setTripOpen(true)}>
+            <Plane className="mr-2 h-4 w-4" />
+            Atribuir a Viagem
+          </Button>
+          <ChangeStatusDropdown orderId={order.id} currentStatus={order.status} />
+        </div>
+      </div>
 
-        {/* Items Section */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Itens do Pedido</h2>
-          <div className="rounded-md border">
+      <Separator />
+
+      {/* Order info */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="font-body text-xl">
+              Detalhes do Pedido
+            </CardTitle>
+            <Badge variant="secondary">
+              {statusLabels[order.status] ?? order.status}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <span className="text-muted-foreground block">Cliente</span>
+              <span className="font-medium">{order.customer_name}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block">Telefone</span>
+              <span className="font-medium">{order.customer_phone}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block">Itens</span>
+              <span className="font-medium">{order.items}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block">Total</span>
+              <span className="font-medium">
+                R${" "}
+                {order.total_amount.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })}
+              </span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block">Peso Est.</span>
+              <span className="font-medium">
+                {order.estimated_weight_kg
+                  ? `${order.estimated_weight_kg} kg`
+                  : "-"}
+              </span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block">Criado em</span>
+              <span className="font-medium">
+                {format(new Date(order.created_at), "dd/MM/yyyy", {
+                  locale: ptBR,
+                })}
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Payments section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="font-body text-lg">Pagamentos</CardTitle>
+            <Button
+              size="sm"
+              className="gap-2"
+              onClick={() => setPaymentOpen(true)}
+            >
+              <Plus size={14} />
+              Registrar Pagamento
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Summary */}
+          <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
+            <div className="text-center">
+              <span className="text-xs text-muted-foreground block">Total</span>
+              <span className="font-bold text-sm">
+                R${" "}
+                {order.total_amount.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })}
+              </span>
+            </div>
+            <div className="text-center">
+              <span className="text-xs text-muted-foreground block">Pago</span>
+              <span className="font-bold text-sm text-green-600">
+                R${" "}
+                {totalPaid.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })}
+              </span>
+            </div>
+            <div className="text-center">
+              <span className="text-xs text-muted-foreground block">
+                Restante
+              </span>
+              <span
+                className={`font-bold text-sm ${
+                  remaining > 0 ? "text-orange-500" : "text-green-600"
+                }`}
+              >
+                R${" "}
+                {remaining.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })}
+              </span>
+            </div>
+          </div>
+
+          {/* Payment list */}
+          {payments && payments.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Produto</TableHead>
-                  <TableHead>Loja</TableHead>
-                  <TableHead className="text-right">USD</TableHead>
-                  <TableHead className="text-right">BRL</TableHead>
+                  <TableHead>Data</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead className="text-right">Valor</TableHead>
+                  <TableHead>Notas</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {order.items.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        {item.image_url && (
-                          <img
-                            src={item.image_url}
-                            alt={item.name}
-                            className="h-10 w-10 rounded object-cover"
-                          />
-                        )}
-                        <span className="font-medium">{item.name}</span>
-                      </div>
+                {payments.map((p) => (
+                  <TableRow key={p.id}>
+                    <TableCell className="text-sm">
+                      {format(new Date(p.created_at), "dd/MM/yyyy", {
+                        locale: ptBR,
+                      })}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{item.store}</TableCell>
-                    <TableCell className="text-right">{formatUSD(item.price_usd)}</TableCell>
-                    <TableCell className="text-right font-medium">{formatBRL(item.price_brl)}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          p.type === "refund" ? "destructive" : "secondary"
+                        }
+                      >
+                        {typeLabels[p.type] ?? p.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right font-medium">
+                      {p.type === "refund" ? "- " : ""}R${" "}
+                      {p.amount.toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {p.notes ?? "-"}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              Nenhum pagamento registrado.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Register payment dialog */}
+      <Dialog open={paymentOpen} onOpenChange={setPaymentOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Registrar Pagamento</DialogTitle>
+            <DialogDescription>
+              Registre um novo pagamento para o pedido {order.order_number}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Tipo</Label>
+              <Select
+                value={paymentForm.type}
+                onValueChange={(val) =>
+                  setPaymentForm({
+                    ...paymentForm,
+                    type: val as "deposit" | "balance" | "refund",
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="deposit">Deposito Sinal</SelectItem>
+                  <SelectItem value="balance">Pagamento Saldo</SelectItem>
+                  <SelectItem value="refund">Reembolso</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Valor (R$)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={paymentForm.amount}
+                onChange={(e) =>
+                  setPaymentForm({ ...paymentForm, amount: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label>Link do Comprovante (opcional)</Label>
+              <Input
+                placeholder="https://..."
+                value={paymentForm.receipt_url}
+                onChange={(e) =>
+                  setPaymentForm({
+                    ...paymentForm,
+                    receipt_url: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <Label>Observacoes (opcional)</Label>
+              <Input
+                placeholder="Sinal via PIX..."
+                value={paymentForm.notes}
+                onChange={(e) =>
+                  setPaymentForm({ ...paymentForm, notes: e.target.value })
+                }
+              />
+            </div>
           </div>
-        </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPaymentOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleCreatePayment}
+              disabled={!paymentForm.amount || createPayment.isPending}
+            >
+              {createPayment.isPending ? "Registrando..." : "Registrar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-        {/* Financial Section */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Financeiro</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Total Estimado
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{formatBRL(order.total_brl)}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Sinal Pago
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-green-600">{formatBRL(totalPaid)}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Saldo Restante
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className={`text-2xl font-bold ${remaining > 0 ? "text-amber-600" : "text-green-600"}`}>
-                  {formatBRL(remaining)}
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Câmbio Usado
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">R$ {order.exchange_rate.toFixed(2)}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Spread %
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{order.spread}%</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Timeline Section */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Timeline</h2>
-          <Card>
-            <CardContent className="pt-6">
-              <OrderTimeline events={order.events} />
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Modals */}
+      {/* Modals from admin branch */}
       <UploadFileDialog orderId={order.id} open={uploadOpen} onOpenChange={setUploadOpen} />
       <AssignTripDialog
         orderId={order.id}
@@ -210,6 +417,8 @@ export default function OrderDetail() {
         open={tripOpen}
         onOpenChange={setTripOpen}
       />
-    </AdminLayout>
+    </div>
   );
-}
+};
+
+export default OrderDetail;
