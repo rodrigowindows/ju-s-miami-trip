@@ -8,7 +8,7 @@ import { CardSkeleton } from "@/components/shared/LoadingSkeleton";
 import { useClientOrders } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/types";
+import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/constants";
 import { format } from "date-fns";
 
 export default function ClientOrders() {

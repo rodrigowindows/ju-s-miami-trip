@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import type { WalletTransaction } from "@/lib/types";
+import type { WalletTransaction } from "@/types";
 import { toast } from "sonner";
 
 export function useWalletTransactions(clientId: string) {

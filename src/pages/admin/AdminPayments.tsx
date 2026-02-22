@@ -65,7 +65,7 @@ export default function AdminPayments() {
                           {p.order?.order_number ?? "—"}
                         </Link>
                       </TableCell>
-                      <TableCell>{p.order?.client_name ?? "—"}</TableCell>
+                      <TableCell>{p.order?.customer_name ?? "—"}</TableCell>
                       <TableCell><Badge variant="outline" className={t.color}>{t.label}</Badge></TableCell>
                       <TableCell className={`font-semibold ${p.type === "refund" ? "text-red-600" : "text-emerald-600"}`}>
                         {p.type === "refund" ? "-" : "+"}R$ {p.amount.toFixed(2)}

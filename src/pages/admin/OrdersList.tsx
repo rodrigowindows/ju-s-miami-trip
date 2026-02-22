@@ -60,7 +60,7 @@ export default function OrdersList() {
         <div className="flex items-center gap-2">
           <Filter size={16} className="text-muted-foreground" />
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -91,10 +91,10 @@ export default function OrdersList() {
               <TableRow>
                 <TableHead>Pedido</TableHead>
                 <TableHead>Cliente</TableHead>
-                <TableHead>Itens</TableHead>
+                <TableHead className="hidden md:table-cell">Itens</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-                <TableHead>Data</TableHead>
+                <TableHead className="text-right hidden sm:table-cell">Total</TableHead>
+                <TableHead className="hidden lg:table-cell">Data</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -112,7 +112,7 @@ export default function OrdersList() {
                     <TableCell className="text-sm">
                       {order.client?.full_name ?? "—"}
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
+                    <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate hidden md:table-cell">
                       {order.items ?? "—"}
                     </TableCell>
                     <TableCell>
@@ -120,12 +120,12 @@ export default function OrdersList() {
                         {cfg.label}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right font-medium text-sm">
+                    <TableCell className="text-right font-medium text-sm hidden sm:table-cell">
                       {order.total_brl
                         ? `R$ ${order.total_brl.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
                         : "—"}
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell className="text-sm text-muted-foreground hidden lg:table-cell">
                       {format(new Date(order.created_at), "dd/MM/yyyy", { locale: ptBR })}
                     </TableCell>
                   </TableRow>

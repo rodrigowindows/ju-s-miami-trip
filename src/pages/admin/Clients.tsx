@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import type { Profile } from "@/lib/types";
+import type { Profile } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -105,11 +105,11 @@ export default function Clients() {
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Telefone</TableHead>
-                <TableHead>Endereço</TableHead>
-                <TableHead>Código Referral</TableHead>
-                <TableHead className="text-right">Saldo Wallet</TableHead>
+                <TableHead className="hidden sm:table-cell">Email</TableHead>
+                <TableHead className="hidden lg:table-cell">Telefone</TableHead>
+                <TableHead className="hidden lg:table-cell">Endereço</TableHead>
+                <TableHead className="hidden md:table-cell">Código Referral</TableHead>
+                <TableHead className="text-right">Saldo</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -119,12 +119,12 @@ export default function Clients() {
                   <TableCell className="font-medium text-sm">
                     {client.full_name ?? "—"}
                   </TableCell>
-                  <TableCell className="text-sm">{client.email}</TableCell>
-                  <TableCell className="text-sm">{client.phone ?? "—"}</TableCell>
-                  <TableCell className="text-sm max-w-[150px] truncate">
+                  <TableCell className="text-sm hidden sm:table-cell">{client.email}</TableCell>
+                  <TableCell className="text-sm hidden lg:table-cell">{client.phone ?? "—"}</TableCell>
+                  <TableCell className="text-sm max-w-[150px] truncate hidden lg:table-cell">
                     {client.address ?? "—"}
                   </TableCell>
-                  <TableCell className="text-sm font-mono">
+                  <TableCell className="text-sm font-mono hidden md:table-cell">
                     {client.referral_code ?? "—"}
                   </TableCell>
                   <TableCell className="text-right font-medium text-sm">

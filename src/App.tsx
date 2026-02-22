@@ -3,18 +3,18 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 
 // Client pages
 import ClientLayout from "./components/client/ClientLayout";
-import Catalog from "./pages/client/Catalog";
-import ClientOrders from "./pages/client/Orders";
-import ClientOrderDetail from "./pages/client/OrderDetail";
-import Promos from "./pages/client/Promos";
-import Profile from "./pages/client/Profile";
+import ClientDashboard from "./pages/client/ClientDashboard";
+import ClientCatalog from "./pages/client/ClientCatalog";
+import ClientOrders from "./pages/client/ClientOrders";
+import ClientPromotions from "./pages/client/ClientPromotions";
+import ClientProfile from "./pages/client/ClientProfile";
 
 // Admin pages
 import AdminLayout from "./components/admin/AdminLayout";
@@ -57,7 +57,7 @@ function RequireAdmin({ children }: { children: React.ReactNode }) {
 
   if (loading) return <LoadingScreen />;
   if (!user) return <Navigate to="/login" replace />;
-  if (profile && profile.role !== "admin") return <Navigate to="/client/catalog" replace />;
+  if (profile && profile.role !== "admin") return <Navigate to="/client/dashboard" replace />;
 
   return <>{children}</>;
 }
@@ -69,7 +69,7 @@ function RedirectIfAuthed({ children }: { children: React.ReactNode }) {
 
   if (user && profile) {
     if (profile.role === "admin") return <Navigate to="/admin/dashboard" replace />;
-    return <Navigate to="/client/catalog" replace />;
+    return <Navigate to="/client/dashboard" replace />;
   }
 
   return <>{children}</>;
@@ -102,12 +102,12 @@ const App = () => (
                 </RequireClient>
               }
             >
-              <Route index element={<Navigate to="catalog" replace />} />
-              <Route path="catalog" element={<Catalog />} />
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<ClientDashboard />} />
+              <Route path="catalog" element={<ClientCatalog />} />
               <Route path="orders" element={<ClientOrders />} />
-              <Route path="orders/:id" element={<ClientOrderDetail />} />
-              <Route path="promos" element={<Promos />} />
-              <Route path="profile" element={<Profile />} />
+              <Route path="promotions" element={<ClientPromotions />} />
+              <Route path="profile" element={<ClientProfile />} />
             </Route>
 
             {/* Admin authenticated routes */}

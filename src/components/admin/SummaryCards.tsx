@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
+import { formatBRL } from "@/lib/format";
 import { ClipboardList, ShoppingBag, Plane, DollarSign } from "lucide-react";
 
 interface SummaryData {
@@ -28,7 +29,7 @@ export default function SummaryCards() {
         supabase
           .from("orders")
           .select("id", { count: "exact", head: true })
-          .in("status", ["aprovado", "comprando", "em_viagem", "entregar"]),
+          .in("status", ["aprovado", "comprando", "em_transito"]),
         supabase
           .from("trips")
           .select("id", { count: "exact", head: true })
@@ -38,8 +39,13 @@ export default function SummaryCards() {
           .from("orders")
           .select("price_brl")
           .eq("balance_paid", false)
-          .in("status", ["aprovado", "comprando", "em_viagem", "entregar"]),
+          .in("status", ["aprovado", "comprando", "em_transito"]),
       ]);
+
+      if (quoteRes.error) console.error("Erro ao contar orçamentos:", quoteRes.error.message);
+      if (activeRes.error) console.error("Erro ao contar pedidos ativos:", activeRes.error.message);
+      if (tripsRes.error) console.error("Erro ao contar viagens:", tripsRes.error.message);
+      if (revenueRes.error) console.error("Erro ao calcular receita:", revenueRes.error.message);
 
       const pendingRevenue =
         revenueRes.data?.reduce(
@@ -80,8 +86,7 @@ export default function SummaryCards() {
       title: "Receita Pendente",
       value: data.pendingRevenue,
       icon: DollarSign,
-      format: (v: number) =>
-        v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+      format: (v: number) => formatBRL(v),
     },
   ];
 

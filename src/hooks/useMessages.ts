@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import type { WhatsAppTemplate, Order, OrderWithClient } from "@/lib/types";
+import { formatBRL } from "@/lib/format";
+import type { WhatsAppTemplate, Order } from "@/types";
+
+export type OrderWithClient = Order & {
+  client: { full_name: string | null; phone: string | null; email: string } | null;
+};
 
 export function useWhatsAppTemplates() {
   return useQuery({
@@ -96,15 +101,15 @@ export function fillTemplate(
 ): string {
   const clientName = order.client?.full_name ?? "Cliente";
   const itemsSummary = (order as { items_summary?: string }).items_summary ?? order.items ?? "";
-  const totalBrl = order.total_brl ?? 0;
-  const depositPaid = order.deposit_paid ?? 0;
+  const totalAmount = order.total_amount ?? 0;
+  const depositAmount = order.deposit_amount ?? 0;
 
   return template
     .replace(/{nome_cliente}/g, clientName)
     .replace(/{numero_pedido}/g, order.order_number)
     .replace(/{itens}/g, itemsSummary)
     .replace(/{item}/g, itemsSummary)
-    .replace(/{valor_total}/g, totalBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2 }))
-    .replace(/{valor_sinal}/g, depositPaid.toLocaleString("pt-BR", { minimumFractionDigits: 2 }))
+    .replace(/{valor_total}/g, formatBRL(totalAmount))
+    .replace(/{valor_sinal}/g, formatBRL(depositAmount))
     .replace(/{codigo_viagem}/g, (order as { trip_code?: string }).trip_code ?? "");
 }

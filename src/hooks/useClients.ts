@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import type { Profile } from "@/lib/types";
+import type { Profile } from "@/types";
 
 export interface ClientWithStats extends Profile {
   total_orders: number;

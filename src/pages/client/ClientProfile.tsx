@@ -8,7 +8,7 @@ import EmptyState from '@/components/shared/EmptyState';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWalletTransactions } from '@/hooks/useWallet';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { formatBRL, formatShortDate } from '@/lib/format';
 
 export default function ClientProfile() {
   const { user, profile, signOut } = useAuth();
@@ -68,7 +68,7 @@ export default function ClientProfile() {
           {/* Balance highlight */}
           <div className="rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-5 text-center">
             <p className="text-sm opacity-90">Saldo disponível</p>
-            <p className="text-4xl font-bold mt-1">R$ {(profile?.wallet_balance ?? 0).toFixed(2)}</p>
+            <p className="text-4xl font-bold mt-1">{formatBRL(profile?.wallet_balance ?? 0)}</p>
           </div>
 
           {/* Transaction history */}
@@ -105,10 +105,10 @@ export default function ClientProfile() {
                     </div>
                     <div className="text-right">
                       <p className={`font-semibold text-sm ${t.amount >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                        {t.amount >= 0 ? '+' : ''}R$ {Math.abs(t.amount).toFixed(2)}
+                        {t.amount >= 0 ? '+' : ''}{formatBRL(Math.abs(t.amount))}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {format(new Date(t.created_at), 'dd/MM')}
+                        {formatShortDate(t.created_at)}
                       </p>
                     </div>
                   </div>

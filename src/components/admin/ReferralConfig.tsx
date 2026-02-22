@@ -10,7 +10,7 @@ import { useSettings, useSaveSettings } from '@/hooks/useSettings';
 import { CardSkeleton } from '@/components/shared/LoadingSkeleton';
 import { Gift, Save } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { formatBRL, formatDate } from '@/lib/format';
 
 export default function ReferralConfig() {
   const { data: settings, isLoading: settingsLoading } = useSettings();
@@ -98,9 +98,9 @@ export default function ReferralConfig() {
                       <TableCell>
                         <StatusBadge status={r.status} />
                       </TableCell>
-                      <TableCell className="font-medium">R$ {r.credit_amount.toFixed(2)}</TableCell>
+                      <TableCell className="font-medium">{formatBRL(r.credit_amount)}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">
-                        {format(new Date(r.created_at), 'dd/MM/yyyy')}
+                        {formatDate(r.created_at)}
                       </TableCell>
                     </TableRow>
                   ))}

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import type { TripWithAllocated, Order } from "@/lib/types";
+import type { TripWithAllocated, Order } from "@/types";
 
 export function useTrips() {
   return useQuery({

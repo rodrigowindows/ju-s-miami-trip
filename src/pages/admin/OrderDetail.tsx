@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Truck } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import StatusBadge from "@/components/shared/StatusBadge";
 import {
   Dialog,
   DialogContent,
@@ -35,36 +33,14 @@ import { useOrder, useOrderItems, useOrderEvents, useUpdateOrderStatus } from "@
 import { useOrderPayments, useCreatePayment } from "@/hooks/usePayments";
 import { useTrips, useAllocateOrder } from "@/hooks/useTrips";
 import { useToast } from "@/hooks/use-toast";
+import { formatBRL, formatDate, formatDateTime } from "@/lib/format";
+import { calculateTotalPaid } from "@/lib/calculations";
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  novo: { label: "Novo", color: "bg-gray-100 text-gray-700" },
-  orcamento: { label: "Orçamento", color: "bg-yellow-100 text-yellow-800" },
-  aprovado: { label: "Aprovado", color: "bg-green-100 text-green-700" },
-  comprando: { label: "Comprando", color: "bg-blue-100 text-blue-700" },
-  comprado: { label: "Comprado", color: "bg-blue-100 text-blue-700" },
-  em_transito: { label: "Em trânsito", color: "bg-purple-100 text-purple-700" },
-  chegou_brasil: { label: "Chegou Brasil", color: "bg-indigo-100 text-indigo-700" },
-  entregue: { label: "Entregue", color: "bg-green-100 text-green-700" },
-  cancelado: { label: "Cancelado", color: "bg-red-100 text-red-700" },
-};
-
-const STATUS_FLOW = [
-  { value: "novo", label: "Novo" },
-  { value: "orcamento", label: "Orçamento" },
-  { value: "aprovado", label: "Aprovado" },
-  { value: "comprando", label: "Comprando" },
-  { value: "comprado", label: "Comprado" },
-  { value: "em_transito", label: "Em trânsito" },
-  { value: "chegou_brasil", label: "Chegou ao Brasil" },
-  { value: "entregue", label: "Entregue" },
-  { value: "cancelado", label: "Cancelado" },
-];
-
-const typeLabels: Record<string, string> = {
-  deposit: "Depósito Sinal",
-  balance: "Pagamento Saldo",
-  refund: "Reembolso",
-};
+const STATUS_FLOW = Object.entries(ORDER_STATUS_CONFIG).map(([value, { label }]) => ({
+  value,
+  label,
+}));
 
 const OrderDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -108,19 +84,15 @@ const OrderDetail = () => {
     return (
       <div className="p-6 md:p-8 max-w-5xl mx-auto text-center">
         <p className="text-muted-foreground">Pedido não encontrado.</p>
-        <Button variant="link" onClick={() => navigate(-1)}>Voltar</Button>
+        <Button variant="link" onClick={() => navigate(-1)}>
+          Voltar
+        </Button>
       </div>
     );
   }
 
-  const totalPaid = payments?.reduce((sum, p) => {
-    if (p.type === "refund") return sum - p.amount;
-    return sum + p.amount;
-  }, 0) ?? 0;
-
-  const totalBrl = order.total_brl ?? 0;
-  const remaining = totalBrl - totalPaid;
-  const cfg = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.novo;
+  const totalPaid = calculateTotalPaid(payments ?? []);
+  const remaining = order.total_amount - totalPaid;
 
   const handleChangeStatus = async () => {
     if (!newStatus) return;
@@ -177,7 +149,7 @@ const OrderDetail = () => {
           <div className="flex items-center justify-between flex-wrap gap-2">
             <CardTitle className="text-xl">Pedido {order.order_number}</CardTitle>
             <div className="flex gap-2">
-              <Badge className={`${cfg.color} border-0`}>{cfg.label}</Badge>
+              <StatusBadge status={order.status} />
               <Button size="sm" variant="outline" onClick={() => { setNewStatus(order.status); setStatusOpen(true); }}>
                 Alterar Status
               </Button>
@@ -206,7 +178,7 @@ const OrderDetail = () => {
             <div>
               <span className="text-muted-foreground block">Total BRL</span>
               <span className="font-medium">
-                {totalBrl > 0 ? `R$ ${totalBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "—"}
+                {formatBRL(order.total_amount)}
               </span>
             </div>
             <div>
@@ -218,7 +190,7 @@ const OrderDetail = () => {
             <div>
               <span className="text-muted-foreground block">Criado em</span>
               <span className="font-medium">
-                {format(new Date(order.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                {formatDate(order.created_at)}
               </span>
             </div>
           </div>
@@ -250,7 +222,7 @@ const OrderDetail = () => {
                       {item.price_usd ? `US$ ${item.price_usd.toFixed(2)}` : "—"}
                     </TableCell>
                     <TableCell className="text-right text-sm">
-                      {item.price_brl ? `R$ ${item.price_brl.toFixed(2)}` : "—"}
+                      {item.price_brl ? formatBRL(item.price_brl) : "—"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -276,9 +248,8 @@ const OrderDetail = () => {
                     {event.description && (
                       <p className="text-xs text-muted-foreground">{event.description}</p>
                     )}
-                    
                     <p className="text-[10px] text-muted-foreground mt-0.5">
-                      {format(new Date(event.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                      {formatDateTime(event.created_at)}
                     </p>
                   </div>
                 </div>
@@ -299,23 +270,29 @@ const OrderDetail = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 p-3 sm:p-4 bg-muted/50 rounded-lg">
             <div className="text-center">
               <span className="text-xs text-muted-foreground block">Total</span>
               <span className="font-bold text-sm">
-                R$ {totalBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                {formatBRL(order.total_amount)}
               </span>
             </div>
             <div className="text-center">
               <span className="text-xs text-muted-foreground block">Pago</span>
               <span className="font-bold text-sm text-green-600">
-                R$ {totalPaid.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                {formatBRL(totalPaid)}
               </span>
             </div>
             <div className="text-center">
-              <span className="text-xs text-muted-foreground block">Restante</span>
-              <span className={`font-bold text-sm ${remaining > 0 ? "text-orange-500" : "text-green-600"}`}>
-                R$ {remaining.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+              <span className="text-xs text-muted-foreground block">
+                Restante
+              </span>
+              <span
+                className={`font-bold text-sm ${
+                  remaining > 0 ? "text-orange-500" : "text-green-600"
+                }`}
+              >
+                {formatBRL(remaining)}
               </span>
             </div>
           </div>
@@ -334,15 +311,14 @@ const OrderDetail = () => {
                 {payments.map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="text-sm">
-                      {format(new Date(p.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                      {formatDate(p.created_at)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={p.type === "refund" ? "destructive" : "secondary"}>
-                        {typeLabels[p.type] ?? p.type}
-                      </Badge>
+                      <StatusBadge status={p.type} />
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      {p.type === "refund" ? "- " : ""}R$ {p.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      {p.type === "refund" ? "- " : ""}
+                      {formatBRL(p.amount)}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{p.notes ?? "—"}</TableCell>
                   </TableRow>
@@ -439,7 +415,13 @@ const OrderDetail = () => {
             </div>
             <div>
               <Label>Observações (opcional)</Label>
-              <Input value={paymentForm.notes} onChange={(e) => setPaymentForm({ ...paymentForm, notes: e.target.value })} />
+              <Input
+                placeholder="Sinal via PIX..."
+                value={paymentForm.notes}
+                onChange={(e) =>
+                  setPaymentForm({ ...paymentForm, notes: e.target.value })
+                }
+              />
             </div>
           </div>
           <DialogFooter>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useOrders } from "@/hooks/useOrders";
 import { Loader2, ShoppingBag, DollarSign, Plane, Clock } from "lucide-react";
-import type { OrderWithClient } from "@/lib/types";
+import type { OrderWithClient } from "@/types";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   novo: { label: "Novo / Orçar", color: "bg-gray-100 text-gray-700" },
