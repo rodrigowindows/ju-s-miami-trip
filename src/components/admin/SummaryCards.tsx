@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { formatBRL } from "@/lib/format";
 import { ClipboardList, ShoppingBag, Plane, DollarSign } from "lucide-react";
 
