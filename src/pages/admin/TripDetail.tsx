@@ -43,18 +43,7 @@ import {
   useDeleteTrip,
 } from "@/hooks/useTrips";
 import { useToast } from "@/hooks/use-toast";
-
-const statusLabels: Record<string, string> = {
-  novo: "Novo",
-  orcamento: "Orçamento",
-  aprovado: "Aprovado",
-  comprando: "Comprando",
-  comprado: "Comprado",
-  em_transito: "Em Trânsito",
-  chegou_brasil: "Chegou Brasil",
-  entregue: "Entregue",
-  cancelado: "Cancelado",
-};
+import { ORDER_STATUS_LABELS } from "@/lib/constants";
 
 const TripDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -251,7 +240,7 @@ const TripDetail = () => {
                     <TableCell>{order.client_name ?? "—"}</TableCell>
                     <TableCell>{order.estimated_weight_kg ? `${order.estimated_weight_kg} kg` : "—"}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{statusLabels[order.status] ?? order.status}</Badge>
+                      <Badge variant="secondary">{ORDER_STATUS_LABELS[order.status] ?? order.status}</Badge>
                     </TableCell>
                   </TableRow>
                 ))}
