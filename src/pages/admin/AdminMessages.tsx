@@ -8,7 +8,7 @@ import EmptyState from "@/components/shared/EmptyState";
 import { CardSkeleton } from "@/components/shared/LoadingSkeleton";
 import { useWhatsAppTemplates, useOrdersForMessages, fillTemplate } from "@/hooks/useMessages";
 import { useSettings } from "@/hooks/useSettings";
-import type { WhatsAppTemplate } from "@/lib/types";
+import type { WhatsAppTemplate } from "@/types";
 
 export default function AdminMessages() {
   const { data: templates, isLoading } = useWhatsAppTemplates();

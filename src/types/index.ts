@@ -75,3 +75,14 @@ export const KANBAN_COLUMNS: KanbanColumn[] = [
   { id: 'chegou_brasil', title: 'Chegou no Brasil', statuses: ['chegou_brasil'] },
   { id: 'entregue', title: 'Entregue', statuses: ['entregue'] },
 ];
+
+// ── Catalog Product ────────────────────────
+export type CatalogProduct = Tables<'catalog_products'>;
+
+// ── Order with Client (joined) ─────────────
+export type OrderWithClient = Order & {
+  client: { full_name: string | null; phone: string | null; email: string } | null;
+};
+
+// ── Settings alias (plural) ────────────────
+export type Settings = Setting;

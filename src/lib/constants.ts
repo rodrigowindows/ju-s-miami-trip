@@ -36,6 +36,15 @@ export const WALLET_TYPE_CONFIG: Record<
   refund: { label: 'Reembolso', color: 'bg-yellow-100 text-yellow-800' },
 } as const;
 
+// ── Derived label/color maps ─────────────────
+export const ORDER_STATUS_LABELS: Record<string, string> = Object.fromEntries(
+  Object.entries(ORDER_STATUS_CONFIG).map(([k, v]) => [k, v.label]),
+);
+
+export const ORDER_STATUS_COLORS: Record<string, string> = Object.fromEntries(
+  Object.entries(ORDER_STATUS_CONFIG).map(([k, v]) => [k, v.color]),
+);
+
 // ── Default settings ─────────────────────────
 export const DEFAULT_SETTINGS = {
   exchange_rate: '5.70',
