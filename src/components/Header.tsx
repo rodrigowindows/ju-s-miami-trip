@@ -3,14 +3,13 @@ import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import Logo from "@/components/shared/Logo";
 
+const anchorLinks = [
+  { label: "Home", href: "#home" },
+  { label: "Contato", href: "#contato" },
+];
+
 const Header = () => {
   const [open, setOpen] = useState(false);
-
-  const links = [
-    { label: "Home", href: "#home" },
-    { label: "Produtos", href: "#produtos" },
-    { label: "Contato", href: "#contato" },
-  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -21,7 +20,7 @@ const Header = () => {
 
         {/* Desktop */}
         <nav className="hidden md:flex items-center gap-6">
-          {links.map((l) => (
+          {anchorLinks.map((l) => (
             <a
               key={l.href}
               href={l.href}
@@ -30,6 +29,12 @@ const Header = () => {
               {l.label}
             </a>
           ))}
+          <Link
+            to="/catalog"
+            className="font-body text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
+          >
+            Produtos
+          </Link>
           <Link
             to="/login"
             className="ml-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
@@ -51,7 +56,7 @@ const Header = () => {
       {/* Mobile menu */}
       {open && (
         <nav className="md:hidden border-t border-border bg-background px-4 pb-4">
-          {links.map((l) => (
+          {anchorLinks.map((l) => (
             <a
               key={l.href}
               href={l.href}
@@ -61,6 +66,13 @@ const Header = () => {
               {l.label}
             </a>
           ))}
+          <Link
+            to="/catalog"
+            onClick={() => setOpen(false)}
+            className="block py-3 font-body text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
+          >
+            Produtos
+          </Link>
           <Link
             to="/login"
             onClick={() => setOpen(false)}
