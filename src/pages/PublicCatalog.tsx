@@ -11,6 +11,7 @@ import {
   Loader2, X, LogIn, Search, Truck,
   HelpCircle, Send, User, CheckCircle2,
   Zap, Timer, Flame,
+  ShoppingCart, Plane, Package, MessageCircle,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
 import { useToast } from "@/hooks/use-toast";
@@ -280,9 +281,9 @@ export default function PublicCatalog() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-[#131921] text-white">
         <div className="px-4 py-2 flex items-center gap-3">
-          <Link to="/" className="shrink-0">
+          <button onClick={() => { setSearchQuery(""); setActiveCategory("Todos"); window.scrollTo(0, 0); }} className="shrink-0">
             <Logo size="sm" />
-          </Link>
+          </button>
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
@@ -318,6 +319,34 @@ export default function PublicCatalog() {
           ))}
         </div>
       </header>
+
+      {/* Hero Banner */}
+      <div className="bg-gradient-to-r from-[#232F3E] via-[#37475A] to-[#232F3E] text-white px-4 py-3">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-sm sm:text-base font-bold">
+              Compre dos EUA, receba no Brasil
+            </h2>
+            <p className="text-[11px] sm:text-xs text-gray-300 mt-0.5">
+              Personal shopper em Miami com entrega segura
+            </p>
+          </div>
+          <div className="hidden sm:flex items-center gap-4 shrink-0">
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-300">
+              <ShoppingCart size={14} className="text-amber-400" />
+              <span>Escolha</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-300">
+              <Plane size={14} className="text-amber-400" />
+              <span>Compramos</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-300">
+              <Package size={14} className="text-amber-400" />
+              <span>Entregamos</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Results Bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
@@ -395,6 +424,52 @@ export default function PublicCatalog() {
           </div>
         )}
       </main>
+
+      {/* How It Works */}
+      <div className="bg-white border-t border-gray-200 py-6">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-base font-bold text-gray-900 text-center mb-4">Como Funciona</h2>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { icon: ShoppingCart, title: "Escolha", desc: "Navegue e selecione os produtos dos EUA" },
+              { icon: Plane, title: "Compramos", desc: "Compramos em Miami e trazemos na viagem" },
+              { icon: Package, title: "Receba", desc: "Entregamos no Brasil com seguranca" },
+            ].map((step) => (
+              <div key={step.title} className="text-center">
+                <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-[#232F3E] flex items-center justify-center">
+                  <step.icon size={18} className="text-amber-400" />
+                </div>
+                <p className="text-xs font-semibold text-gray-900">{step.title}</p>
+                <p className="text-[10px] text-gray-500 mt-0.5 leading-snug">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-[#232F3E] text-gray-300 py-6">
+        <div className="max-w-4xl mx-auto px-4 text-center space-y-4">
+          <div className="flex items-center justify-center gap-2">
+            <Logo size="sm" />
+          </div>
+          <p className="text-xs">
+            Personal shopper em Miami. Produtos originais dos EUA com entrega segura no Brasil.
+          </p>
+          <a
+            href="https://wa.me/5511999999999?text=Olá! Vim do site MalaBridge"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors"
+          >
+            <MessageCircle size={16} />
+            Falar pelo WhatsApp
+          </a>
+          <p className="text-[10px] text-gray-500 pt-2">
+            MalaBridge &copy; {new Date().getFullYear()}. Todos os direitos reservados.
+          </p>
+        </div>
+      </footer>
 
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>

@@ -89,7 +89,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<PublicCatalog />} />
             <Route path="/catalog" element={<PublicCatalog />} />
             <Route
               path="/login"
