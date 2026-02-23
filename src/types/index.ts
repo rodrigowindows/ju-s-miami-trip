@@ -9,6 +9,7 @@ export type {
   Order,
   Payment,
   Promotion,
+  PromotionWithProduct,
   Referral,
   Trip,
   TripWithAllocated,

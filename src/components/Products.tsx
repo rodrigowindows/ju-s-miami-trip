@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import type { Promotion, CatalogProduct } from "@/types";
+import type { PromotionWithProduct, CatalogProduct } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -33,7 +33,7 @@ const HIGHLIGHT_NAMES = [
 ];
 
 function useHomeData() {
-  const [promos, setPromos] = useState<Promotion[]>([]);
+  const [promos, setPromos] = useState<PromotionWithProduct[]>([]);
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [rate, setRate] = useState(5.70);
   const [spread, setSpread] = useState(3);
@@ -44,7 +44,7 @@ function useHomeData() {
       const [promosRes, productsRes, settingsRes] = await Promise.all([
         supabase
           .from("promotions")
-          .select("*")
+          .select("*, catalog_products(id, name, brand, image_url, price_usd, category)")
           .eq("active", true)
           .gte("expires_at", new Date().toISOString())
           .order("created_at", { ascending: false })
@@ -60,7 +60,7 @@ function useHomeData() {
           .in("key", ["exchange_rate", "spread_percent"]),
       ]);
 
-      setPromos((promosRes.data as Promotion[]) ?? []);
+      setPromos((promosRes.data as PromotionWithProduct[]) ?? []);
       setProducts((productsRes.data as CatalogProduct[]) ?? []);
 
       if (settingsRes.data) {
@@ -128,46 +128,69 @@ const Products = () => {
               {promos.map((promo) => (
                 <div
                   key={promo.id}
-                  className="group relative bg-white rounded-2xl border border-violet-100 p-5 hover:shadow-lg hover:border-violet-200 transition-all duration-300"
+                  className="group relative bg-white rounded-2xl border border-violet-100 overflow-hidden hover:shadow-lg hover:border-violet-200 transition-all duration-300"
                 >
-                  <div className="absolute top-0 right-0 bg-violet-600 text-white text-xs font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl">
-                    {promo.discount_type === "percent"
-                      ? `${promo.discount_value}% OFF`
-                      : `R$ ${promo.discount_value.toFixed(0)} OFF`}
-                  </div>
+                  <div className="flex">
+                    {/* Product image */}
+                    {promo.catalog_products && (
+                      <div className="w-28 sm:w-32 shrink-0 bg-muted overflow-hidden">
+                        <img
+                          src={promo.catalog_products.image_url}
+                          alt={promo.catalog_products.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
 
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
-                      <Tag size={18} className="text-violet-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-display text-base font-bold text-foreground">
-                        {promo.name}
-                      </h3>
-                      {promo.min_order_value && (
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          Pedido min: R$ {promo.min_order_value.toFixed(0)}
-                        </p>
+                    <div className="flex-1 p-4 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          {promo.catalog_products ? (
+                            <>
+                              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                                {promo.catalog_products.brand}
+                              </p>
+                              <h3 className="font-display text-sm font-bold text-foreground truncate">
+                                {promo.catalog_products.name}
+                              </h3>
+                            </>
+                          ) : (
+                            <h3 className="font-display text-sm font-bold text-foreground">
+                              {promo.name}
+                            </h3>
+                          )}
+                        </div>
+                        <Badge className="bg-violet-600 text-white text-[10px] font-bold shrink-0 border-0">
+                          {promo.discount_type === "percent"
+                            ? `${promo.discount_value}% OFF`
+                            : `R$ ${promo.discount_value.toFixed(0)} OFF`}
+                        </Badge>
+                      </div>
+
+                      {promo.catalog_products && (
+                        <p className="text-xs text-violet-600 font-medium mt-1">{promo.name}</p>
                       )}
-                      <p className="text-xs text-muted-foreground">
+
+                      <p className="text-[11px] text-muted-foreground mt-1">
                         Expira em {new Date(promo.expires_at).toLocaleDateString("pt-BR")}
                       </p>
-                    </div>
-                  </div>
 
-                  <div className="mt-4 flex items-center justify-between">
-                    <Badge variant="secondary" className="font-mono text-sm px-3 py-1">
-                      {promo.coupon_code}
-                    </Badge>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-1.5 text-xs rounded-full border-violet-200 text-violet-700 hover:bg-violet-50"
-                      onClick={() => copyCode(promo.coupon_code)}
-                    >
-                      <Copy size={12} />
-                      Copiar
-                    </Button>
+                      <div className="mt-3 flex items-center justify-between">
+                        <Badge variant="secondary" className="font-mono text-xs px-2 py-0.5">
+                          {promo.coupon_code}
+                        </Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1 text-[11px] h-7 rounded-full border-violet-200 text-violet-700 hover:bg-violet-50"
+                          onClick={() => copyCode(promo.coupon_code)}
+                        >
+                          <Copy size={11} />
+                          Copiar
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
