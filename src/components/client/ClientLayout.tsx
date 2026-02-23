@@ -4,6 +4,7 @@ import Logo from "@/components/shared/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { CartDrawer } from "@/components/catalog/CartDrawer";
+import NotificationBell from "@/components/shared/NotificationBell";
 
 const navItems = [
   { to: "/client/catalog", icon: ShoppingBag, label: "Vitrine", end: true },
@@ -27,6 +28,7 @@ export default function ClientLayout() {
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b px-4 py-3 flex items-center justify-between">
         <Logo size="sm" />
         <div className="flex items-center gap-3">
+          <NotificationBell />
           {/* Cart Button */}
           <button
             onClick={openCart}
@@ -42,7 +44,7 @@ export default function ClientLayout() {
           </button>
           {profile && (
             <button onClick={() => navigate("/client/profile")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-              Ola, {profile.full_name?.split(" ")[0]}
+              Olá, {profile.full_name?.split(" ")[0]}
             </button>
           )}
         </div>

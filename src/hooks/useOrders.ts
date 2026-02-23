@@ -2,6 +2,19 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { fetchProfileMapFull } from "@/lib/profileMap";
 import type { Order, TablesInsert } from "@/types";
+import { createNotification } from "@/hooks/useNotifications";
+
+const STATUS_LABELS: Record<string, string> = {
+  novo: "Novo",
+  orcamento: "Orçamento enviado",
+  aprovado: "Aprovado",
+  comprando: "Comprando nos EUA",
+  comprado: "Comprado",
+  em_transito: "Em trânsito para o Brasil",
+  chegou_brasil: "Chegou no Brasil",
+  entregue: "Entregue",
+  cancelado: "Cancelado",
+};
 
 export type OrderWithClient = Order & {
   client: { full_name: string | null; phone: string | null; email: string } | null;
@@ -137,6 +150,13 @@ export function useUpdateOrderStatus() {
       title: string;
       description?: string;
     }) => {
+      // Get the order first to know the client_id and order_number
+      const { data: order } = await supabase
+        .from("orders")
+        .select("client_id, order_number")
+        .eq("id", orderId)
+        .single();
+
       const { error: updateError } = await supabase
         .from("orders")
         .update({ status })
@@ -152,6 +172,20 @@ export function useUpdateOrderStatus() {
           description: description ?? null,
         });
       if (eventError) throw eventError;
+
+      // Send notification to the client
+      if (order) {
+        const statusLabel = STATUS_LABELS[status] || status;
+        const orderNum = (order as { client_id: string; order_number: string }).order_number;
+        const clientId = (order as { client_id: string; order_number: string }).client_id;
+        await createNotification({
+          userId: clientId,
+          type: "order_status",
+          title: `Pedido #${orderNum}: ${statusLabel}`,
+          body: description || `Seu pedido foi atualizado para "${statusLabel}".`,
+          orderId,
+        });
+      }
     },
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -171,7 +205,27 @@ export function useCreateOrder() {
         .select()
         .single();
       if (error) throw error;
-      return data as Order;
+
+      // Notify all admins about the new order
+      const created = data as Order;
+      const { data: admins } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("role", "admin");
+
+      if (admins) {
+        for (const admin of admins) {
+          await createNotification({
+            userId: admin.id,
+            type: "new_order",
+            title: `Novo pedido #${created.order_number}`,
+            body: `${created.customer_name} fez um novo pedido.`,
+            orderId: created.id,
+          });
+        }
+      }
+
+      return created;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });

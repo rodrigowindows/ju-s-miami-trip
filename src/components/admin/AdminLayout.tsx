@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import NotificationBell from "@/components/shared/NotificationBell";
 
 const navItems = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -40,10 +41,13 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <aside className="w-64 border-r bg-card hidden md:flex flex-col">
         <div className="p-6 border-b">
-          <h1 className="font-display text-lg font-bold flex items-center gap-2">
-            <LayoutDashboard size={20} />
-            MalaBridge
-          </h1>
+          <div className="flex items-center justify-between">
+            <h1 className="font-display text-lg font-bold flex items-center gap-2">
+              <LayoutDashboard size={20} />
+              MalaBridge
+            </h1>
+            <NotificationBell />
+          </div>
           <p className="text-xs text-muted-foreground mt-1">Painel Admin</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
