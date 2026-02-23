@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ShoppingCart, Search, Truck, Loader2, Plus, Check } from "lucide-react";
+import { ShoppingCart, Search, Truck, Loader2, Plus, Check, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
 import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
+import { shareProductWhatsApp } from "@/lib/share";
 
 export default function ClientCatalog() {
   const [category, setCategory] = useState("Todos");
@@ -255,6 +256,13 @@ export default function ClientCatalog() {
                         Ver
                       </Button>
                     )}
+                    <Button
+                      onClick={() => shareProductWhatsApp(selected, brl)}
+                      variant="outline"
+                      className="rounded-full text-[#25D366] border-[#25D366] hover:bg-[#25D366]/10 px-3"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </>
