@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { ShoppingBag, Package, Heart, Tag, User, ShoppingCart } from "lucide-react";
 import Logo from "@/components/shared/Logo";
+import NotificationBell from "@/components/client/NotificationBell";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { CartDrawer } from "@/components/catalog/CartDrawer";
@@ -41,9 +42,10 @@ export default function ClientLayout() {
               </span>
             )}
           </button>
+          <NotificationBell />
           {profile && (
             <button onClick={() => navigate("/client/profile")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-              Ola, {profile.full_name?.split(" ")[0]}
+              Olá, {profile.full_name?.split(" ")[0]}
             </button>
           )}
         </div>

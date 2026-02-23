@@ -1,17 +1,17 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import type { CatalogProduct, ProductQuestion } from "@/types";
+import type { CatalogProduct, ProductQuestion, ProductReview } from "@/types";
 import type { Tables } from "@/integrations/supabase/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Loader2, X, LogIn, Search, Truck,
+  Loader2, X, LogIn, Search, Star, Truck,
   HelpCircle, Send, User, CheckCircle2,
   Zap, Timer, Flame, Share2,
-  ShoppingCart, Plane, Package, MessageCircle,
+  ShoppingCart, Plane, Package, MessageCircle, MessageSquare,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
 import { shareProductWhatsApp } from "@/lib/share";
@@ -207,6 +207,35 @@ function useExchangeRate() {
   return { convert, effectiveRate };
 }
 
+function getRating(product: CatalogProduct) {
+  if (product.review_count > 0) {
+    return { rating: Number(product.rating) || 0, reviews: product.review_count };
+  }
+  // Fallback for products with no reviews yet
+  return fakeRating(product.name);
+}
+
+function useProductReviewsLocal(productId: string | null) {
+  const [reviews, setReviews] = useState<ProductReview[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!productId) { setReviews([]); return; }
+    setLoading(true);
+    supabase
+      .from("product_reviews")
+      .select("*")
+      .eq("product_id", productId)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        setReviews((data as ProductReview[]) ?? []);
+        setLoading(false);
+      });
+  }, [productId]);
+
+  return { reviews, loading };
+}
+
 export default function PublicCatalog() {
   const { products, loading } = useCatalog();
   const { convert } = useExchangeRate();
@@ -218,6 +247,7 @@ export default function PublicCatalog() {
   const [sortBy, setSortBy] = useState<string>("relevance");
 
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
+  const { reviews: productReviews, loading: reviewsLoading } = useProductReviewsLocal(selectedProduct?.id ?? null);
   const { toast } = useToast();
 
   // Q&A form state
@@ -470,7 +500,7 @@ export default function PublicCatalog() {
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
         <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-lg overflow-hidden max-h-[90vh] overflow-y-auto">
           {selectedProduct && (() => {
-            const { rating, reviews } = fakeRating(selectedProduct.name);
+            const { rating, reviews } = getRating(selectedProduct);
             const brl = convert(selectedProduct.price_usd);
             const bestSeller = isBestSeller(selectedProduct.name);
             const prevPrice = fakePreviousPrice(brl, selectedProduct.name);
@@ -540,6 +570,59 @@ export default function PublicCatalog() {
                       <Truck size={14} className="text-[#007600]" />
                       <span className="text-sm text-[#007600] font-medium">Entrega via viagem Miami</span>
                     </div>
+                  </div>
+
+                  {/* Reviews Section */}
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MessageSquare size={16} className="text-[#007185]" />
+                      <h3 className="font-semibold text-sm text-gray-900">
+                        Avaliações de clientes
+                      </h3>
+                      {productReviews.length > 0 && (
+                        <Badge variant="secondary" className="text-[10px]">{productReviews.length}</Badge>
+                      )}
+                    </div>
+
+                    {reviewsLoading ? (
+                      <div className="flex items-center justify-center py-4">
+                        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                      </div>
+                    ) : productReviews.length === 0 ? (
+                      <p className="text-xs text-gray-500 text-center py-3">
+                        Nenhuma avaliação ainda. Faça login para avaliar!
+                      </p>
+                    ) : (
+                      <div className="space-y-3 max-h-60 overflow-y-auto">
+                        {productReviews.map((r) => (
+                          <div key={r.id} className="bg-gray-50 rounded-lg p-3">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    size={11}
+                                    className={i < r.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-xs font-semibold text-gray-900">{r.reviewer_name}</span>
+                              {r.verified_purchase && (
+                                <Badge variant="secondary" className="text-[9px] bg-green-50 text-green-700 border-green-200">
+                                  Compra verificada
+                                </Badge>
+                              )}
+                            </div>
+                            {r.comment && (
+                              <p className="text-xs text-gray-700 mt-1">{r.comment}</p>
+                            )}
+                            <p className="text-[10px] text-gray-400 mt-1">
+                              {new Date(r.created_at).toLocaleDateString("pt-BR")}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Q&A Section */}

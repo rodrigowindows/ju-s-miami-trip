@@ -22,6 +22,7 @@ import ClientPromotions from "./pages/client/ClientPromotions";
 import ClientProfile from "./pages/client/ClientProfile";
 import ClientWishlist from "./pages/client/ClientWishlist";
 import ClientCart from "./pages/client/ClientCart";
+import ClientNotifications from "./pages/client/ClientNotifications";
 
 // Admin pages
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -134,6 +135,7 @@ const App = () => (
               <Route path="promos" element={<ClientPromotions />} />
               <Route path="cart" element={<ClientCart />} />
               <Route path="profile" element={<ClientProfile />} />
+              <Route path="notifications" element={<ClientNotifications />} />
             </Route>
 
             {/* Admin login */}

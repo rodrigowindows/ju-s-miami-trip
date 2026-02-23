@@ -8,6 +8,7 @@ export type {
   Profile,
   Order,
   OrderReview,
+  Notification,
   Payment,
   Promotion,
   PromotionWithProduct,

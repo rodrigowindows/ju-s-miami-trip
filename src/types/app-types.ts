@@ -142,3 +142,14 @@ export type OrderReview = {
   comment: string | null;
   created_at: string;
 };
+
+export type Notification = {
+  id: string;
+  client_id: string;
+  title: string;
+  message: string;
+  type: 'order_update' | 'promo' | 'system';
+  read: boolean;
+  order_id: string | null;
+  created_at: string;
+};
