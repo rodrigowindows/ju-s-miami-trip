@@ -18,7 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
-import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORIES } from "@/components/catalog/catalog-utils";
+import { CategoryNav } from "@/components/catalog/CategoryNav";
+import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
@@ -309,22 +310,8 @@ export default function PublicCatalog() {
           </Link>
         </div>
 
-        {/* Category Nav */}
-        <div className="bg-[#232F3E] px-4 py-2 flex gap-3 overflow-x-auto scrollbar-hide">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`shrink-0 text-sm font-medium transition-colors whitespace-nowrap py-1.5 ${
-                activeCategory === cat
-                  ? "text-white border-b-2 border-amber-400"
-                  : "text-gray-300 hover:text-white"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {/* Category Nav with Icons */}
+        <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="dark" />
       </header>
 
       {/* Hero Banner */}

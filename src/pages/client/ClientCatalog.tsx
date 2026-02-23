@@ -1,14 +1,14 @@
 import { useState, useMemo } from "react";
-import { ShoppingBag, Search, Truck, Loader2 } from "lucide-react";
+import { ShoppingCart, Search, Truck, Loader2, Plus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import EmptyState from "@/components/shared/EmptyState";
 import { useCatalogProducts } from "@/hooks/useCatalog";
-import { useCreateOrder, useCreateOrderItem } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import type { CatalogProduct } from "@/types";
 import { toast } from "sonner";
 import { calculatePriceBRL } from "@/lib/calculations";
@@ -16,25 +16,27 @@ import { formatBRL } from "@/lib/format";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
-import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORIES } from "@/components/catalog/catalog-utils";
+import { CategoryNav } from "@/components/catalog/CategoryNav";
+import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
 
 export default function ClientCatalog() {
   const [category, setCategory] = useState("Todos");
   const { data: products, isLoading } = useCatalogProducts(category);
   const { data: settings } = useSettings();
   const { user, profile } = useAuth();
-  const createOrder = useCreateOrder();
-  const createOrderItem = useCreateOrderItem();
+  const { addItem, items, openCart } = useCart();
 
   const [selected, setSelected] = useState<CatalogProduct | null>(null);
-  const [ordering, setOrdering] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("relevance");
+  const [justAdded, setJustAdded] = useState<string | null>(null);
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
 
   const calcBRL = (usd: number) => calculatePriceBRL(usd, exchangeRate, spread);
+
+  const isInCart = (productId: string) => items.some((i) => i.product.id === productId);
 
   const filtered = useMemo(() => {
     let list = products ?? [];
@@ -61,40 +63,11 @@ export default function ClientCatalog() {
     }
   }, [products, searchQuery, sortBy]);
 
-  const handleOrder = async () => {
-    if (!user || !profile || !selected) return;
-    setOrdering(true);
-    try {
-      const totalUsd = selected.price_usd;
-      const totalBrl = calcBRL(totalUsd);
-      const deposit = totalBrl * 0.5;
-
-      const order = await createOrder.mutateAsync({
-        client_id: user.id,
-        customer_name: profile.full_name ?? "",
-        customer_phone: profile.phone ?? undefined,
-        items: selected.name,
-        total_usd: totalUsd,
-        total_brl: totalBrl,
-        total_amount: totalBrl,
-        deposit_amount: deposit,
-      });
-
-      await createOrderItem.mutateAsync({
-        order_id: order.id,
-        product_name: selected.name,
-        product_image_url: selected.image_url,
-        price_usd: totalUsd,
-        price_brl: totalBrl,
-      });
-
-      setSelected(null);
-      toast.success("Pedido criado! Acompanhe em Meus Pedidos.");
-    } catch {
-      toast.error("Erro ao criar pedido.");
-    } finally {
-      setOrdering(false);
-    }
+  const handleAddToCart = (product: CatalogProduct) => {
+    addItem(product);
+    setJustAdded(product.id);
+    toast.success("Adicionado ao carrinho!");
+    setTimeout(() => setJustAdded(null), 1500);
   };
 
   return (
@@ -112,22 +85,8 @@ export default function ClientCatalog() {
         </div>
       </div>
 
-      {/* Category Nav */}
-      <div className="bg-[#131921] px-4 py-2 flex gap-3 overflow-x-auto scrollbar-hide">
-        {CATEGORIES.map((c) => (
-          <button
-            key={c}
-            onClick={() => setCategory(c)}
-            className={`shrink-0 text-sm font-medium transition-colors whitespace-nowrap py-1.5 ${
-              category === c
-                ? "text-white border-b-2 border-amber-400"
-                : "text-gray-300 hover:text-white"
-            }`}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
+      {/* Category Nav with Icons */}
+      <CategoryNav active={category} onSelect={setCategory} variant="dark" />
 
       {/* Results Bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
@@ -156,7 +115,7 @@ export default function ClientCatalog() {
             <EmptyState
               icon="orders"
               title="Nenhum produto encontrado"
-              description={searchQuery ? "Tente outra busca." : "Novos produtos serão adicionados em breve!"}
+              description={searchQuery ? "Tente outra busca." : "Novos produtos serao adicionados em breve!"}
             />
             {searchQuery && (
               <div className="text-center mt-2">
@@ -191,6 +150,8 @@ export default function ClientCatalog() {
             const brl = calcBRL(selected.price_usd);
             const bestSeller = isBestSeller(selected.name);
             const prevPrice = fakePreviousPrice(brl, selected.name);
+            const inCart = isInCart(selected.id);
+            const wasJustAdded = justAdded === selected.id;
 
             return (
               <>
@@ -248,7 +209,7 @@ export default function ClientCatalog() {
                     </p>
                     <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Câmbio</span>
+                        <span className="text-gray-600">Cambio</span>
                         <span className="text-gray-700">{exchangeRate.toFixed(2).replace(".", ",")} + {spread}%</span>
                       </div>
                       <div className="flex justify-between font-semibold">
@@ -263,14 +224,38 @@ export default function ClientCatalog() {
                     </div>
                   </div>
 
-                  <Button
-                    onClick={handleOrder}
-                    className="w-full bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full border border-[#FCD200] font-medium"
-                    disabled={ordering}
-                  >
-                    <ShoppingBag className="h-4 w-4 mr-2" />
-                    {ordering ? "Criando pedido..." : "Quero este produto"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => handleAddToCart(selected)}
+                      className={`flex-1 rounded-full font-medium transition-all ${
+                        wasJustAdded
+                          ? "bg-[#007600] hover:bg-[#007600] text-white"
+                          : "bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 border border-[#FCD200]"
+                      }`}
+                    >
+                      {wasJustAdded ? (
+                        <>
+                          <Check className="h-4 w-4 mr-2" />
+                          Adicionado!
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Adicionar ao carrinho
+                        </>
+                      )}
+                    </Button>
+                    {inCart && !wasJustAdded && (
+                      <Button
+                        onClick={() => { setSelected(null); openCart(); }}
+                        variant="outline"
+                        className="rounded-full border-[#131921] text-[#131921]"
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-1" />
+                        Ver
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </>
             );

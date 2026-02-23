@@ -1,3 +1,6 @@
+import { LayoutGrid, Smartphone, Sparkles, Shirt, Heart } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
 /** Deterministic fake rating based on product name hash */
 export function fakeRating(name: string) {
   let hash = 0;
@@ -19,7 +22,20 @@ export function fakePreviousPrice(brl: number, name: string) {
   return brl * (1 + (Math.abs(name.charCodeAt(0)) % 30 + 10) / 100);
 }
 
-export const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion", "Lifestyle"] as const;
+export interface CategoryDef {
+  label: string;
+  icon: LucideIcon;
+}
+
+export const CATEGORY_LIST: CategoryDef[] = [
+  { label: "Todos", icon: LayoutGrid },
+  { label: "Tech", icon: Smartphone },
+  { label: "Beauty", icon: Sparkles },
+  { label: "Fashion", icon: Shirt },
+  { label: "Lifestyle", icon: Heart },
+];
+
+export const CATEGORIES = CATEGORY_LIST.map((c) => c.label) as readonly string[];
 
 export const SORT_OPTIONS = [
   { value: "relevance", label: "Relevância" },
