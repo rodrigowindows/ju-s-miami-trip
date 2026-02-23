@@ -50,6 +50,53 @@ export type Database = {
         }
         Relationships: []
       }
+      product_deals: {
+        Row: {
+          id: string
+          product_id: string
+          discount_percent: number
+          deal_type: string
+          starts_at: string
+          ends_at: string
+          claimed_count: number
+          max_claims: number | null
+          active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          discount_percent: number
+          deal_type?: string
+          starts_at?: string
+          ends_at: string
+          claimed_count?: number
+          max_claims?: number | null
+          active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          discount_percent?: number
+          deal_type?: string
+          starts_at?: string
+          ends_at?: string
+          claimed_count?: number
+          max_claims?: number | null
+          active?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_deals_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_events: {
         Row: {
           created_at: string
