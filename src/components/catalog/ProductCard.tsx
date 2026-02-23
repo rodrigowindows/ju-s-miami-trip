@@ -1,4 +1,4 @@
-import { Truck, Zap } from "lucide-react";
+import { Truck, Zap, Heart } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "./catalog-utils";
 import type { CatalogProduct } from "@/types";
@@ -13,9 +13,11 @@ interface ProductCardProps {
   brl: number;
   onClick: () => void;
   activeDeal?: ActiveDeal | null;
+  isWished?: boolean;
+  onToggleWishlist?: (productId: string) => void;
 }
 
-export function ProductCard({ product, brl, onClick, activeDeal }: ProductCardProps) {
+export function ProductCard({ product, brl, onClick, activeDeal, isWished, onToggleWishlist }: ProductCardProps) {
   const { rating, reviews } = fakeRating(product.name);
   const bestSeller = isBestSeller(product.name);
   const prevPrice = fakePreviousPrice(brl, product.name);
@@ -35,13 +37,27 @@ export function ProductCard({ product, brl, onClick, activeDeal }: ProductCardPr
         </div>
       ) : null}
 
-      <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden">
+      <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden relative">
         <img
           src={product.image_url}
           alt={product.name}
           className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform"
           loading="lazy"
         />
+        {onToggleWishlist && (
+          <span
+            role="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleWishlist(product.id);
+            }}
+            className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <Heart
+              className={`h-4 w-4 transition-colors ${isWished ? "fill-red-500 text-red-500" : "text-gray-400 hover:text-red-400"}`}
+            />
+          </span>
+        )}
       </div>
 
       <div className="p-3 pt-1 flex flex-col gap-1 flex-1 border-t border-gray-100">

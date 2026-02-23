@@ -1,10 +1,11 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { ShoppingBag, Package, Tag, User } from "lucide-react";
+import { ShoppingBag, Package, Heart, Tag, User } from "lucide-react";
 import Logo from "@/components/shared/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { to: "/client/catalog", icon: ShoppingBag, label: "Vitrine", end: true },
+  { to: "/client/wishlist", icon: Heart, label: "Desejos" },
   { to: "/client/orders", icon: Package, label: "Pedidos" },
   { to: "/client/promos", icon: Tag, label: "Ofertas" },
   { to: "/client/profile", icon: User, label: "Perfil" },

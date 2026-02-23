@@ -601,6 +601,35 @@ export type Database = {
         }
         Relationships: []
       }
+      wishlists: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          product_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          product_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlists_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whatsapp_templates: {
         Row: {
           created_at: string

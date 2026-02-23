@@ -82,6 +82,9 @@ export type CatalogProduct = import('@/integrations/supabase/types').Tables<'cat
 // ── Product Review ─────────────────────────
 export type ProductReview = import('@/integrations/supabase/types').Tables<'product_reviews'>;
 
+// ── Wishlist Item ──────────────────────────
+export type WishlistItem = import('@/integrations/supabase/types').Tables<'wishlists'>;
+
 // ── Product Question (Q&A) ─────────────────
 export type ProductQuestion = import('@/integrations/supabase/types').Tables<'product_questions'>;
 

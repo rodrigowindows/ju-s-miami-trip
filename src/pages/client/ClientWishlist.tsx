@@ -1,68 +1,41 @@
-import { useState, useMemo } from "react";
-import { ShoppingBag, Search, Truck, Loader2, Heart } from "lucide-react";
+import { useState } from "react";
+import { Heart, ShoppingBag, Trash2, Truck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import EmptyState from "@/components/shared/EmptyState";
-import { useCatalogProducts } from "@/hooks/useCatalog";
+import { useWishlistProducts, useToggleWishlist, useWishlistIds } from "@/hooks/useWishlist";
 import { useCreateOrder, useCreateOrderItem } from "@/hooks/useOrders";
-import { useWishlistIds, useToggleWishlist } from "@/hooks/useWishlist";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
-import type { CatalogProduct } from "@/types";
-import { toast } from "sonner";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
-import { ProductCard } from "@/components/catalog/ProductCard";
-import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
-import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORIES } from "@/components/catalog/catalog-utils";
+import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
+import type { CatalogProduct } from "@/types";
+import { toast } from "sonner";
 
-export default function ClientCatalog() {
-  const [category, setCategory] = useState("Todos");
-  const { data: products, isLoading } = useCatalogProducts(category);
+export default function ClientWishlist() {
+  const { data: products, isLoading } = useWishlistProducts();
+  const { data: wishlistIds = [] } = useWishlistIds();
+  const toggleWishlist = useToggleWishlist();
   const { data: settings } = useSettings();
   const { user, profile } = useAuth();
   const createOrder = useCreateOrder();
   const createOrderItem = useCreateOrderItem();
-  const { data: wishlistIds = [] } = useWishlistIds();
-  const toggleWishlist = useToggleWishlist();
 
   const [selected, setSelected] = useState<CatalogProduct | null>(null);
   const [ordering, setOrdering] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<string>("relevance");
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
-
   const calcBRL = (usd: number) => calculatePriceBRL(usd, exchangeRate, spread);
 
-  const filtered = useMemo(() => {
-    let list = products ?? [];
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.brand?.toLowerCase().includes(q) ||
-          p.description?.toLowerCase().includes(q)
-      );
-    }
-
-    switch (sortBy) {
-      case "price_asc":
-        return [...list].sort((a, b) => a.price_usd - b.price_usd);
-      case "price_desc":
-        return [...list].sort((a, b) => b.price_usd - a.price_usd);
-      case "name":
-        return [...list].sort((a, b) => a.name.localeCompare(b.name));
-      default:
-        return list;
-    }
-  }, [products, searchQuery, sortBy]);
+  const handleRemove = (productId: string) => {
+    toggleWishlist.mutate({ productId, isWished: true });
+    if (selected?.id === productId) setSelected(null);
+    toast.success("Removido da lista de desejos");
+  };
 
   const handleOrder = async () => {
     if (!user || !profile || !selected) return;
@@ -102,90 +75,100 @@ export default function ClientCatalog() {
 
   return (
     <div className="space-y-0 -mx-4 -mt-4">
-      {/* Search Bar */}
-      <div className="bg-[#232F3E] px-4 py-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-          <Input
-            placeholder="Buscar produtos..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 h-9 rounded-lg bg-white text-gray-900 border-none text-sm focus-visible:ring-2 focus-visible:ring-amber-400"
-          />
-        </div>
+      {/* Header */}
+      <div className="bg-[#232F3E] px-4 py-3 flex items-center gap-2">
+        <Heart className="h-5 w-5 text-white fill-white" />
+        <h1 className="text-white font-semibold text-lg">Lista de Desejos</h1>
+        {products && products.length > 0 && (
+          <span className="bg-white/20 text-white text-xs font-bold rounded-full px-2 py-0.5 ml-auto">
+            {products.length}
+          </span>
+        )}
       </div>
 
-      {/* Category Nav */}
-      <div className="bg-[#131921] px-4 py-2 flex gap-3 overflow-x-auto scrollbar-hide">
-        {CATEGORIES.map((c) => (
-          <button
-            key={c}
-            onClick={() => setCategory(c)}
-            className={`shrink-0 text-sm font-medium transition-colors whitespace-nowrap py-1.5 ${
-              category === c
-                ? "text-white border-b-2 border-amber-400"
-                : "text-gray-300 hover:text-white"
-            }`}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
-
-      {/* Results Bar */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
-        <p className="text-sm text-gray-700">
-          {isLoading ? "Carregando..." : (
-            <>
-              <span className="font-bold text-[#C45500]">{filtered.length}</span>{" "}
-              resultado{filtered.length !== 1 ? "s" : ""}
-              {category !== "Todos" && (
-                <> em <span className="font-semibold">{category}</span></>
-              )}
-            </>
-          )}
-        </p>
-        <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
-      </div>
-
-      {/* Product Grid */}
-      <div className="bg-[#EAEDED] px-3 py-3">
+      <div className="bg-[#EAEDED] px-3 py-3 min-h-[60vh]">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
           </div>
-        ) : filtered.length === 0 ? (
+        ) : !products || products.length === 0 ? (
           <div className="bg-white rounded-lg p-8">
             <EmptyState
               icon="orders"
-              title="Nenhum produto encontrado"
-              description={searchQuery ? "Tente outra busca." : "Novos produtos serão adicionados em breve!"}
+              title="Sua lista de desejos está vazia"
+              description="Navegue pela vitrine e toque no coração para salvar produtos aqui!"
             />
-            {searchQuery && (
-              <div className="text-center mt-2">
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="text-sm text-sky-700 hover:underline"
-                >
-                  Limpar busca
-                </button>
-              </div>
-            )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {filtered.map((p) => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                brl={calcBRL(p.price_usd)}
-                onClick={() => setSelected(p)}
-                isWished={wishlistIds.includes(p.id)}
-                onToggleWishlist={(id) =>
-                  toggleWishlist.mutate({ productId: id, isWished: wishlistIds.includes(id) })
-                }
-              />
-            ))}
+          <div className="space-y-3">
+            {products.map((product) => {
+              const brl = calcBRL(product.price_usd);
+              const { rating, reviews } = fakeRating(product.name);
+              const prevPrice = fakePreviousPrice(brl, product.name);
+
+              return (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-lg border border-gray-200 overflow-hidden flex"
+                >
+                  <button
+                    onClick={() => setSelected(product)}
+                    className="w-28 shrink-0 bg-white p-2 flex items-center justify-center"
+                  >
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="max-w-full max-h-24 object-contain"
+                      loading="lazy"
+                    />
+                  </button>
+
+                  <div className="flex-1 p-3 flex flex-col gap-1 min-w-0">
+                    <button
+                      onClick={() => setSelected(product)}
+                      className="text-left"
+                    >
+                      <p className="text-sm text-gray-900 leading-tight line-clamp-2 hover:text-[#C45500] transition-colors">
+                        {product.name}
+                      </p>
+                    </button>
+
+                    <p className="text-[11px] text-gray-500">{product.brand}</p>
+                    <StarRating rating={rating} reviews={reviews} />
+
+                    <div className="flex items-baseline gap-1 mt-auto">
+                      <span className="text-xs text-gray-900">R$</span>
+                      <span className="text-lg font-bold text-gray-900">
+                        {Math.floor(brl).toLocaleString("pt-BR")}
+                      </span>
+                      <span className="text-xs text-gray-500 line-through ml-1">
+                        R$ {prevPrice.toFixed(2).replace(".", ",")}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-1">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs text-red-500 border-red-200 hover:bg-red-50"
+                        onClick={() => handleRemove(product.id)}
+                      >
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        Remover
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 border border-[#FCD200]"
+                        onClick={() => setSelected(product)}
+                      >
+                        <ShoppingBag className="h-3 w-3 mr-1" />
+                        Comprar
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -198,6 +181,7 @@ export default function ClientCatalog() {
             const brl = calcBRL(selected.price_usd);
             const bestSeller = isBestSeller(selected.name);
             const prevPrice = fakePreviousPrice(brl, selected.name);
+            const isWished = wishlistIds.includes(selected.id);
 
             return (
               <>
@@ -217,14 +201,13 @@ export default function ClientCatalog() {
                     </div>
                   )}
                   <button
-                    onClick={() => {
-                      const isW = wishlistIds.includes(selected.id);
-                      toggleWishlist.mutate({ productId: selected.id, isWished: isW });
-                    }}
+                    onClick={() =>
+                      toggleWishlist.mutate({ productId: selected.id, isWished })
+                    }
                     className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md"
                   >
                     <Heart
-                      className={`h-5 w-5 ${wishlistIds.includes(selected.id) ? "fill-red-500 text-red-500" : "text-gray-400"}`}
+                      className={`h-5 w-5 ${isWished ? "fill-red-500 text-red-500" : "text-gray-400"}`}
                     />
                   </button>
                 </div>
