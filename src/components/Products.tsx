@@ -1,20 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import type { Promotion, CatalogProduct } from "@/types";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tag, Copy, ShoppingBag, Loader2, ArrowRight } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { Tag, Copy, ArrowRight, Star, TrendingUp, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { calculatePriceBRL } from "@/lib/calculations";
+import { formatBRL } from "@/lib/format";
+
+const HIGHLIGHT_NAMES = [
+  "AirPods Pro 2",
+  "Rare Beauty Soft Pinch Blush",
+  "Nike Dunk Low Panda",
+  "Stanley Quencher H2.0 40oz",
+  "iPhone 16 Pro Case MagSafe",
+  "Dyson Airwrap Complete",
+  "Ray-Ban Aviator Classic",
+  "Kindle Paperwhite 11a Geracao",
+  "Dior Addict Lip Glow",
+  "Adidas Samba OG",
+  "Creatina Monohidratada 300g",
+  "Charlotte Tilbury Pillow Talk Set",
+];
 
 function useHomeData() {
   const [promos, setPromos] = useState<Promotion[]>([]);
   const [products, setProducts] = useState<CatalogProduct[]>([]);
+  const [rate, setRate] = useState(5.70);
+  const [spread, setSpread] = useState(3);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetch() {
-      const [promosRes, productsRes] = await Promise.all([
+    async function load() {
+      const [promosRes, productsRes, settingsRes] = await Promise.all([
         supabase
           .from("promotions")
           .select("*")
@@ -26,51 +53,43 @@ function useHomeData() {
           .from("catalog_products")
           .select("*")
           .eq("active", true)
-          .order("created_at", { ascending: false })
-          .limit(6),
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("settings")
+          .select("key, value")
+          .in("key", ["exchange_rate", "spread_percent"]),
       ]);
 
       setPromos((promosRes.data as Promotion[]) ?? []);
       setProducts((productsRes.data as CatalogProduct[]) ?? []);
-      setLoading(false);
-    }
-    fetch();
-  }, []);
 
-  return { promos, products, loading };
-}
-
-function useExchangeRate() {
-  const [rate, setRate] = useState(6.05);
-  const [spread, setSpread] = useState(8);
-
-  useEffect(() => {
-    async function fetch() {
-      const { data } = await supabase
-        .from("settings")
-        .select("key, value")
-        .in("key", ["exchange_rate_usd_brl", "spread_percentage"]);
-      if (data) {
-        for (const row of data) {
-          if (row.key === "exchange_rate_usd_brl") setRate(parseFloat(row.value));
-          if (row.key === "spread_percentage") setSpread(parseFloat(row.value));
+      if (settingsRes.data) {
+        for (const row of settingsRes.data) {
+          if (row.key === "exchange_rate") setRate(parseFloat(row.value));
+          if (row.key === "spread_percent") setSpread(parseFloat(row.value));
         }
       }
+      setLoading(false);
     }
-    fetch();
+    load();
   }, []);
 
-  function convert(usd: number) {
-    return usd * rate * (1 + spread / 100);
-  }
-
-  return { convert };
+  return { promos, products, rate, spread, loading };
 }
 
 const Products = () => {
-  const { promos, products, loading } = useHomeData();
-  const { convert } = useExchangeRate();
+  const { promos, products, rate, spread, loading } = useHomeData();
   const { toast } = useToast();
+
+  const calcBRL = (usd: number) => calculatePriceBRL(usd, rate, spread);
+
+  const highlighted = useMemo(() => {
+    if (!products.length) return [];
+    const picks = products.filter((p) => HIGHLIGHT_NAMES.includes(p.name));
+    if (picks.length >= 6) return picks;
+    const remaining = products.filter((p) => !HIGHLIGHT_NAMES.includes(p.name));
+    return [...picks, ...remaining].slice(0, 12);
+  }, [products]);
 
   function copyCode(code: string) {
     navigator.clipboard.writeText(code);
@@ -157,93 +176,96 @@ const Products = () => {
         </section>
       )}
 
-      {/* Featured Products Section */}
-      <section id="produtos" className="py-24 bg-miami-sand">
+      {/* Featured Products Carousel */}
+      <section id="produtos" className="py-20 bg-miami-sand">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="font-body text-sm font-semibold tracking-widest uppercase text-miami-blue mb-2 block">
-              Vitrine
-            </span>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground">
-              Produtos Populares
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-miami-orange/10 text-miami-orange px-4 py-1.5 rounded-full mb-4">
+              <TrendingUp size={14} />
+              <span className="font-body text-xs font-semibold tracking-wider uppercase">
+                Mais Pedidos
+              </span>
+            </div>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-3">
+              Destaques de Miami
             </h2>
-            <p className="font-body text-muted-foreground mt-3 max-w-md mx-auto">
-              Confira os itens mais procurados direto dos EUA
+            <p className="font-body text-muted-foreground max-w-lg mx-auto">
+              Produtos com melhor custo-beneficio, faceis de trazer e que nossos clientes mais amam
             </p>
           </div>
 
-          {products.length === 0 ? (
+          {highlighted.length === 0 ? (
             <p className="text-center text-muted-foreground py-10">
               Em breve novos produtos!
             </p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              {products.map((product) => (
-                <Card
-                  key={product.id}
-                  className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/30 bg-card"
-                >
-                  <div className="aspect-square bg-muted/30 relative overflow-hidden">
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                    <Badge className="absolute top-3 left-3 bg-white/90 text-foreground text-[10px] font-medium backdrop-blur-sm border-0">
-                      {product.category}
-                    </Badge>
-                  </div>
-                  <CardHeader className="pb-2">
-                    <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">
-                      {product.brand}
-                    </p>
-                    <CardTitle className="font-display text-lg leading-tight">
-                      {product.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pb-2">
-                    {product.description && (
-                      <p className="font-body text-muted-foreground text-sm line-clamp-2">
-                        {product.description}
-                      </p>
-                    )}
-                  </CardContent>
-                  <CardFooter className="flex items-end justify-between pt-0">
-                    <div>
-                      <p className="text-xs text-muted-foreground">
-                        US$ {product.price_usd.toFixed(2)}
-                      </p>
-                      <span className="font-display text-xl font-bold text-primary">
-                        R$ {convert(product.price_usd).toFixed(2).replace(".", ",")}
-                      </span>
-                    </div>
-                    <Button
-                      size="sm"
-                      className="font-body rounded-full gap-2"
-                      asChild
+            <div className="max-w-6xl mx-auto px-8 md:px-14">
+              <Carousel
+                opts={{ align: "start", loop: true }}
+                plugins={[Autoplay({ delay: 3500, stopOnInteraction: true })]}
+              >
+                <CarouselContent className="-ml-3">
+                  {highlighted.map((product) => (
+                    <CarouselItem
+                      key={product.id}
+                      className="pl-3 basis-1/2 md:basis-1/3 lg:basis-1/4"
                     >
-                      <a href="/login">
-                        <ShoppingBag size={16} />
-                        Comprar
-                      </a>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+                      <div className="group relative bg-card rounded-xl overflow-hidden border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                        <div className="relative h-40 md:h-48 overflow-hidden bg-muted">
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                          />
+                          <Badge
+                            variant="secondary"
+                            className="absolute top-2 left-2 text-[10px] font-semibold backdrop-blur-sm bg-background/80"
+                          >
+                            {product.category}
+                          </Badge>
+                          {product.price_usd <= 50 && (
+                            <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
+                              <Star size={10} fill="currentColor" />
+                              Facil trazer
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col flex-1 p-3 md:p-4">
+                          <p className="text-xs text-muted-foreground">{product.brand}</p>
+                          <h3 className="font-semibold text-sm leading-tight mt-0.5 line-clamp-2 flex-1">
+                            {product.name}
+                          </h3>
+                          <div className="mt-2 space-y-0.5">
+                            <p className="text-lg font-bold text-primary">
+                              {formatBRL(calcBRL(product.price_usd))}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              US$ {product.price_usd.toFixed(2).replace(".", ",")}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="-left-5 md:-left-7" />
+                <CarouselNext className="-right-5 md:-right-7" />
+              </Carousel>
             </div>
           )}
 
           <div className="text-center mt-10">
             <Button
-              variant="outline"
-              className="rounded-full gap-2 px-6"
+              size="lg"
+              className="font-body rounded-full gap-2 px-8 shadow-lg shadow-primary/25"
               asChild
             >
-              <a href="/login">
-                Ver todos os produtos
+              <Link to="/login">
+                Ver catalogo completo
                 <ArrowRight size={16} />
-              </a>
+              </Link>
             </Button>
           </div>
         </div>
