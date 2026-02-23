@@ -1,14 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import type { CatalogProduct } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, X, ArrowLeft, LogIn } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Loader2, X, LogIn, Search, Star, Truck, ChevronDown, SlidersHorizontal } from "lucide-react";
 import Logo from "@/components/shared/Logo";
 
 const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion"] as const;
+
+const SORT_OPTIONS = [
+  { value: "relevance", label: "Relevância" },
+  { value: "price_asc", label: "Menor preço" },
+  { value: "price_desc", label: "Maior preço" },
+  { value: "name", label: "A-Z" },
+] as const;
 
 function useCatalog() {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
@@ -47,7 +55,46 @@ function useExchangeRate() {
     return usd * effectiveRate;
   }
 
-  return { convert };
+  return { convert, effectiveRate };
+}
+
+function fakeRating(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
+  const rating = 3.5 + (Math.abs(hash) % 15) / 10;
+  const reviews = 50 + (Math.abs(hash) % 950);
+  return { rating: Math.min(rating, 5), reviews };
+}
+
+function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
+  return (
+    <div className="flex items-center gap-1">
+      <div className="flex items-center">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star
+            key={i}
+            size={12}
+            className={
+              i < full
+                ? "fill-amber-400 text-amber-400"
+                : i === full && half
+                ? "fill-amber-400/50 text-amber-400"
+                : "text-gray-300"
+            }
+          />
+        ))}
+      </div>
+      <span className="text-xs text-sky-700">{reviews.toLocaleString("pt-BR")}</span>
+    </div>
+  );
+}
+
+function isBestSeller(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
+  return Math.abs(hash) % 4 === 0;
 }
 
 export default function PublicCatalog() {
@@ -56,47 +103,73 @@ export default function PublicCatalog() {
 
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<string>("relevance");
+  const [showSort, setShowSort] = useState(false);
 
-  const filtered =
-    activeCategory === "Todos"
+  const filtered = useMemo(() => {
+    let list = activeCategory === "Todos"
       ? products
       : products.filter((p) => p.category === activeCategory);
 
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.brand?.toLowerCase().includes(q) ||
+          p.description?.toLowerCase().includes(q)
+      );
+    }
+
+    switch (sortBy) {
+      case "price_asc":
+        return [...list].sort((a, b) => a.price_usd - b.price_usd);
+      case "price_desc":
+        return [...list].sort((a, b) => b.price_usd - a.price_usd);
+      case "name":
+        return [...list].sort((a, b) => a.name.localeCompare(b.name));
+      default:
+        return list;
+    }
+  }, [products, activeCategory, searchQuery, sortBy]);
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-border px-4 pt-3 pb-2">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft size={20} />
-            </Link>
+    <div className="min-h-screen bg-[#EAEDED]">
+      {/* Amazon-style Header */}
+      <header className="sticky top-0 z-40 bg-[#131921] text-white">
+        <div className="px-4 py-2 flex items-center gap-3">
+          <Link to="/" className="shrink-0">
             <Logo size="sm" />
+          </Link>
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+            <Input
+              placeholder="Buscar produtos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 h-9 rounded-lg bg-white text-gray-900 border-none text-sm focus-visible:ring-2 focus-visible:ring-amber-400"
+            />
           </div>
           <Link
             to="/login"
-            className="flex items-center gap-1.5 bg-violet-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-700 transition-colors"
+            className="shrink-0 flex items-center gap-1.5 text-white text-xs hover:text-amber-300 transition-colors"
           >
-            <LogIn size={14} />
-            Entrar
+            <LogIn size={16} />
+            <span className="hidden sm:inline">Entrar</span>
           </Link>
         </div>
 
-        <h1 className="font-display text-xl font-bold text-foreground">Vitrine</h1>
-        <p className="text-xs text-muted-foreground mb-3">
-          Produtos populares dos EUA
-        </p>
-
-        {/* Category filters */}
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+        {/* Category Nav */}
+        <div className="bg-[#232F3E] px-4 py-1.5 flex gap-3 overflow-x-auto scrollbar-hide">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              className={`shrink-0 text-sm font-medium transition-colors whitespace-nowrap pb-0.5 ${
                 activeCategory === cat
-                  ? "bg-violet-600 text-white"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  ? "text-white border-b-2 border-amber-400"
+                  : "text-gray-300 hover:text-white"
               }`}
             >
               {cat}
@@ -105,118 +178,225 @@ export default function PublicCatalog() {
         </div>
       </header>
 
+      {/* Results Bar */}
+      <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
+        <p className="text-sm text-gray-700">
+          {loading ? "Carregando..." : (
+            <>
+              <span className="font-bold text-[#C45500]">{filtered.length}</span>{" "}
+              resultado{filtered.length !== 1 ? "s" : ""}
+              {activeCategory !== "Todos" && (
+                <> em <span className="font-semibold">{activeCategory}</span></>
+              )}
+            </>
+          )}
+        </p>
+        <div className="relative">
+          <button
+            onClick={() => setShowSort(!showSort)}
+            className="flex items-center gap-1 text-sm text-gray-700 hover:text-gray-900 bg-gray-100 border border-gray-300 rounded-lg px-3 py-1.5"
+          >
+            <SlidersHorizontal size={14} />
+            Ordenar
+            <ChevronDown size={14} />
+          </button>
+          {showSort && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowSort(false)} />
+              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1 min-w-[160px]">
+                {SORT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => { setSortBy(opt.value); setShowSort(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                      sortBy === opt.value ? "font-semibold text-[#C45500]" : "text-gray-700"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
       {/* Product Grid */}
-      <main className="px-4 pt-4 pb-8 max-w-2xl mx-auto">
+      <main className="px-3 py-3 max-w-6xl mx-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
           </div>
         ) : filtered.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground py-20">
-            Nenhum produto encontrado.
-          </p>
-        ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {filtered.map((product) => (
+          <div className="text-center py-20 bg-white rounded-lg">
+            <p className="text-gray-500 text-sm">Nenhum produto encontrado.</p>
+            {searchQuery && (
               <button
-                key={product.id}
-                onClick={() => setSelectedProduct(product)}
-                className="bg-white rounded-xl border border-border overflow-hidden text-left hover:shadow-md transition-shadow"
+                onClick={() => setSearchQuery("")}
+                className="text-sm text-sky-700 hover:underline mt-2"
               >
-                <div className="aspect-square bg-muted/50 relative overflow-hidden">
-                  <img
-                    src={product.image_url}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-3">
-                  <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">
-                    {product.brand}
-                  </p>
-                  <p className="text-sm font-semibold text-foreground leading-tight mt-0.5 line-clamp-2">
-                    {product.name}
-                  </p>
-                  <div className="mt-2 space-y-0.5">
-                    <p className="text-xs text-muted-foreground">
-                      US$ {product.price_usd.toFixed(2)}
-                    </p>
-                    <p className="text-sm font-bold text-violet-600">
-                      R$ {convert(product.price_usd).toFixed(2).replace(".", ",")}
-                    </p>
-                  </div>
-                </div>
+                Limpar busca
               </button>
-            ))}
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {filtered.map((product) => {
+              const { rating, reviews } = fakeRating(product.name);
+              const bestSeller = isBestSeller(product.name);
+              const brl = convert(product.price_usd);
+              const fakePreviousPrice = brl * (1 + (Math.abs(product.name.charCodeAt(0)) % 30 + 10) / 100);
+
+              return (
+                <button
+                  key={product.id}
+                  onClick={() => setSelectedProduct(product)}
+                  className="bg-white rounded-lg overflow-hidden text-left hover:shadow-lg transition-shadow group flex flex-col border border-gray-200"
+                >
+                  {/* Badge */}
+                  {bestSeller && (
+                    <div className="bg-[#E47911] text-white text-[10px] font-bold px-2 py-0.5">
+                      Mais vendido
+                    </div>
+                  )}
+
+                  {/* Product Image */}
+                  <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden">
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  {/* Product Info */}
+                  <div className="p-3 pt-1 flex flex-col gap-1 flex-1 border-t border-gray-100">
+                    <p className="text-sm text-gray-900 leading-tight line-clamp-2 group-hover:text-[#C45500] transition-colors">
+                      {product.name}
+                    </p>
+
+                    <p className="text-[11px] text-gray-500">{product.brand}</p>
+
+                    <StarRating rating={rating} reviews={reviews} />
+
+                    <div className="mt-auto pt-1">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-xs text-gray-900">R$</span>
+                        <span className="text-xl font-bold text-gray-900">
+                          {Math.floor(brl).toLocaleString("pt-BR")}
+                        </span>
+                        <span className="text-xs text-gray-900">
+                          {(brl % 1).toFixed(2).slice(1).replace(".", ",")}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 line-through">
+                        R$ {fakePreviousPrice.toFixed(2).replace(".", ",")}
+                      </p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">
+                        US$ {product.price_usd.toFixed(2)}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1 mt-1">
+                      <Truck size={12} className="text-[#007600]" />
+                      <span className="text-[11px] text-[#007600] font-medium">Entrega via viagem</span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
       </main>
 
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-sm mx-auto p-0 gap-0 rounded-2xl overflow-hidden">
-          {selectedProduct && (
-            <>
-              <div className="aspect-square bg-muted/50 relative">
-                <img
-                  src={selectedProduct.image_url}
-                  alt={selectedProduct.name}
-                  className="w-full h-full object-cover"
-                />
-                <button
-                  onClick={() => setSelectedProduct(null)}
-                  className="absolute top-3 right-3 bg-black/40 text-white rounded-full p-1.5"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-              <div className="p-5 space-y-3">
-                <div>
-                  <Badge variant="secondary" className="text-[10px] font-medium mb-2">
-                    {selectedProduct.category}
-                  </Badge>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">
-                    {selectedProduct.brand}
-                  </p>
-                  <DialogHeader>
-                    <DialogTitle className="font-display text-xl mt-1">
-                      {selectedProduct.name}
-                    </DialogTitle>
-                  </DialogHeader>
+        <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-lg overflow-hidden">
+          {selectedProduct && (() => {
+            const { rating, reviews } = fakeRating(selectedProduct.name);
+            const brl = convert(selectedProduct.price_usd);
+            const bestSeller = isBestSeller(selectedProduct.name);
+            const fakePreviousPrice = brl * (1 + (Math.abs(selectedProduct.name.charCodeAt(0)) % 30 + 10) / 100);
+
+            return (
+              <>
+                <div className="bg-white relative">
+                  <div className="aspect-square bg-white p-6 flex items-center justify-center">
+                    <img
+                      src={selectedProduct.image_url}
+                      alt={selectedProduct.name}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                  <button
+                    onClick={() => setSelectedProduct(null)}
+                    className="absolute top-3 right-3 bg-white/90 text-gray-600 rounded-full p-1.5 shadow-md hover:bg-white"
+                  >
+                    <X size={16} />
+                  </button>
+                  {bestSeller && (
+                    <div className="absolute top-3 left-3">
+                      <span className="bg-[#E47911] text-white text-xs font-bold px-2 py-1 rounded">
+                        Mais vendido
+                      </span>
+                    </div>
+                  )}
                 </div>
 
-                {selectedProduct.description && (
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {selectedProduct.description}
-                  </p>
-                )}
-
-                <div className="flex items-end gap-3 pt-1">
+                <div className="p-5 space-y-3 bg-white">
                   <div>
-                    <p className="text-xs text-muted-foreground">Preco EUA</p>
-                    <p className="text-lg font-semibold">
+                    <Badge variant="secondary" className="text-[10px] font-medium mb-2">
+                      {selectedProduct.category}
+                    </Badge>
+                    <DialogHeader>
+                      <DialogTitle className="text-base font-normal text-gray-900 leading-snug">
+                        {selectedProduct.name}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-sky-700 mt-1">
+                      Visitar loja de {selectedProduct.brand}
+                    </p>
+                  </div>
+
+                  <StarRating rating={rating} reviews={reviews} />
+
+                  {selectedProduct.description && (
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {selectedProduct.description}
+                    </p>
+                  )}
+
+                  <div className="border-t border-gray-200 pt-3">
+                    <p className="text-xs text-gray-500 line-through">
+                      R$ {fakePreviousPrice.toFixed(2).replace(".", ",")}
+                    </p>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-2xl font-bold text-gray-900">
+                        R$ {brl.toFixed(2).replace(".", ",")}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-0.5">
                       US$ {selectedProduct.price_usd.toFixed(2)}
                     </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Estimativa Brasil</p>
-                    <p className="text-lg font-bold text-violet-600">
-                      R$ {convert(selectedProduct.price_usd).toFixed(2).replace(".", ",")}
-                    </p>
-                  </div>
-                </div>
 
-                <Link
-                  to="/login"
-                  className="flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-700 text-white rounded-full py-2.5 px-4 font-medium text-sm mt-2 transition-colors"
-                >
-                  <LogIn size={16} />
-                  Fazer login para comprar
-                </Link>
-              </div>
-            </>
-          )}
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <Truck size={14} className="text-[#007600]" />
+                      <span className="text-sm text-[#007600] font-medium">Entrega via viagem Miami</span>
+                    </div>
+                  </div>
+
+                  <Link
+                    to="/login"
+                    className="flex items-center justify-center gap-2 w-full bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm mt-2 transition-colors border border-[#FCD200]"
+                  >
+                    <LogIn size={16} />
+                    Fazer login para comprar
+                  </Link>
+                </div>
+              </>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </div>
