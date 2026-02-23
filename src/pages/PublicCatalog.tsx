@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
 import { useToast } from "@/hooks/use-toast";
+import { fakeRating, isBestSeller } from "@/lib/product-display";
 
 const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion"] as const;
 
@@ -98,15 +99,7 @@ function useExchangeRate() {
   return { convert, effectiveRate };
 }
 
-function fakeRating(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
-  const rating = 3.5 + (Math.abs(hash) % 15) / 10;
-  const reviews = 50 + (Math.abs(hash) % 950);
-  return { rating: Math.min(rating, 5), reviews };
-}
-
-function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
+function CatalogStarRating({ rating, reviews }: { rating: number; reviews: number }) {
   const full = Math.floor(rating);
   const half = rating - full >= 0.5;
   return (
@@ -129,12 +122,6 @@ function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
       <span className="text-xs text-sky-700">{reviews.toLocaleString("pt-BR")}</span>
     </div>
   );
-}
-
-function isBestSeller(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
-  return Math.abs(hash) % 4 === 0;
 }
 
 export default function PublicCatalog() {
@@ -352,7 +339,7 @@ export default function PublicCatalog() {
 
                     <p className="text-[11px] text-gray-500">{product.brand}</p>
 
-                    <StarRating rating={rating} reviews={reviews} />
+                    <CatalogStarRating rating={rating} reviews={reviews} />
 
                     <div className="mt-auto pt-1">
                       <div className="flex items-baseline gap-1">
@@ -433,7 +420,7 @@ export default function PublicCatalog() {
                     </p>
                   </div>
 
-                  <StarRating rating={rating} reviews={reviews} />
+                  <CatalogStarRating rating={rating} reviews={reviews} />
 
                   {selectedProduct.description && (
                     <p className="text-sm text-gray-600 leading-relaxed">

@@ -1,17 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
 import type { CatalogProduct } from "@/types";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Loader2,
-  X,
   LogIn,
   Search,
-  Star,
   Truck,
   ChevronDown,
   SlidersHorizontal,
@@ -19,21 +14,19 @@ import {
   Zap,
   Clock,
   Shield,
-  ChevronRight,
-  Flame,
   Tag,
   MessageCircle,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
+import ProductCard from "@/components/shared/ProductCard";
+import ProductDetailModal from "@/components/shared/ProductDetailModal";
+import { useCatalogProducts } from "@/hooks/useCatalog";
+import { useSettings } from "@/hooks/useSettings";
+import { useActivePromotions } from "@/hooks/usePromotions";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { useToast } from "@/hooks/use-toast";
 
-const CATEGORIES = [
-  { key: "Todos" },
-  { key: "Tech" },
-  { key: "Beauty" },
-  { key: "Fashion" },
-] as const;
+const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion"] as const;
 
 const SORT_OPTIONS = [
   { value: "relevance", label: "Relevancia" },
@@ -42,96 +35,20 @@ const SORT_OPTIONS = [
   { value: "name", label: "A-Z" },
 ] as const;
 
-type PromoData = {
-  id: string;
-  name: string;
-  coupon_code: string;
-  discount_type: string;
-  discount_value: number;
-  expires_at: string;
-};
-
-function useHomeData() {
-  const [products, setProducts] = useState<CatalogProduct[]>([]);
-  const [promos, setPromos] = useState<PromoData[]>([]);
-  const [rate, setRate] = useState(5.70);
-  const [spread, setSpread] = useState(3);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      const [productsRes, promosRes, settingsRes] = await Promise.all([
-        supabase
-          .from("catalog_products")
-          .select("*")
-          .eq("active", true)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("promotions")
-          .select("id, name, coupon_code, discount_type, discount_value, expires_at")
-          .eq("active", true)
-          .gte("expires_at", new Date().toISOString())
-          .order("created_at", { ascending: false })
-          .limit(3),
-        supabase
-          .from("settings")
-          .select("key, value")
-          .in("key", ["exchange_rate", "spread_percent"]),
-      ]);
-
-      setProducts((productsRes.data as CatalogProduct[]) ?? []);
-      setPromos((promosRes.data as PromoData[]) ?? []);
-
-      if (settingsRes.data) {
-        for (const row of settingsRes.data) {
-          if (row.key === "exchange_rate") setRate(parseFloat(row.value));
-          if (row.key === "spread_percent") setSpread(parseFloat(row.value));
-        }
-      }
-      setLoading(false);
-    }
-    load();
-  }, []);
-
-  const convert = (usd: number) => calculatePriceBRL(usd, rate, spread);
-
-  return { products, promos, convert, loading };
-}
-
-function stableHash(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
-  return Math.abs(hash);
-}
-
-function StarRating({ rating, count }: { rating: number; count: number }) {
-  const full = Math.floor(rating);
-  const half = rating - full >= 0.5;
-  return (
-    <div className="flex items-center gap-1">
-      <div className="flex items-center">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Star
-            key={i}
-            size={10}
-            className={
-              i < full
-                ? "fill-amber-400 text-amber-400"
-                : i === full && half
-                ? "fill-amber-400/50 text-amber-400"
-                : "text-gray-300"
-            }
-          />
-        ))}
-      </div>
-      <span className="text-[10px] text-gray-500">{count.toLocaleString("pt-BR")}</span>
-    </div>
-  );
-}
-
 const Index = () => {
-  const { products, promos, convert, loading } = useHomeData();
+  const { data: products = [], isLoading } = useCatalogProducts();
+  const { data: settings } = useSettings();
+  const { data: promos = [] } = useActivePromotions();
   const { toast } = useToast();
+
+  const rate = parseFloat(settings?.exchange_rate ?? "5.70");
+  const spread = parseFloat(settings?.spread_percent ?? "3");
+  const whatsapp = settings?.whatsapp_number ?? "5561999999999";
+
+  const convert = useCallback(
+    (usd: number) => calculatePriceBRL(usd, rate, spread),
+    [rate, spread],
+  );
 
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [searchQuery, setSearchQuery] = useState("");
@@ -150,7 +67,7 @@ const Index = () => {
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.brand?.toLowerCase().includes(q) ||
-          p.description?.toLowerCase().includes(q)
+          p.description?.toLowerCase().includes(q),
       );
     }
 
@@ -166,14 +83,17 @@ const Index = () => {
     }
   }, [products, activeCategory, searchQuery, sortBy]);
 
-  function copyCode(code: string) {
-    navigator.clipboard.writeText(code);
-    toast({ title: "Cupom copiado!", description: code });
-  }
+  const copyCode = useCallback(
+    (code: string) => {
+      navigator.clipboard.writeText(code);
+      toast({ title: "Cupom copiado!", description: code });
+    },
+    [toast],
+  );
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      {/* Sticky header */}
+      {/* ─── Sticky Header ─── */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
         {/* Promo ticker */}
         <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-violet-500 text-white text-center py-1.5 px-4">
@@ -182,7 +102,7 @@ const Index = () => {
           </p>
         </div>
 
-        {/* Main header */}
+        {/* Search bar */}
         <div className="px-4 py-2 flex items-center gap-3">
           <Link to="/" className="shrink-0">
             <Logo size="sm" />
@@ -209,21 +129,21 @@ const Index = () => {
         <div className="px-4 pb-2 flex gap-2 overflow-x-auto scrollbar-hide">
           {CATEGORIES.map((cat) => (
             <button
-              key={cat.key}
-              onClick={() => setActiveCategory(cat.key)}
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
               className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
-                activeCategory === cat.key
+                activeCategory === cat
                   ? "bg-gray-900 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              {cat.key}
+              {cat}
             </button>
           ))}
         </div>
       </header>
 
-      {/* Trust banner */}
+      {/* ─── Trust Banner ─── */}
       <div className="bg-white border-b border-gray-100 px-4 py-2.5">
         <div className="flex items-center justify-around text-center max-w-lg mx-auto">
           <div className="flex items-center gap-1.5">
@@ -244,7 +164,7 @@ const Index = () => {
       </div>
 
       <main>
-        {/* Flash promo banners */}
+        {/* ─── Promo Coupons ─── */}
         {promos.length > 0 && (
           <div className="px-3 pt-3">
             <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
@@ -275,10 +195,12 @@ const Index = () => {
           </div>
         )}
 
-        {/* Results bar + sort */}
+        {/* ─── Results bar + Sort ─── */}
         <div className="px-4 pt-3 pb-2 flex items-center justify-between">
           <p className="text-xs text-gray-500">
-            {loading ? "Carregando..." : (
+            {isLoading ? (
+              "Carregando..."
+            ) : (
               <>
                 <span className="font-bold text-gray-900">{filtered.length}</span>{" "}
                 produto{filtered.length !== 1 ? "s" : ""}
@@ -301,7 +223,10 @@ const Index = () => {
                   {SORT_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
-                      onClick={() => { setSortBy(opt.value); setShowSort(false); }}
+                      onClick={() => {
+                        setSortBy(opt.value);
+                        setShowSort(false);
+                      }}
                       className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
                         sortBy === opt.value ? "font-semibold text-rose-500" : "text-gray-700"
                       }`}
@@ -315,9 +240,9 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Product Grid - Shein style */}
+        {/* ─── Product Grid ─── */}
         <div className="px-3 pb-20">
-          {loading ? (
+          {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
             </div>
@@ -336,80 +261,19 @@ const Index = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-              {filtered.map((product) => {
-                const h = stableHash(product.name);
-                const rating = 3.5 + (h % 15) / 10;
-                const reviews = 50 + (h % 950);
-                const bestSeller = h % 4 === 0;
-                const brl = convert(product.price_usd);
-                const discount = 10 + (h % 30);
-                const originalPrice = brl / (1 - discount / 100);
-
-                return (
-                  <button
-                    key={product.id}
-                    onClick={() => setSelectedProduct(product)}
-                    className="bg-white rounded-xl overflow-hidden text-left hover:shadow-md transition-all group flex flex-col"
-                  >
-                    {/* Product Image */}
-                    <div className="aspect-[3/4] bg-gray-50 relative overflow-hidden">
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                      <div className="absolute top-1.5 left-1.5">
-                        <span className="bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
-                          -{discount}%
-                        </span>
-                      </div>
-                      {bestSeller && (
-                        <div className="absolute top-1.5 right-1.5">
-                          <span className="bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                            <Flame size={8} />
-                            HOT
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="p-2.5 flex flex-col gap-1 flex-1">
-                      <p className="text-xs text-gray-800 leading-tight line-clamp-2">
-                        {product.name}
-                      </p>
-
-                      <div className="mt-auto pt-1">
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-sm font-bold text-gray-900">
-                            R${Math.floor(brl).toLocaleString("pt-BR")}
-                            <span className="text-xs">,{(brl % 1).toFixed(2).slice(2)}</span>
-                          </span>
-                        </div>
-                        <p className="text-[10px] text-gray-400 line-through">
-                          R$ {originalPrice.toFixed(2).replace(".", ",")}
-                        </p>
-                        <p className="text-[10px] text-gray-400 mt-0.5">
-                          US$ {product.price_usd.toFixed(2)}
-                        </p>
-                      </div>
-
-                      <StarRating rating={Math.min(rating, 5)} count={reviews} />
-
-                      <div className="flex items-center gap-1 mt-0.5">
-                        <Truck size={10} className="text-green-600" />
-                        <span className="text-[9px] text-green-600 font-medium">Frete viagem</span>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+              {filtered.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  priceBRL={convert(product.price_usd)}
+                  onClick={() => setSelectedProduct(product)}
+                />
+              ))}
             </div>
           )}
         </div>
 
-        {/* How it works - compact */}
+        {/* ─── How It Works (compact) ─── */}
         <div className="bg-white border-t border-gray-100 px-4 py-8">
           <h2 className="text-center text-sm font-bold text-gray-900 mb-5">Como funciona</h2>
           <div className="flex items-start gap-4 max-w-sm mx-auto">
@@ -428,11 +292,11 @@ const Index = () => {
           </div>
         </div>
 
-        {/* WhatsApp CTA */}
+        {/* ─── WhatsApp CTA ─── */}
         <div className="bg-white border-t border-gray-100 px-4 py-6 text-center">
           <p className="text-xs text-gray-500 mb-3">Duvidas? Fale com a gente</p>
           <a
-            href="https://wa.me/5511999999999?text=Ola! Vim do site MalaBridge"
+            href={`https://wa.me/${whatsapp}?text=Ola! Vim do site MalaBridge`}
             target="_blank"
             rel="noreferrer"
           >
@@ -444,113 +308,12 @@ const Index = () => {
         </div>
       </main>
 
-      {/* Product Detail Modal */}
-      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-xl overflow-hidden max-h-[90vh] overflow-y-auto">
-          {selectedProduct && (() => {
-            const h = stableHash(selectedProduct.name);
-            const rating = Math.min(3.5 + (h % 15) / 10, 5);
-            const reviews = 50 + (h % 950);
-            const bestSeller = h % 4 === 0;
-            const brl = convert(selectedProduct.price_usd);
-            const discount = 10 + (h % 30);
-            const originalPrice = brl / (1 - discount / 100);
-
-            return (
-              <>
-                <div className="bg-white relative">
-                  <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
-                    <img
-                      src={selectedProduct.image_url}
-                      alt={selectedProduct.name}
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  </div>
-                  <button
-                    onClick={() => setSelectedProduct(null)}
-                    className="absolute top-3 right-3 bg-white/90 text-gray-600 rounded-full p-1.5 shadow-md hover:bg-white"
-                  >
-                    <X size={16} />
-                  </button>
-                  <div className="absolute top-3 left-3 flex gap-1.5">
-                    <span className="bg-rose-500 text-white text-xs font-bold px-2 py-1 rounded">
-                      -{discount}%
-                    </span>
-                    {bestSeller && (
-                      <span className="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
-                        <Flame size={10} />
-                        HOT
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="p-5 space-y-3 bg-white">
-                  <div>
-                    <Badge variant="secondary" className="text-[10px] font-medium mb-2">
-                      {selectedProduct.category}
-                    </Badge>
-                    <DialogHeader>
-                      <DialogTitle className="text-base font-normal text-gray-900 leading-snug">
-                        {selectedProduct.name}
-                      </DialogTitle>
-                    </DialogHeader>
-                    <p className="text-sm text-rose-500 mt-1 font-medium">
-                      {selectedProduct.brand}
-                    </p>
-                  </div>
-
-                  <StarRating rating={rating} count={reviews} />
-
-                  {selectedProduct.description && (
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {selectedProduct.description}
-                    </p>
-                  )}
-
-                  <div className="bg-rose-50 rounded-xl p-4 space-y-1">
-                    <p className="text-xs text-gray-400 line-through">
-                      R$ {originalPrice.toFixed(2).replace(".", ",")}
-                    </p>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-gray-900">
-                        R$ {brl.toFixed(2).replace(".", ",")}
-                      </span>
-                      <span className="bg-rose-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                        -{discount}%
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500">
-                      US$ {selectedProduct.price_usd.toFixed(2)}
-                    </p>
-
-                    <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-rose-100">
-                      <Truck size={14} className="text-green-600" />
-                      <span className="text-xs text-green-600 font-medium">Entrega via viagem Miami</span>
-                    </div>
-                  </div>
-
-                  <Link
-                    to="/login"
-                    className="flex items-center justify-center gap-2 w-full bg-rose-500 hover:bg-rose-600 text-white rounded-full py-3 px-4 font-medium text-sm transition-colors"
-                  >
-                    <ShoppingBag size={16} />
-                    Fazer login para comprar
-                  </Link>
-
-                  <Link
-                    to="/catalog"
-                    className="flex items-center justify-center gap-1 text-xs text-gray-500 hover:text-rose-500 transition-colors pt-1"
-                  >
-                    Ver catalogo completo
-                    <ChevronRight size={14} />
-                  </Link>
-                </div>
-              </>
-            );
-          })()}
-        </DialogContent>
-      </Dialog>
+      {/* ─── Product Detail Modal ─── */}
+      <ProductDetailModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        convert={convert}
+      />
     </div>
   );
 };
