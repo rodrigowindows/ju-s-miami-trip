@@ -669,54 +669,6 @@ export type Database = {
         }
         Relationships: []
       }
-      notifications: {
-        Row: {
-          id: string
-          client_id: string
-          title: string
-          message: string
-          type: string
-          read: boolean
-          order_id: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          client_id: string
-          title: string
-          message: string
-          type?: string
-          read?: boolean
-          order_id?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          client_id?: string
-          title?: string
-          message?: string
-          type?: string
-          read?: boolean
-          order_id?: string | null
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notifications_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "notifications_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       wishlists: {
         Row: {
           client_id: string
