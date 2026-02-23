@@ -262,7 +262,7 @@ const Products = () => {
               className="font-body rounded-full gap-2 px-8 shadow-lg shadow-primary/25"
               asChild
             >
-              <Link to="/login">
+              <Link to="/catalog">
                 Ver catalogo completo
                 <ArrowRight size={16} />
               </Link>

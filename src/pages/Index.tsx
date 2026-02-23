@@ -6,7 +6,7 @@ import PriceSimulator from "@/components/PriceSimulator";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
+
 
 const Index = () => {
   return (
@@ -21,7 +21,7 @@ const Index = () => {
         <FAQ />
         <Contact />
       </main>
-      <Footer />
+
     </div>
   );
 };
