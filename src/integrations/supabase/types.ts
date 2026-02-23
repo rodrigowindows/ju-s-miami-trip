@@ -50,47 +50,6 @@ export type Database = {
         }
         Relationships: []
       }
-      product_questions: {
-        Row: {
-          id: string
-          product_id: string
-          asker_name: string
-          asker_email: string | null
-          question: string
-          answer: string | null
-          answered_at: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          product_id: string
-          asker_name?: string
-          asker_email?: string | null
-          question: string
-          answer?: string | null
-          answered_at?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          product_id?: string
-          asker_name?: string
-          asker_email?: string | null
-          question?: string
-          answer?: string | null
-          answered_at?: string | null
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_questions_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "catalog_products"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       order_events: {
         Row: {
           created_at: string
@@ -288,6 +247,47 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          asker_email: string | null
+          asker_name: string
+          created_at: string
+          id: string
+          product_id: string
+          question: string
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          asker_email?: string | null
+          asker_name?: string
+          created_at?: string
+          id?: string
+          product_id: string
+          question: string
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          asker_email?: string | null
+          asker_name?: string
+          created_at?: string
+          id?: string
+          product_id?: string
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_questions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_products"
             referencedColumns: ["id"]
           },
         ]
@@ -496,21 +496,33 @@ export type Database = {
       whatsapp_templates: {
         Row: {
           created_at: string
+          icon: string | null
           id: string
           name: string
+          slug: string | null
           template: string
+          template_text: string | null
+          title: string | null
         }
         Insert: {
           created_at?: string
+          icon?: string | null
           id?: string
           name: string
+          slug?: string | null
           template: string
+          template_text?: string | null
+          title?: string | null
         }
         Update: {
           created_at?: string
+          icon?: string | null
           id?: string
           name?: string
+          slug?: string | null
           template?: string
+          template_text?: string | null
+          title?: string | null
         }
         Relationships: []
       }

@@ -78,8 +78,9 @@ export const KANBAN_COLUMNS: KanbanColumn[] = [
 // ── Catalog Product ────────────────────────
 export type CatalogProduct = import('@/integrations/supabase/types').Tables<'catalog_products'>;
 
-// ── Product Review ─────────────────────────
-export type ProductReview = import('@/integrations/supabase/types').Tables<'product_reviews'>;
+// ── Product Review (placeholder) ─────────────────────────
+// product_reviews table does not exist yet
+export type ProductReview = Record<string, never>;
 
 // ── Product Question (Q&A) ─────────────────
 export type ProductQuestion = import('@/integrations/supabase/types').Tables<'product_questions'>;
