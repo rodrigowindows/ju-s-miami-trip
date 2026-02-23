@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   full_name TEXT NOT NULL,
   phone TEXT,
   address TEXT,
-  role TEXT NOT NULL DEFAULT 'client' CHECK (role IN ('admin', 'client')),
+  role TEXT NOT NULL DEFAULT 'cliente' CHECK (role IN ('admin', 'cliente')),
   referral_code TEXT UNIQUE,
   wallet_balance NUMERIC NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -49,7 +49,7 @@ BEGIN
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
-    COALESCE(NEW.raw_user_meta_data->>'role', 'client')
+    COALESCE(NEW.raw_user_meta_data->>'role', 'cliente')
   );
   RETURN NEW;
 END;

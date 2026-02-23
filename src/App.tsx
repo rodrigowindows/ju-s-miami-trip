@@ -18,6 +18,7 @@ import ClientPromotions from "./pages/client/ClientPromotions";
 import ClientProfile from "./pages/client/ClientProfile";
 
 // Admin pages
+import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import OrdersList from "./pages/admin/OrdersList";
@@ -57,7 +58,7 @@ function RequireAdmin({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
 
   if (loading) return <LoadingScreen />;
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/admin/login" replace />;
   if (profile && profile.role !== "admin") return <Navigate to="/client/dashboard" replace />;
 
   return <>{children}</>;
@@ -111,6 +112,16 @@ const App = () => (
               <Route path="promotions" element={<ClientPromotions />} />
               <Route path="profile" element={<ClientProfile />} />
             </Route>
+
+            {/* Admin login */}
+            <Route
+              path="/admin/login"
+              element={
+                <RedirectIfAuthed>
+                  <AdminLogin />
+                </RedirectIfAuthed>
+              }
+            />
 
             {/* Admin authenticated routes */}
             <Route

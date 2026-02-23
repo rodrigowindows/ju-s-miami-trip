@@ -46,7 +46,7 @@ export type WalletTransactionType =
 export type TripStatus = 'planejada' | 'em_andamento' | 'concluida';
 
 // ── User Role ────────────────────────────────
-export type UserRole = 'admin' | 'client';
+export type UserRole = 'admin' | 'cliente';
 
 // ── Referral Status ──────────────────────────
 export type ReferralStatus = 'pending' | 'completed';
