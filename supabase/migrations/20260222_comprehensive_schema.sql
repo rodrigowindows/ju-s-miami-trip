@@ -128,14 +128,14 @@ DROP POLICY IF EXISTS "Admin can manage catalog products" ON catalog_products;
 CREATE POLICY "Admin can manage catalog products" ON catalog_products FOR ALL
   USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
 
--- Seed 6 catalog products
+-- Seed catalog products (real Unsplash images)
 INSERT INTO catalog_products (name, brand, category, price_usd, image_url, description) VALUES
-  ('AirPods Pro 2', 'Apple', 'Tech', 249.00, 'https://placehold.co/400x400/f0f0f0/333?text=AirPods+Pro+2', 'AirPods Pro de segunda geração com cancelamento ativo de ruído, modo Transparência adaptativo e áudio personalizado espacial.'),
-  ('Nike Dunk Low Panda', 'Nike', 'Fashion', 110.00, 'https://placehold.co/400x400/f0f0f0/333?text=Nike+Dunk+Low', 'O clássico Nike Dunk Low na icônica colorway preto e branco "Panda". Couro premium, sola vulcanizada.'),
-  ('Perfume Chanel Nº5', 'Chanel', 'Beauty', 135.00, 'https://placehold.co/400x400/f0f0f0/333?text=Chanel+N5', 'Eau de Parfum 100ml. O perfume mais icônico do mundo, com notas de ylang-ylang, rosa e sândalo.'),
-  ('iPhone 15 Pro Case', 'Apple', 'Tech', 49.00, 'https://placehold.co/400x400/f0f0f0/333?text=iPhone+Case', 'Case de silicone com MagSafe para iPhone 15 Pro. Proteção premium com toque aveludado.'),
-  ('Stanley Cup Tumbler', 'Stanley', 'Fashion', 45.00, 'https://placehold.co/400x400/f0f0f0/333?text=Stanley+Cup', 'Copo térmico Quencher H2.0 de 40oz. Mantém bebidas geladas por 11h e quentes por 7h.'),
-  ('Rare Beauty Blush', 'Rare Beauty', 'Beauty', 23.00, 'https://placehold.co/400x400/f0f0f0/333?text=Rare+Beauty', 'Soft Pinch Liquid Blush da marca da Selena Gomez. Fórmula leve e ultra-pigmentada que dura o dia todo.')
+  ('AirPods Pro 2', 'Apple', 'Tech', 249.00, 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=400&h=400&fit=crop', 'AirPods Pro de segunda geração com cancelamento ativo de ruído, modo Transparência adaptativo e áudio personalizado espacial.'),
+  ('Nike Dunk Low Panda', 'Nike', 'Fashion', 110.00, 'https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=400&h=400&fit=crop', 'O clássico Nike Dunk Low na icônica colorway preto e branco "Panda". Couro premium, sola vulcanizada.'),
+  ('Perfume Chanel Nº5', 'Chanel', 'Beauty', 135.00, 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop', 'Eau de Parfum 100ml. O perfume mais icônico do mundo, com notas de ylang-ylang, rosa e sândalo.'),
+  ('iPhone 15 Pro Max', 'Apple', 'Tech', 1199.00, 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop', 'iPhone 15 Pro Max 256GB com chip A17 Pro, câmera de 48MP e corpo de titânio.'),
+  ('Stanley Quencher H2.0', 'Stanley', 'Lifestyle', 45.00, 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=400&fit=crop', 'Copo térmico Quencher H2.0 de 40oz. Mantém bebidas geladas por 11h e quentes por 7h.'),
+  ('Rare Beauty Soft Pinch Blush', 'Rare Beauty', 'Beauty', 23.00, 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop', 'Soft Pinch Liquid Blush da marca da Selena Gomez. Fórmula leve e ultra-pigmentada que dura o dia todo.')
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -367,7 +367,7 @@ CREATE TABLE IF NOT EXISTS promotions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   coupon_code text UNIQUE NOT NULL,
-  discount_type text NOT NULL DEFAULT 'percentage' CHECK (discount_type IN ('percentage', 'fixed')),
+  discount_type text NOT NULL DEFAULT 'percent' CHECK (discount_type IN ('percent', 'fixed')),
   discount_value numeric NOT NULL,
   min_order_value numeric,
   starts_at timestamptz NOT NULL DEFAULT now(),

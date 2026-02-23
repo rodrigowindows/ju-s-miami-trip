@@ -44,7 +44,7 @@ function useHomeData() {
       const [promosRes, productsRes, settingsRes] = await Promise.all([
         supabase
           .from("promotions")
-          .select("*, catalog_products(id, name, brand, image_url, price_usd, category)")
+          .select("*")
           .eq("active", true)
           .gte("expires_at", new Date().toISOString())
           .order("created_at", { ascending: false })
@@ -131,46 +131,19 @@ const Products = () => {
                   className="group relative bg-white rounded-2xl border border-violet-100 overflow-hidden hover:shadow-lg hover:border-violet-200 transition-all duration-300"
                 >
                   <div className="flex">
-                    {/* Product image */}
-                    {promo.catalog_products && (
-                      <div className="w-28 sm:w-32 shrink-0 bg-muted overflow-hidden">
-                        <img
-                          src={promo.catalog_products.image_url}
-                          alt={promo.catalog_products.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-
                     <div className="flex-1 p-4 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          {promo.catalog_products ? (
-                            <>
-                              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
-                                {promo.catalog_products.brand}
-                              </p>
-                              <h3 className="font-display text-sm font-bold text-foreground truncate">
-                                {promo.catalog_products.name}
-                              </h3>
-                            </>
-                          ) : (
-                            <h3 className="font-display text-sm font-bold text-foreground">
-                              {promo.name}
-                            </h3>
-                          )}
+                          <h3 className="font-display text-sm font-bold text-foreground">
+                            {promo.name}
+                          </h3>
                         </div>
-                        <Badge className="bg-violet-600 text-white text-[10px] font-bold shrink-0 border-0">
+                        <Badge className="bg-primary text-primary-foreground text-[10px] font-bold shrink-0 border-0">
                           {promo.discount_type === "percent"
                             ? `${promo.discount_value}% OFF`
                             : `R$ ${promo.discount_value.toFixed(0)} OFF`}
                         </Badge>
                       </div>
-
-                      {promo.catalog_products && (
-                        <p className="text-xs text-violet-600 font-medium mt-1">{promo.name}</p>
-                      )}
 
                       <p className="text-[11px] text-muted-foreground mt-1">
                         Expira em {new Date(promo.expires_at).toLocaleDateString("pt-BR")}

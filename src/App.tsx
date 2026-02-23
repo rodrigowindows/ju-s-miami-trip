@@ -15,6 +15,7 @@ import ClientLayout from "./components/client/ClientLayout";
 import ClientDashboard from "./pages/client/ClientDashboard";
 import ClientCatalog from "./pages/client/ClientCatalog";
 import ClientOrders from "./pages/client/ClientOrders";
+import ClientOrderDetail from "./pages/client/ClientOrderDetail";
 import ClientPromotions from "./pages/client/ClientPromotions";
 import ClientProfile from "./pages/client/ClientProfile";
 
@@ -31,6 +32,7 @@ import Payments from "./pages/admin/Payments";
 import AdminPromos from "./pages/admin/AdminPromos";
 import Clients from "./pages/admin/Clients";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminQuestions from "./pages/admin/AdminQuestions";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
 
 import { Loader2 } from "lucide-react";
@@ -118,6 +120,7 @@ const App = () => (
               <Route path="dashboard" element={<ClientDashboard />} />
               <Route path="catalog" element={<ClientCatalog />} />
               <Route path="orders" element={<ClientOrders />} />
+              <Route path="orders/:id" element={<ClientOrderDetail />} />
               <Route path="promos" element={<ClientPromotions />} />
               <Route path="profile" element={<ClientProfile />} />
             </Route>
@@ -149,6 +152,7 @@ const App = () => (
               <Route path="catalogo" element={<AdminCatalog />} />
               <Route path="messages" element={<Messages />} />
               <Route path="payments" element={<Payments />} />
+              <Route path="perguntas" element={<AdminQuestions />} />
               <Route path="promos" element={<AdminPromos />} />
               <Route path="clients" element={<Clients />} />
               <Route path="settings" element={<AdminSettings />} />

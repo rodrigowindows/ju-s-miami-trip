@@ -217,7 +217,7 @@ export default function Catalog() {
 
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-sm mx-auto p-0 gap-0 rounded-2xl overflow-hidden">
+        <DialogContent className="max-w-sm mx-auto p-0 gap-0 rounded-2xl max-h-[90vh] overflow-y-auto">
           {selectedProduct && (
             <>
               <div className="aspect-square bg-muted/50 relative">

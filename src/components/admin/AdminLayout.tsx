@@ -13,6 +13,7 @@ import {
   LogOut,
   MoreHorizontal,
   X,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,6 +25,7 @@ const navItems = [
   { to: "/admin/catalogo", label: "Catálogo", icon: Store },
   { to: "/admin/messages", label: "Mensagens", icon: MessageSquare },
   { to: "/admin/payments", label: "Pagamentos", icon: DollarSign },
+  { to: "/admin/perguntas", label: "Perguntas", icon: HelpCircle },
   { to: "/admin/promos", label: "Promoções", icon: Tag },
   { to: "/admin/clients", label: "Clientes", icon: Users },
   { to: "/admin/settings", label: "Config", icon: Settings },

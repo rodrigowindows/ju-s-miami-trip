@@ -25,10 +25,6 @@ export type Database = {
           image_url: string
           name: string
           price_usd: number
-          rating: number
-          review_count: number
-          sales_count: number
-          trending: boolean
         }
         Insert: {
           active?: boolean
@@ -40,10 +36,6 @@ export type Database = {
           image_url?: string
           name: string
           price_usd?: number
-          rating?: number
-          review_count?: number
-          sales_count?: number
-          trending?: boolean
         }
         Update: {
           active?: boolean
@@ -55,50 +47,8 @@ export type Database = {
           image_url?: string
           name?: string
           price_usd?: number
-          rating?: number
-          review_count?: number
-          sales_count?: number
-          trending?: boolean
         }
         Relationships: []
-      }
-      product_reviews: {
-        Row: {
-          id: string
-          product_id: string
-          reviewer_name: string
-          rating: number
-          comment: string
-          verified_purchase: boolean
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          product_id: string
-          reviewer_name: string
-          rating: number
-          comment: string
-          verified_purchase?: boolean
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          product_id?: string
-          reviewer_name?: string
-          rating?: number
-          comment?: string
-          verified_purchase?: boolean
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_reviews_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "catalog_products"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       order_events: {
         Row: {
@@ -301,6 +251,47 @@ export type Database = {
           },
         ]
       }
+      product_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          asker_email: string | null
+          asker_name: string
+          created_at: string
+          id: string
+          product_id: string
+          question: string
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          asker_email?: string | null
+          asker_name?: string
+          created_at?: string
+          id?: string
+          product_id: string
+          question: string
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          asker_email?: string | null
+          asker_name?: string
+          created_at?: string
+          id?: string
+          product_id?: string
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_questions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
@@ -350,7 +341,6 @@ export type Database = {
           max_uses: number | null
           min_order_value: number | null
           name: string
-          product_id: string | null
           starts_at: string
         }
         Insert: {
@@ -365,7 +355,6 @@ export type Database = {
           max_uses?: number | null
           min_order_value?: number | null
           name: string
-          product_id?: string | null
           starts_at: string
         }
         Update: {
@@ -380,18 +369,9 @@ export type Database = {
           max_uses?: number | null
           min_order_value?: number | null
           name?: string
-          product_id?: string | null
           starts_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "promotions_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "catalog_products"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       referrals: {
         Row: {
@@ -516,21 +496,33 @@ export type Database = {
       whatsapp_templates: {
         Row: {
           created_at: string
+          icon: string | null
           id: string
           name: string
+          slug: string | null
           template: string
+          template_text: string | null
+          title: string | null
         }
         Insert: {
           created_at?: string
+          icon?: string | null
           id?: string
           name: string
+          slug?: string | null
           template: string
+          template_text?: string | null
+          title?: string | null
         }
         Update: {
           created_at?: string
+          icon?: string | null
           id?: string
           name?: string
+          slug?: string | null
           template?: string
+          template_text?: string | null
+          title?: string | null
         }
         Relationships: []
       }
