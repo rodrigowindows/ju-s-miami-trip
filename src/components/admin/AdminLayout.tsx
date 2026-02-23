@@ -15,6 +15,7 @@ import {
   X,
   HelpCircle,
   Flame,
+  Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -29,6 +30,7 @@ const navItems = [
   { to: "/admin/perguntas", label: "Perguntas", icon: HelpCircle },
   { to: "/admin/promos", label: "Promoções", icon: Tag },
   { to: "/admin/ofertas", label: "Ofertas do Dia", icon: Flame },
+  { to: "/admin/avaliacoes", label: "Avaliações", icon: Star },
   { to: "/admin/clients", label: "Clientes", icon: Users },
   { to: "/admin/settings", label: "Config", icon: Settings },
 ];

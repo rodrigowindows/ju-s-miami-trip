@@ -144,6 +144,41 @@ export type Database = {
           },
         ]
       }
+      order_reviews: {
+        Row: {
+          client_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          order_id: string
+          rating: number
+        }
+        Insert: {
+          client_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          order_id: string
+          rating: number
+        }
+        Update: {
+          client_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          order_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           balance_paid: boolean
