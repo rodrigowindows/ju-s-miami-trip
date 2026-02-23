@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { formatBRL } from "@/lib/format";
 import { fetchProfileMapFull } from "@/lib/profileMap";
@@ -6,7 +6,11 @@ import type { WhatsAppTemplate, Order } from "@/types";
 
 export type OrderWithClient = Order & {
   client: { full_name: string | null; phone: string | null; email: string } | null;
+  trip_code: string;
+  items_summary: string;
 };
+
+// ── Queries ────────────────────────────────────
 
 export function useWhatsAppTemplates() {
   return useQuery({
@@ -23,22 +27,25 @@ export function useWhatsAppTemplates() {
   });
 }
 
-export function useOrdersForMessages() {
+export function useOrdersForMessages(statusFilter?: string) {
   return useQuery({
-    queryKey: ["orders", "messages"],
+    queryKey: ["orders", "messages", statusFilter ?? "all"],
     queryFn: async () => {
-      const { data: orders, error } = await supabase
+      let query = supabase
         .from("orders")
         .select("*")
         .order("created_at", { ascending: false });
 
+      if (statusFilter && statusFilter !== "all") {
+        query = query.eq("status", statusFilter);
+      }
+
+      const { data: orders, error } = await query;
       if (error) throw error;
 
-      // Fetch client info
       const clientIds = [...new Set((orders ?? []).map((o: Order) => o.client_id))];
       const profileMap = await fetchProfileMapFull(clientIds);
 
-      // Fetch trip codes
       const tripIds = [
         ...new Set(
           (orders ?? [])
@@ -53,13 +60,11 @@ export function useOrdersForMessages() {
           .from("trips")
           .select("id, code")
           .in("id", tripIds);
-
         tripMap = new Map((trips ?? []).map((t: { id: string; code: string }) => [t.id, t.code]));
       }
 
-      // Fetch order items for summary
       const orderIds = (orders ?? []).map((o: Order) => o.id);
-      let itemsMap = new Map<string, string>();
+      const itemsMap = new Map<string, string>();
       if (orderIds.length > 0) {
         const { data: items } = await supabase
           .from("order_items")
@@ -82,17 +87,98 @@ export function useOrdersForMessages() {
         client: profileMap.get(o.client_id) ?? null,
         trip_code: o.trip_id ? tripMap.get(o.trip_id) ?? "" : "",
         items_summary: itemsMap.get(o.id) ?? o.items ?? "",
-      })) as (OrderWithClient & { trip_code: string; items_summary: string })[];
+      })) as OrderWithClient[];
     },
   });
 }
 
+// ── Mutations ──────────────────────────────────
+
+export function useCreateTemplate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      slug: string;
+      title: string;
+      icon: string;
+      template_text: string;
+    }) => {
+      const { data, error } = await supabase
+        .from("whatsapp_templates")
+        .insert(input)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["whatsapp_templates"] }),
+  });
+}
+
+export function useUpdateTemplate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      ...updates
+    }: {
+      id: string;
+      slug?: string;
+      title?: string;
+      icon?: string;
+      template_text?: string;
+    }) => {
+      const { data, error } = await supabase
+        .from("whatsapp_templates")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["whatsapp_templates"] }),
+  });
+}
+
+export function useDeleteTemplate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("whatsapp_templates")
+        .delete()
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["whatsapp_templates"] }),
+  });
+}
+
+// ── Template ↔ Status mapping ──────────────────
+
+export const TEMPLATE_STATUS_MAP: Record<string, string> = {
+  orcamento: "novo",
+  confirmacao: "aprovado",
+  compra: "aprovado",
+  comprado: "comprado",
+  comprando: "comprando",
+  em_transito: "em_transito",
+  em_viagem: "em_transito",
+  chegou: "chegou_brasil",
+  entrega: "entregue",
+  entregue: "entregue",
+  esgotado: "comprado",
+};
+
+// ── Template variable replacement ──────────────
+
 export function fillTemplate(
   template: string,
-  order: OrderWithClient & { trip_code?: string; items_summary?: string }
+  order: OrderWithClient
 ): string {
   const clientName = order.client?.full_name ?? "Cliente";
-  const itemsSummary = (order as { items_summary?: string }).items_summary ?? order.items ?? "";
+  const itemsSummary = order.items_summary ?? order.items ?? "";
   const totalAmount = order.total_amount ?? 0;
   const depositAmount = order.deposit_amount ?? 0;
 
@@ -103,5 +189,14 @@ export function fillTemplate(
     .replace(/{item}/g, itemsSummary)
     .replace(/{valor_total}/g, formatBRL(totalAmount))
     .replace(/{valor_sinal}/g, formatBRL(depositAmount))
-    .replace(/{codigo_viagem}/g, (order as { trip_code?: string }).trip_code ?? "");
+    .replace(/{codigo_viagem}/g, order.trip_code ?? "");
 }
+
+export const TEMPLATE_VARIABLES = [
+  { key: "{nome_cliente}", label: "Nome do cliente" },
+  { key: "{numero_pedido}", label: "Numero do pedido" },
+  { key: "{itens}", label: "Lista de itens" },
+  { key: "{valor_total}", label: "Valor total R$" },
+  { key: "{valor_sinal}", label: "Valor do sinal R$" },
+  { key: "{codigo_viagem}", label: "Codigo da viagem" },
+];

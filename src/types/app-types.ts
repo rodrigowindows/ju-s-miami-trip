@@ -70,11 +70,10 @@ export type Payment = {
 
 export type WhatsAppTemplate = {
   id: string;
-  name: string;
-  template: string;
-  title?: string;
-  icon?: string;
-  template_text?: string;
+  slug: string;
+  title: string;
+  icon: string;
+  template_text: string;
   created_at: string;
 };
 
