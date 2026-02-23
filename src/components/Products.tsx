@@ -223,7 +223,7 @@ const Products = () => {
                       className="font-body rounded-full gap-2"
                       asChild
                     >
-                      <a href="/login">
+                      <a href="/catalog">
                         <ShoppingBag size={16} />
                         Comprar
                       </a>
@@ -240,7 +240,7 @@ const Products = () => {
               className="rounded-full gap-2 px-6"
               asChild
             >
-              <a href="/login">
+              <a href="/catalog">
                 Ver todos os produtos
                 <ArrowRight size={16} />
               </a>
