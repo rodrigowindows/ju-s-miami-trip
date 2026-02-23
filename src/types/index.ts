@@ -9,6 +9,7 @@ export type {
   Order,
   Payment,
   Promotion,
+  PromotionWithProduct,
   Referral,
   Trip,
   TripWithAllocated,
@@ -76,6 +77,9 @@ export const KANBAN_COLUMNS: KanbanColumn[] = [
 
 // ── Catalog Product ────────────────────────
 export type CatalogProduct = import('@/integrations/supabase/types').Tables<'catalog_products'>;
+
+// ── Product Review ─────────────────────────
+export type ProductReview = import('@/integrations/supabase/types').Tables<'product_reviews'>;
 
 // ── Order with Client (joined) ─────────────
 export type OrderWithClient = Order & {
