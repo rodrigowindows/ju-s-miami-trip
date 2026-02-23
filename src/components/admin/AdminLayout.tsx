@@ -14,6 +14,7 @@ import {
   MoreHorizontal,
   X,
   HelpCircle,
+  Flame,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,6 +28,7 @@ const navItems = [
   { to: "/admin/payments", label: "Pagamentos", icon: DollarSign },
   { to: "/admin/perguntas", label: "Perguntas", icon: HelpCircle },
   { to: "/admin/promos", label: "Promoções", icon: Tag },
+  { to: "/admin/ofertas", label: "Ofertas do Dia", icon: Flame },
   { to: "/admin/clients", label: "Clientes", icon: Users },
   { to: "/admin/settings", label: "Config", icon: Settings },
 ];
@@ -77,7 +79,7 @@ const AdminLayout = () => {
       </aside>
 
       {/* Mobile bottom nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t safe-area-pb">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t pb-[env(safe-area-inset-bottom,0px)]">
         <div className="flex">
           {navItems.slice(0, 4).map((item) => (
             <NavLink
@@ -108,14 +110,14 @@ const AdminLayout = () => {
       {moreOpen && (
         <div className="md:hidden fixed inset-0 z-[60]">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMoreOpen(false)} />
-          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-2xl safe-area-pb animate-in slide-in-from-bottom duration-200">
+          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-2xl pb-[env(safe-area-inset-bottom,0px)] animate-in slide-in-from-bottom duration-200">
             <div className="flex items-center justify-between p-4 border-b">
               <span className="font-semibold text-sm">Menu</span>
               <button onClick={() => setMoreOpen(false)} className="p-2 -m-1">
                 <X size={20} />
               </button>
             </div>
-            <nav className="p-2 space-y-0.5 max-h-[60vh] overflow-y-auto">
+            <nav className="p-2 space-y-0.5 max-h-[70vh] overflow-y-auto">
               {navItems.slice(4).map((item) => (
                 <NavLink
                   key={item.to}

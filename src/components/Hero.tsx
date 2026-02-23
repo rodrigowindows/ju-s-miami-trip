@@ -15,7 +15,7 @@ const Hero = () => {
         <span className="inline-block font-body text-sm font-semibold tracking-widest uppercase text-miami-orange mb-4">
           🌴 Sua ponte de compras para Miami
         </span>
-        <h1 className="font-display text-5xl md:text-7xl font-black leading-tight mb-6 text-foreground">
+        <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-black leading-tight mb-6 text-foreground">
           Mala
           <span className="bg-gradient-to-r from-miami-pink via-miami-orange to-miami-blue bg-clip-text text-transparent">
             Bridge

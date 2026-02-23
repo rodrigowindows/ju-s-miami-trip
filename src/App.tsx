@@ -4,8 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import PublicCatalog from "./pages/PublicCatalog";
+import Rastreio from "./pages/Rastreio";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -33,6 +35,7 @@ import AdminPromos from "./pages/admin/AdminPromos";
 import Clients from "./pages/admin/Clients";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminQuestions from "./pages/admin/AdminQuestions";
+import AdminDeals from "./pages/admin/AdminDeals";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
 
 import { Loader2 } from "lucide-react";
@@ -88,8 +91,9 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<PublicCatalog />} />
             <Route path="/catalog" element={<PublicCatalog />} />
+            <Route path="/rastreio" element={<Rastreio />} />
             <Route
               path="/login"
               element={
@@ -112,7 +116,9 @@ const App = () => (
               path="/client"
               element={
                 <RequireClient>
-                  <ClientLayout />
+                  <CartProvider>
+                    <ClientLayout />
+                  </CartProvider>
                 </RequireClient>
               }
             >
@@ -154,6 +160,7 @@ const App = () => (
               <Route path="payments" element={<Payments />} />
               <Route path="perguntas" element={<AdminQuestions />} />
               <Route path="promos" element={<AdminPromos />} />
+              <Route path="ofertas" element={<AdminDeals />} />
               <Route path="clients" element={<Clients />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="orders/:id" element={<AdminOrderDetail />} />

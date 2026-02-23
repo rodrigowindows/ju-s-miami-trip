@@ -2,36 +2,27 @@ import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import type { CatalogProduct, ProductQuestion } from "@/types";
+import type { Tables } from "@/integrations/supabase/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
-  Loader2,
-  X,
-  LogIn,
-  Search,
-  Star,
-  Truck,
-  ChevronDown,
-  SlidersHorizontal,
-  HelpCircle,
-  Send,
-  User,
-  CheckCircle2,
+  Loader2, X, LogIn, Search, Truck,
+  HelpCircle, Send, User, CheckCircle2,
+  Zap, Timer, Flame,
+  ShoppingCart, Plane, Package, MessageCircle,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
 import { useToast } from "@/hooks/use-toast";
-import { fakeRating, isBestSeller } from "@/lib/product-display";
+import { ProductCard } from "@/components/catalog/ProductCard";
+import { SortDropdown } from "@/components/catalog/SortDropdown";
+import { StarRating } from "@/components/catalog/StarRating";
+import { CategoryNav } from "@/components/catalog/CategoryNav";
+import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
 
-const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion"] as const;
-
-const SORT_OPTIONS = [
-  { value: "relevance", label: "Relevância" },
-  { value: "price_asc", label: "Menor preço" },
-  { value: "price_desc", label: "Maior preço" },
-  { value: "name", label: "A-Z" },
-] as const;
+type ProductDeal = Tables<"product_deals">;
+type DealWithProduct = ProductDeal & { product: CatalogProduct };
 
 function useCatalog() {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
@@ -51,6 +42,122 @@ function useCatalog() {
   }, []);
 
   return { products, loading };
+}
+
+function useDeals() {
+  const [deals, setDeals] = useState<DealWithProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetch() {
+      const { data } = await supabase
+        .from("product_deals")
+        .select("*, catalog_products(*)")
+        .eq("active", true)
+        .gte("ends_at", new Date().toISOString())
+        .order("deal_type", { ascending: true });
+
+      const mapped = (data ?? [])
+        .filter((d: Record<string, unknown>) => d.catalog_products)
+        .map((d: Record<string, unknown>) => ({
+          ...d,
+          product: d.catalog_products as CatalogProduct,
+        })) as DealWithProduct[];
+
+      setDeals(mapped);
+      setLoading(false);
+    }
+    fetch();
+  }, []);
+
+  return { deals, loading };
+}
+
+function useCountdown(endsAt: string) {
+  const [timeLeft, setTimeLeft] = useState("");
+  useEffect(() => {
+    function tick() {
+      const diff = new Date(endsAt).getTime() - Date.now();
+      if (diff <= 0) { setTimeLeft("Encerrado"); return; }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(`${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`);
+    }
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [endsAt]);
+  return timeLeft;
+}
+
+function DealCard({
+  deal,
+  convert,
+  onSelect,
+}: {
+  deal: DealWithProduct;
+  convert: (usd: number) => number;
+  onSelect: (p: CatalogProduct) => void;
+}) {
+  const countdown = useCountdown(deal.ends_at);
+  const p = deal.product;
+  const brl = convert(p.price_usd);
+  const discounted = brl * (1 - deal.discount_percent / 100);
+  const claimedPct = deal.max_claims ? Math.min(100, (deal.claimed_count / deal.max_claims) * 100) : 0;
+
+  return (
+    <button
+      onClick={() => onSelect(p)}
+      className="bg-white rounded-lg overflow-hidden text-left hover:shadow-lg transition-shadow group flex flex-col border border-gray-200 min-w-[180px] max-w-[200px] shrink-0"
+    >
+      <div className="bg-[#CC0C39] text-white text-xs font-bold px-2 py-1 flex items-center gap-1">
+        {deal.deal_type === "lightning" ? <Zap size={12} /> : <Flame size={12} />}
+        {deal.discount_percent}% OFF
+      </div>
+
+      <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden relative">
+        <img
+          src={p.image_url}
+          alt={p.name}
+          className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform"
+          loading="lazy"
+        />
+      </div>
+
+      <div className="p-2.5 space-y-1.5 border-t border-gray-100">
+        <p className="text-xs text-gray-900 leading-tight line-clamp-2">{p.name}</p>
+
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-lg font-bold text-[#CC0C39]">
+            R$ {discounted.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+          </span>
+          <span className="text-[10px] text-gray-500 line-through">
+            R$ {brl.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+          </span>
+        </div>
+
+        {deal.max_claims && (
+          <div>
+            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#CC0C39] to-[#FF6138] transition-all"
+                style={{ width: `${claimedPct}%` }}
+              />
+            </div>
+            <p className="text-[9px] text-gray-500 mt-0.5">
+              {deal.claimed_count} de {deal.max_claims} resgatados
+            </p>
+          </div>
+        )}
+
+        <div className="flex items-center gap-1 text-[10px] text-[#CC0C39] font-mono font-semibold">
+          <Timer size={10} />
+          {countdown}
+        </div>
+      </div>
+    </button>
+  );
 }
 
 function useQuestions(productId: string | null) {
@@ -99,40 +206,15 @@ function useExchangeRate() {
   return { convert, effectiveRate };
 }
 
-function CatalogStarRating({ rating, reviews }: { rating: number; reviews: number }) {
-  const full = Math.floor(rating);
-  const half = rating - full >= 0.5;
-  return (
-    <div className="flex items-center gap-1">
-      <div className="flex items-center">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Star
-            key={i}
-            size={12}
-            className={
-              i < full
-                ? "fill-amber-400 text-amber-400"
-                : i === full && half
-                ? "fill-amber-400/50 text-amber-400"
-                : "text-gray-300"
-            }
-          />
-        ))}
-      </div>
-      <span className="text-xs text-sky-700">{reviews.toLocaleString("pt-BR")}</span>
-    </div>
-  );
-}
-
 export default function PublicCatalog() {
   const { products, loading } = useCatalog();
   const { convert } = useExchangeRate();
+  const { deals, loading: dealsLoading } = useDeals();
 
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("relevance");
-  const [showSort, setShowSort] = useState(false);
 
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { toast } = useToast();
@@ -197,12 +279,12 @@ export default function PublicCatalog() {
 
   return (
     <div className="min-h-screen bg-[#EAEDED]">
-      {/* Amazon-style Header */}
+      {/* Header */}
       <header className="sticky top-0 z-40 bg-[#131921] text-white">
         <div className="px-4 py-2 flex items-center gap-3">
-          <Link to="/" className="shrink-0">
+          <button onClick={() => { setSearchQuery(""); setActiveCategory("Todos"); window.scrollTo(0, 0); }} className="shrink-0">
             <Logo size="sm" />
-          </Link>
+          </button>
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
@@ -213,6 +295,13 @@ export default function PublicCatalog() {
             />
           </div>
           <Link
+            to="/rastreio"
+            className="shrink-0 flex items-center gap-1.5 text-white text-xs hover:text-amber-300 transition-colors"
+          >
+            <Truck size={16} />
+            <span className="hidden sm:inline">Rastrear</span>
+          </Link>
+          <Link
             to="/login"
             className="shrink-0 flex items-center gap-1.5 text-white text-xs hover:text-amber-300 transition-colors"
           >
@@ -221,23 +310,37 @@ export default function PublicCatalog() {
           </Link>
         </div>
 
-        {/* Category Nav */}
-        <div className="bg-[#232F3E] px-4 py-1.5 flex gap-3 overflow-x-auto scrollbar-hide">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`shrink-0 text-sm font-medium transition-colors whitespace-nowrap pb-0.5 ${
-                activeCategory === cat
-                  ? "text-white border-b-2 border-amber-400"
-                  : "text-gray-300 hover:text-white"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {/* Category Nav with Icons */}
+        <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="dark" />
       </header>
+
+      {/* Hero Banner */}
+      <div className="bg-gradient-to-r from-[#232F3E] via-[#37475A] to-[#232F3E] text-white px-4 py-3">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-sm sm:text-base font-bold">
+              Compre dos EUA, receba no Brasil
+            </h2>
+            <p className="text-[11px] sm:text-xs text-gray-300 mt-0.5">
+              Personal shopper em Miami com entrega segura
+            </p>
+          </div>
+          <div className="hidden sm:flex items-center gap-4 shrink-0">
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-300">
+              <ShoppingCart size={14} className="text-amber-400" />
+              <span>Escolha</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-300">
+              <Plane size={14} className="text-amber-400" />
+              <span>Compramos</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-300">
+              <Package size={14} className="text-amber-400" />
+              <span>Entregamos</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Results Bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
@@ -252,35 +355,33 @@ export default function PublicCatalog() {
             </>
           )}
         </p>
-        <div className="relative">
-          <button
-            onClick={() => setShowSort(!showSort)}
-            className="flex items-center gap-1 text-sm text-gray-700 hover:text-gray-900 bg-gray-100 border border-gray-300 rounded-lg px-3 py-1.5"
-          >
-            <SlidersHorizontal size={14} />
-            Ordenar
-            <ChevronDown size={14} />
-          </button>
-          {showSort && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setShowSort(false)} />
-              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1 min-w-[160px]">
-                {SORT_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => { setSortBy(opt.value); setShowSort(false); }}
-                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                      sortBy === opt.value ? "font-semibold text-[#C45500]" : "text-gray-700"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+        <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
       </div>
+
+      {/* Deals Section */}
+      {!dealsLoading && deals.length > 0 && (
+        <div className="bg-white border-b border-gray-200 py-4">
+          <div className="px-4 max-w-6xl mx-auto">
+            <div className="flex items-center gap-2 mb-3">
+              <Flame size={18} className="text-[#CC0C39]" />
+              <h2 className="text-base font-bold text-gray-900">Ofertas do Dia</h2>
+              <Badge className="bg-[#CC0C39] text-white text-[10px] hover:bg-[#CC0C39]">
+                {deals.length} ofertas
+              </Badge>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+              {deals.map((deal) => (
+                <DealCard
+                  key={deal.id}
+                  deal={deal}
+                  convert={convert}
+                  onSelect={setSelectedProduct}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Product Grid */}
       <main className="px-3 py-3 max-w-6xl mx-auto">
@@ -303,73 +404,66 @@ export default function PublicCatalog() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {filtered.map((product) => {
-              const { rating, reviews } = fakeRating(product.name);
-              const bestSeller = isBestSeller(product.name);
-              const brl = convert(product.price_usd);
-              const fakePreviousPrice = brl * (1 + (Math.abs(product.name.charCodeAt(0)) % 30 + 10) / 100);
-
+              const activeDeal = deals.find((d) => d.product_id === product.id);
               return (
-                <button
+                <ProductCard
                   key={product.id}
+                  product={product}
+                  brl={convert(product.price_usd)}
                   onClick={() => setSelectedProduct(product)}
-                  className="bg-white rounded-lg overflow-hidden text-left hover:shadow-lg transition-shadow group flex flex-col border border-gray-200"
-                >
-                  {/* Badge */}
-                  {bestSeller && (
-                    <div className="bg-[#E47911] text-white text-[10px] font-bold px-2 py-0.5">
-                      Mais vendido
-                    </div>
-                  )}
-
-                  {/* Product Image */}
-                  <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden">
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="p-3 pt-1 flex flex-col gap-1 flex-1 border-t border-gray-100">
-                    <p className="text-sm text-gray-900 leading-tight line-clamp-2 group-hover:text-[#C45500] transition-colors">
-                      {product.name}
-                    </p>
-
-                    <p className="text-[11px] text-gray-500">{product.brand}</p>
-
-                    <CatalogStarRating rating={rating} reviews={reviews} />
-
-                    <div className="mt-auto pt-1">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-xs text-gray-900">R$</span>
-                        <span className="text-xl font-bold text-gray-900">
-                          {Math.floor(brl).toLocaleString("pt-BR")}
-                        </span>
-                        <span className="text-xs text-gray-900">
-                          {(brl % 1).toFixed(2).slice(1).replace(".", ",")}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-500 line-through">
-                        R$ {fakePreviousPrice.toFixed(2).replace(".", ",")}
-                      </p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">
-                        US$ {product.price_usd.toFixed(2)}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-1 mt-1">
-                      <Truck size={12} className="text-[#007600]" />
-                      <span className="text-[11px] text-[#007600] font-medium">Entrega via viagem</span>
-                    </div>
-                  </div>
-                </button>
+                  activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null}
+                />
               );
             })}
           </div>
         )}
       </main>
+
+      {/* How It Works */}
+      <div className="bg-white border-t border-gray-200 py-6">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-base font-bold text-gray-900 text-center mb-4">Como Funciona</h2>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { icon: ShoppingCart, title: "Escolha", desc: "Navegue e selecione os produtos dos EUA" },
+              { icon: Plane, title: "Compramos", desc: "Compramos em Miami e trazemos na viagem" },
+              { icon: Package, title: "Receba", desc: "Entregamos no Brasil com seguranca" },
+            ].map((step) => (
+              <div key={step.title} className="text-center">
+                <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-[#232F3E] flex items-center justify-center">
+                  <step.icon size={18} className="text-amber-400" />
+                </div>
+                <p className="text-xs font-semibold text-gray-900">{step.title}</p>
+                <p className="text-[10px] text-gray-500 mt-0.5 leading-snug">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-[#232F3E] text-gray-300 py-6">
+        <div className="max-w-4xl mx-auto px-4 text-center space-y-4">
+          <div className="flex items-center justify-center gap-2">
+            <Logo size="sm" />
+          </div>
+          <p className="text-xs">
+            Personal shopper em Miami. Produtos originais dos EUA com entrega segura no Brasil.
+          </p>
+          <a
+            href="https://wa.me/5511999999999?text=Olá! Vim do site MalaBridge"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors"
+          >
+            <MessageCircle size={16} />
+            Falar pelo WhatsApp
+          </a>
+          <p className="text-[10px] text-gray-500 pt-2">
+            MalaBridge &copy; {new Date().getFullYear()}. Todos os direitos reservados.
+          </p>
+        </div>
+      </footer>
 
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
@@ -378,7 +472,7 @@ export default function PublicCatalog() {
             const { rating, reviews } = fakeRating(selectedProduct.name);
             const brl = convert(selectedProduct.price_usd);
             const bestSeller = isBestSeller(selectedProduct.name);
-            const fakePreviousPrice = brl * (1 + (Math.abs(selectedProduct.name.charCodeAt(0)) % 30 + 10) / 100);
+            const prevPrice = fakePreviousPrice(brl, selectedProduct.name);
 
             return (
               <>
@@ -420,7 +514,7 @@ export default function PublicCatalog() {
                     </p>
                   </div>
 
-                  <CatalogStarRating rating={rating} reviews={reviews} />
+                  <StarRating rating={rating} reviews={reviews} />
 
                   {selectedProduct.description && (
                     <p className="text-sm text-gray-600 leading-relaxed">
@@ -430,7 +524,7 @@ export default function PublicCatalog() {
 
                   <div className="border-t border-gray-200 pt-3">
                     <p className="text-xs text-gray-500 line-through">
-                      R$ {fakePreviousPrice.toFixed(2).replace(".", ",")}
+                      R$ {prevPrice.toFixed(2).replace(".", ",")}
                     </p>
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-2xl font-bold text-gray-900">

@@ -89,10 +89,23 @@ export type Promotion = {
   max_uses: number | null;
   current_uses: number;
   active: boolean;
+  product_id: string | null;
   created_at: string;
 };
 
-export type PromotionWithProduct = Promotion;
+export type PromotionWithProduct = Promotion & {
+  product?: { id: string; name: string; image_url: string } | null;
+};
+
+export type ProductReview = {
+  id: string;
+  product_id: string;
+  reviewer_name: string;
+  rating: number;
+  comment: string | null;
+  verified_purchase: boolean;
+  created_at: string;
+};
 
 export type Referral = {
   id: string;
