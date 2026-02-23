@@ -22,7 +22,7 @@ import {
   useOrdersForMessages,
   fillTemplate,
 } from "@/hooks/useMessages";
-import type { WhatsAppTemplate, OrderWithClient } from "@/lib/types";
+import type { WhatsAppTemplate } from "@/types";
 
 const Messages = () => {
   const { data: templates, isLoading: templatesLoading } = useWhatsAppTemplates();
@@ -36,8 +36,8 @@ const Messages = () => {
 
   const filledMessage =
     selectedTemplate && selectedOrder
-      ? fillTemplate(selectedTemplate.template_text, selectedOrder)
-      : selectedTemplate?.template_text ?? "";
+      ? fillTemplate(selectedTemplate.template, selectedOrder)
+      : selectedTemplate?.template ?? "";
 
   const handleOpenTemplate = (template: WhatsAppTemplate) => {
     setSelectedTemplate(template);
@@ -83,13 +83,13 @@ const Messages = () => {
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">{template.icon}</span>
-                  <CardTitle className="text-base">{template.title}</CardTitle>
+                  <MessageSquare className="h-5 w-5 text-emerald-600" />
+                  <CardTitle className="text-base">{template.name}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground line-clamp-3 font-mono">
-                  {template.template_text}
+                  {template.template}
                 </p>
               </CardContent>
             </Card>
@@ -110,8 +110,8 @@ const Messages = () => {
             <DialogTitle className="flex items-center gap-2">
               {selectedTemplate && (
                 <>
-                  <span className="text-xl">{selectedTemplate.icon}</span>
-                  {selectedTemplate.title}
+                  <MessageSquare className="h-5 w-5 text-emerald-600" />
+                  {selectedTemplate.name}
                 </>
               )}
             </DialogTitle>

@@ -1,7 +1,5 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -20,18 +18,8 @@ import {
 } from "@/components/ui/table";
 import { useOrders } from "@/hooks/useOrders";
 import { Loader2, Filter, ShoppingBag } from "lucide-react";
-
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  novo: { label: "Novo", color: "bg-gray-100 text-gray-700" },
-  orcamento: { label: "Orçamento", color: "bg-yellow-100 text-yellow-800" },
-  aprovado: { label: "Aprovado", color: "bg-green-100 text-green-700" },
-  comprando: { label: "Comprando", color: "bg-blue-100 text-blue-700" },
-  comprado: { label: "Comprado", color: "bg-blue-100 text-blue-700" },
-  em_transito: { label: "Em trânsito", color: "bg-purple-100 text-purple-700" },
-  chegou_brasil: { label: "Chegou Brasil", color: "bg-indigo-100 text-indigo-700" },
-  entregue: { label: "Entregue", color: "bg-green-100 text-green-700" },
-  cancelado: { label: "Cancelado", color: "bg-red-100 text-red-700" },
-};
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
+import { formatBRL, formatDate } from "@/lib/format";
 
 export default function OrdersList() {
   const navigate = useNavigate();
@@ -60,12 +48,12 @@ export default function OrdersList() {
         <div className="flex items-center gap-2">
           <Filter size={16} className="text-muted-foreground" />
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos os status</SelectItem>
-              {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+              {Object.entries(ORDER_STATUS_CONFIG).map(([key, cfg]) => (
                 <SelectItem key={key} value={key}>
                   {cfg.label}
                 </SelectItem>
@@ -91,15 +79,15 @@ export default function OrdersList() {
               <TableRow>
                 <TableHead>Pedido</TableHead>
                 <TableHead>Cliente</TableHead>
-                <TableHead>Itens</TableHead>
+                <TableHead className="hidden md:table-cell">Itens</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-                <TableHead>Data</TableHead>
+                <TableHead className="text-right hidden sm:table-cell">Total</TableHead>
+                <TableHead className="hidden lg:table-cell">Data</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((order) => {
-                const cfg = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.novo;
+                const cfg = ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG] ?? ORDER_STATUS_CONFIG.novo;
                 return (
                   <TableRow
                     key={order.id}
@@ -112,7 +100,7 @@ export default function OrdersList() {
                     <TableCell className="text-sm">
                       {order.client?.full_name ?? "—"}
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
+                    <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate hidden md:table-cell">
                       {order.items ?? "—"}
                     </TableCell>
                     <TableCell>
@@ -120,13 +108,13 @@ export default function OrdersList() {
                         {cfg.label}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right font-medium text-sm">
-                      {order.total_brl
-                        ? `R$ ${order.total_brl.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                    <TableCell className="text-right font-medium text-sm hidden sm:table-cell">
+                      {order.total_amount
+                        ? formatBRL(order.total_amount)
                         : "—"}
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {format(new Date(order.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                    <TableCell className="text-sm text-muted-foreground hidden lg:table-cell">
+                      {formatDate(order.created_at)}
                     </TableCell>
                   </TableRow>
                 );

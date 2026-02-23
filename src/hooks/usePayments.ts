@@ -1,6 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import type { Payment, PaymentWithOrder } from "@/lib/types";
+import { fetchProfileMapNames } from "@/lib/profileMap";
+import type { Payment, Order } from "@/types";
+
+export type PaymentWithOrder = Payment & {
+  order: { order_number: string; customer_name: string } | null;
+};
 
 export function usePayments() {
   return useQuery({
@@ -20,21 +25,12 @@ export function usePayments() {
         .in("id", orderIds);
 
       const clientIds = [...new Set((orders ?? []).map((o: { client_id: string }) => o.client_id))];
-      let profileMap = new Map<string, string | null>();
-
-      if (clientIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, full_name")
-          .in("id", clientIds);
-
-        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
-      }
+      const profileMap = await fetchProfileMapNames(clientIds);
 
       const orderMap = new Map(
         (orders ?? []).map((o: { id: string; order_number: string; client_id: string }) => [
           o.id,
-          { order_number: o.order_number, client_name: profileMap.get(o.client_id) ?? null },
+          { order_number: o.order_number, customer_name: profileMap.get(o.client_id) ?? "—" },
         ])
       );
 

@@ -5,6 +5,9 @@ import Logo from "@/components/shared/Logo";
 
 const anchorLinks = [
   { label: "Home", href: "#home" },
+  { label: "Como Funciona", href: "#como-funciona" },
+  { label: "Simulador", href: "#simulador" },
+  { label: "FAQ", href: "#faq" },
   { label: "Contato", href: "#contato" },
 ];
 

@@ -10,8 +10,10 @@ import { useCatalogProducts } from "@/hooks/useCatalog";
 import { useCreateOrder, useCreateOrderItem } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
-import type { CatalogProduct } from "@/lib/types";
+import type { CatalogProduct } from "@/types";
 import { toast } from "sonner";
+import { calculatePriceBRL } from "@/lib/calculations";
+import { formatBRL } from "@/lib/format";
 
 const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion", "Lifestyle"];
 
@@ -29,7 +31,7 @@ export default function ClientCatalog() {
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
 
-  const calcBRL = (usd: number) => usd * exchangeRate * (1 + spread / 100);
+  const calcBRL = (usd: number) => calculatePriceBRL(usd, exchangeRate, spread);
 
   const handleOrder = async () => {
     if (!user || !profile || !selected) return;
@@ -53,7 +55,6 @@ export default function ClientCatalog() {
       await createOrderItem.mutateAsync({
         order_id: order.id,
         product_name: selected.name,
-        store: selected.brand,
         product_image_url: selected.image_url,
         price_usd: totalUsd,
         price_brl: totalBrl,
@@ -94,8 +95,8 @@ export default function ClientCatalog() {
               <CardContent className="p-3">
                 <p className="font-semibold text-sm line-clamp-1">{p.name}</p>
                 <p className="text-xs text-muted-foreground">{p.brand}</p>
-                <p className="font-bold text-primary mt-1">R$ {calcBRL(p.price_usd).toFixed(2)}</p>
-                <p className="text-xs text-muted-foreground">US$ {p.price_usd.toFixed(2)}</p>
+                <p className="font-bold text-primary mt-1">{formatBRL(calcBRL(p.price_usd))}</p>
+                <p className="text-xs text-muted-foreground">US$ {p.price_usd.toFixed(2).replace(".", ",")}</p>
               </CardContent>
             </Card>
           ))}
@@ -114,10 +115,10 @@ export default function ClientCatalog() {
               </div>
               {selected.description && <p className="text-sm text-muted-foreground">{selected.description}</p>}
               <div className="bg-muted/50 rounded-lg p-4 space-y-1">
-                <div className="flex justify-between"><span className="text-sm">Preço USD</span><span className="font-semibold">US$ {selected.price_usd.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span className="text-sm">Câmbio</span><span className="text-sm text-muted-foreground">{exchangeRate.toFixed(2)} + {spread}%</span></div>
-                <div className="flex justify-between"><span className="text-sm font-semibold">Preço BRL</span><span className="text-lg font-bold text-primary">R$ {calcBRL(selected.price_usd).toFixed(2)}</span></div>
-                <div className="flex justify-between"><span className="text-sm">Sinal (50%)</span><span className="text-sm">R$ {(calcBRL(selected.price_usd) * 0.5).toFixed(2)}</span></div>
+                <div className="flex justify-between"><span className="text-sm">Preço USD</span><span className="font-semibold">US$ {selected.price_usd.toFixed(2).replace(".", ",")}</span></div>
+                <div className="flex justify-between"><span className="text-sm">Câmbio</span><span className="text-sm text-muted-foreground">{exchangeRate.toFixed(2).replace(".", ",")} + {spread}%</span></div>
+                <div className="flex justify-between"><span className="text-sm font-semibold">Preço BRL</span><span className="text-lg font-bold text-primary">{formatBRL(calcBRL(selected.price_usd))}</span></div>
+                <div className="flex justify-between"><span className="text-sm">Sinal (50%)</span><span className="text-sm">{formatBRL(calcBRL(selected.price_usd) * 0.5)}</span></div>
               </div>
               <Button onClick={handleOrder} className="w-full" disabled={ordering}>
                 <ShoppingBag className="h-4 w-4 mr-2" />{ordering ? "Criando pedido..." : "Quero este produto"}

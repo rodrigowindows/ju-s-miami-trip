@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import type { Promotion } from "@/lib/types";
+import type { Promotion } from "@/types";
 import { toast } from "sonner";
 
 export function usePromotions() {

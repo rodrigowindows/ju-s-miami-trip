@@ -43,18 +43,7 @@ import {
   useDeleteTrip,
 } from "@/hooks/useTrips";
 import { useToast } from "@/hooks/use-toast";
-
-const statusLabels: Record<string, string> = {
-  novo: "Novo",
-  orcamento: "Orçamento",
-  aprovado: "Aprovado",
-  comprando: "Comprando",
-  comprado: "Comprado",
-  em_transito: "Em Trânsito",
-  chegou_brasil: "Chegou Brasil",
-  entregue: "Entregue",
-  cancelado: "Cancelado",
-};
+import { ORDER_STATUS_LABELS } from "@/lib/constants";
 
 const TripDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -251,7 +240,7 @@ const TripDetail = () => {
                     <TableCell>{order.client_name ?? "—"}</TableCell>
                     <TableCell>{order.estimated_weight_kg ? `${order.estimated_weight_kg} kg` : "—"}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{statusLabels[order.status] ?? order.status}</Badge>
+                      <Badge variant="secondary">{ORDER_STATUS_LABELS[order.status] ?? order.status}</Badge>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -304,12 +293,12 @@ const TripDetail = () => {
             <DialogDescription>Atualize os dados da viagem</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Código</Label><Input value={editForm.code} onChange={(e) => setEditForm({ ...editForm, code: e.target.value })} /></div>
               <div><Label>Voo</Label><Input value={editForm.flight_number} onChange={(e) => setEditForm({ ...editForm, flight_number: e.target.value })} /></div>
             </div>
             <div><Label>Viajante</Label><Input value={editForm.traveler_name} onChange={(e) => setEditForm({ ...editForm, traveler_name: e.target.value })} /></div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Data Ida</Label><Input type="date" value={editForm.departure_date} onChange={(e) => setEditForm({ ...editForm, departure_date: e.target.value })} /></div>
               <div><Label>Data Volta</Label><Input type="date" value={editForm.arrival_date} onChange={(e) => setEditForm({ ...editForm, arrival_date: e.target.value })} /></div>
             </div>

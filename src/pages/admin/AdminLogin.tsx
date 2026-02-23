@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldCheck } from "lucide-react";
 
-export default function Login() {
+export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -15,13 +15,13 @@ export default function Login() {
   const { signIn, profile, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect based on role once profile is loaded
   useEffect(() => {
     if (user && profile) {
       if (profile.role === "admin") {
         navigate("/admin/dashboard", { replace: true });
       } else {
-        navigate("/client/catalog", { replace: true });
+        // Non-admin user trying to access admin login — send to client area
+        navigate("/client/dashboard", { replace: true });
       }
     }
   }, [user, profile, navigate]);
@@ -47,30 +47,33 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="font-display text-2xl">
-            MalaBridge
-          </CardTitle>
-          <p className="text-sm text-muted-foreground mt-1">
-            Entre na sua conta de cliente
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <ShieldCheck className="h-6 w-6 text-primary" />
+            <CardTitle className="font-display text-2xl">
+              MalaBridge
+            </CardTitle>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Painel Administrativo
           </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="admin-email">Email</Label>
               <Input
-                id="email"
+                id="admin-email"
                 type="email"
-                placeholder="seu@email.com"
+                placeholder="admin@malabridge.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="admin-password">Senha</Label>
               <Input
-                id="password"
+                id="admin-password"
                 type="password"
                 placeholder="••••••••"
                 value={password}
@@ -87,7 +90,7 @@ export default function Login() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Entrar
+              Entrar como Admin
             </Button>
           </form>
         </CardContent>

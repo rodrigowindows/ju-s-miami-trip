@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import type { Promotion } from "@/lib/types";
+import type { Promotion } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,7 +34,7 @@ export default function AdminPromos() {
   const [form, setForm] = useState({
     name: "",
     coupon_code: "",
-    discount_type: "percentage" as "percentage" | "fixed",
+    discount_type: "percent" as "percent" | "fixed",
     discount_value: "",
     min_order_value: "",
     starts_at: "",
@@ -58,7 +58,7 @@ export default function AdminPromos() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ name: "", coupon_code: "", discount_type: "percentage", discount_value: "", min_order_value: "", starts_at: "", expires_at: "", max_uses: "", active: true });
+    setForm({ name: "", coupon_code: "", discount_type: "percent", discount_value: "", min_order_value: "", starts_at: "", expires_at: "", max_uses: "", active: true });
     setOpen(true);
   }
 
@@ -67,7 +67,7 @@ export default function AdminPromos() {
     setForm({
       name: promo.name,
       coupon_code: promo.coupon_code,
-      discount_type: promo.discount_type,
+      discount_type: promo.discount_type as "percent" | "fixed",
       discount_value: String(promo.discount_value),
       min_order_value: promo.min_order_value ? String(promo.min_order_value) : "",
       starts_at: promo.starts_at?.split("T")[0] ?? "",
@@ -118,12 +118,12 @@ export default function AdminPromos() {
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-2xl font-bold">Promoções</h1>
           <p className="text-sm text-muted-foreground mt-1">Gerencie cupons e promoções</p>
         </div>
-        <Button onClick={openCreate} className="gap-2">
+        <Button onClick={openCreate} className="gap-2 w-full sm:w-auto">
           <Plus size={16} />
           Nova Promoção
         </Button>
@@ -163,7 +163,7 @@ export default function AdminPromos() {
                   </Badge>
                 </div>
                 <p className="text-sm">
-                  {promo.discount_type === "percentage" ? `${promo.discount_value}% de desconto` : `R$ ${promo.discount_value.toFixed(2)} de desconto`}
+                  {promo.discount_type === "percent" ? `${promo.discount_value}% de desconto` : `R$ ${promo.discount_value.toFixed(2)} de desconto`}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Usos: {promo.current_uses}{promo.max_uses ? ` / ${promo.max_uses}` : ""}
@@ -185,7 +185,7 @@ export default function AdminPromos() {
             <DialogDescription>Preencha os dados da promoção</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Nome</Label>
                 <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -195,13 +195,13 @@ export default function AdminPromos() {
                 <Input value={form.coupon_code} onChange={(e) => setForm({ ...form, coupon_code: e.target.value })} className="font-mono uppercase" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Tipo de desconto</Label>
-                <Select value={form.discount_type} onValueChange={(v) => setForm({ ...form, discount_type: v as "percentage" | "fixed" })}>
+                <Select value={form.discount_type} onValueChange={(v) => setForm({ ...form, discount_type: v as "percent" | "fixed" })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="percentage">Porcentagem (%)</SelectItem>
+                    <SelectItem value="percent">Porcentagem (%)</SelectItem>
                     <SelectItem value="fixed">Valor fixo (R$)</SelectItem>
                   </SelectContent>
                 </Select>
@@ -211,7 +211,7 @@ export default function AdminPromos() {
                 <Input type="number" step="0.01" value={form.discount_value} onChange={(e) => setForm({ ...form, discount_value: e.target.value })} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Data início</Label>
                 <Input type="date" value={form.starts_at} onChange={(e) => setForm({ ...form, starts_at: e.target.value })} />
@@ -221,7 +221,7 @@ export default function AdminPromos() {
                 <Input type="date" value={form.expires_at} onChange={(e) => setForm({ ...form, expires_at: e.target.value })} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Valor mínimo do pedido (R$)</Label>
                 <Input type="number" step="0.01" value={form.min_order_value} onChange={(e) => setForm({ ...form, min_order_value: e.target.value })} />

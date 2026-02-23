@@ -35,10 +35,10 @@ export default function ClientLayout() {
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t safe-area-pb">
-        <div className="flex items-center justify-around py-2 max-w-lg mx-auto">
+        <div className="flex items-center justify-around py-2.5 max-w-lg mx-auto">
           {navItems.map((item) => (
             <NavLink key={item.to} to={item.to} end={item.end} className={linkClass}>
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-6 w-6" />
               <span>{item.label}</span>
             </NavLink>
           ))}

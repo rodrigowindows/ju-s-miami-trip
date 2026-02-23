@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import type { CatalogProduct } from "@/lib/types";
+import type { CatalogProduct } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -119,14 +119,14 @@ export default function AdminCatalog() {
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-2xl font-bold">Catálogo</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Gerencie os produtos da vitrine
           </p>
         </div>
-        <Button onClick={openCreate} className="gap-2">
+        <Button onClick={openCreate} className="gap-2 w-full sm:w-auto">
           <Plus size={16} />
           Novo Produto
         </Button>
@@ -186,7 +186,7 @@ export default function AdminCatalog() {
             <DialogDescription>Preencha os dados do produto</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Nome</Label>
                 <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -196,7 +196,7 @@ export default function AdminCatalog() {
                 <Input value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Categoria</Label>
                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>

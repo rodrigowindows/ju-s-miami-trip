@@ -6,16 +6,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import type { Promotion } from '@/lib/types';
+import type { Promotion } from '@/types';
 
 const schema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
-  coupon_code: z.string().min(1, 'Código é obrigatório'),
+  name: z.string().min(1, 'Nome e obrigatorio'),
+  coupon_code: z.string().min(1, 'Codigo e obrigatorio'),
   discount_type: z.enum(['percent', 'fixed']),
   discount_value: z.number({ coerce: true }).positive('Valor deve ser positivo'),
   min_order_value: z.number({ coerce: true }).nullable().optional(),
-  starts_at: z.string().min(1, 'Data início é obrigatória'),
-  expires_at: z.string().min(1, 'Data fim é obrigatória'),
+  starts_at: z.string().min(1, 'Data inicio e obrigatoria'),
+  expires_at: z.string().min(1, 'Data fim e obrigatoria'),
   max_uses: z.number({ coerce: true }).int().nullable().optional(),
 });
 
@@ -42,7 +42,7 @@ export default function PromotionForm({ open, onClose, onSubmit, promotion, load
       ? {
           name: promotion.name,
           coupon_code: promotion.coupon_code,
-          discount_type: promotion.discount_type,
+          discount_type: promotion.discount_type as 'percent' | 'fixed',
           discount_value: promotion.discount_value,
           min_order_value: promotion.min_order_value,
           starts_at: promotion.starts_at?.slice(0, 16),
@@ -62,7 +62,7 @@ export default function PromotionForm({ open, onClose, onSubmit, promotion, load
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{promotion ? 'Editar Promoção' : 'Nova Promoção'}</DialogTitle>
+          <DialogTitle>{promotion ? 'Editar Promocao' : 'Nova Promocao'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
@@ -72,7 +72,7 @@ export default function PromotionForm({ open, onClose, onSubmit, promotion, load
           </div>
 
           <div>
-            <Label htmlFor="coupon_code">Código do cupom</Label>
+            <Label htmlFor="coupon_code">Codigo do cupom</Label>
             <Input
               id="coupon_code"
               {...register('coupon_code')}
@@ -110,13 +110,13 @@ export default function PromotionForm({ open, onClose, onSubmit, promotion, load
           </div>
 
           <div>
-            <Label htmlFor="min_order_value">Valor mínimo do pedido (R$)</Label>
+            <Label htmlFor="min_order_value">Valor minimo do pedido (R$)</Label>
             <Input id="min_order_value" type="number" step="0.01" {...register('min_order_value')} placeholder="Opcional" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="starts_at">Data início</Label>
+              <Label htmlFor="starts_at">Data inicio</Label>
               <Input id="starts_at" type="datetime-local" {...register('starts_at')} />
               {errors.starts_at && <p className="text-sm text-destructive mt-1">{errors.starts_at.message}</p>}
             </div>
