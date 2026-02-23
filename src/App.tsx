@@ -164,9 +164,9 @@ const App = () => (
               <Route path="messages" element={<Messages />} />
               <Route path="payments" element={<Payments />} />
               <Route path="perguntas" element={<AdminQuestions />} />
+              <Route path="avaliacoes" element={<AdminReviews />} />
               <Route path="promos" element={<AdminPromos />} />
               <Route path="ofertas" element={<AdminDeals />} />
-              <Route path="avaliacoes" element={<AdminReviews />} />
               <Route path="clients" element={<Clients />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="orders/:id" element={<AdminOrderDetail />} />

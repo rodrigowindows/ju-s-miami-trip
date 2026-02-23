@@ -133,3 +133,12 @@ export type Setting = {
   value: string;
   updated_at: string;
 };
+
+export type OrderReview = {
+  id: string;
+  order_id: string;
+  client_id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+};
