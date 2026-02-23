@@ -38,15 +38,19 @@ INSERT INTO trips (code, traveler_name, flight_number, departure_date, arrival_d
   ('T-043', 'Marina Oliveira', 'UA1522', '2026-05-01', '2026-05-08', 23)
 ON CONFLICT (code) DO NOTHING;
 
--- Orders (sem client_id para dados de demonstracao)
-INSERT INTO orders (order_number, customer_name, customer_phone, items, total_amount, deposit_amount, status, trip_id, estimated_weight_kg) VALUES
-  ('PED-001', 'Carlos Silva', '5511988887777', 'iPhone 15 Pro Max 256GB, AirPods Pro 2', 9500, 4750, 'aprovado', (SELECT id FROM trips WHERE code = 'T-041'), 0.8),
-  ('PED-002', 'Ana Beatriz Costa', '5511977776666', 'MacBook Air M3 15"', 12000, 6000, 'aprovado', (SELECT id FROM trips WHERE code = 'T-041'), 2.1),
-  ('PED-003', 'Roberto Almeida', '5511966665555', 'PS5 Slim, DualSense Controller x2', 4200, 2100, 'novo', (SELECT id FROM trips WHERE code = 'T-041'), 4.5),
-  ('PED-004', 'Fernanda Lima', '5511955554444', 'iPad Pro 13" M4, Apple Pencil Pro', 11800, 5900, 'aprovado', (SELECT id FROM trips WHERE code = 'T-042'), 1.2),
-  ('PED-005', 'Lucas Mendes', '5511944443333', 'Nike Air Max 90 x3, Levi''s 501 x2', 2800, 1400, 'novo', NULL, 3.0),
-  ('PED-006', 'Patricia Souza', '5511933332222', 'Vitaminas Kirkland x4, Proteina Whey x2', 850, 425, 'aprovado', (SELECT id FROM trips WHERE code = 'T-042'), 5.5)
-ON CONFLICT (order_number) DO NOTHING;
+-- Orders (demo data - requer que usuarios seed existam em auth.users)
+-- Para criar os pedidos de demo, primeiro crie os usuarios seed
+-- no Supabase Dashboard (ver secao 14 da comprehensive_schema.sql)
+-- e depois rode:
+--
+-- INSERT INTO orders (order_number, client_id, items, deposit_paid, status, trip_id, estimated_weight_kg, notes) VALUES
+--   ('PED-001', '00000000-0000-0000-0000-000000000002', 'iPhone 15 Pro Max 256GB, AirPods Pro 2', 4750, 'aprovado', (SELECT id FROM trips WHERE code = 'T-041'), 0.8, 'Cliente: Carlos Silva - Tel: 5511988887777'),
+--   ('PED-002', '00000000-0000-0000-0000-000000000002', 'MacBook Air M3 15"', 6000, 'aprovado', (SELECT id FROM trips WHERE code = 'T-041'), 2.1, 'Cliente: Ana Beatriz Costa - Tel: 5511977776666'),
+--   ('PED-003', '00000000-0000-0000-0000-000000000002', 'PS5 Slim, DualSense Controller x2', 2100, 'novo', (SELECT id FROM trips WHERE code = 'T-041'), 4.5, 'Cliente: Roberto Almeida - Tel: 5511966665555'),
+--   ('PED-004', '00000000-0000-0000-0000-000000000002', 'iPad Pro 13" M4, Apple Pencil Pro', 5900, 'aprovado', (SELECT id FROM trips WHERE code = 'T-042'), 1.2, 'Cliente: Fernanda Lima - Tel: 5511955554444'),
+--   ('PED-005', '00000000-0000-0000-0000-000000000002', 'Nike Air Max 90 x3, Levi''s 501 x2', 1400, 'novo', NULL, 3.0, 'Cliente: Lucas Mendes - Tel: 5511944443333'),
+--   ('PED-006', '00000000-0000-0000-0000-000000000002', 'Vitaminas Kirkland x4, Proteina Whey x2', 425, 'aprovado', (SELECT id FROM trips WHERE code = 'T-042'), 5.5, 'Cliente: Patricia Souza - Tel: 5511933332222')
+-- ON CONFLICT (order_number) DO NOTHING;
 
 -- Payments
 INSERT INTO payments (order_id, type, amount, notes) VALUES
