@@ -34,30 +34,23 @@ function useCatalog() {
 }
 
 function useExchangeRate() {
-  const [rate, setRate] = useState(6.05);
-  const [spread, setSpread] = useState(8);
+  const [effectiveRate, setEffectiveRate] = useState(6.05 * 1.08);
 
   useEffect(() => {
     async function fetch() {
-      const { data } = await supabase
-        .from("settings")
-        .select("key, value")
-        .in("key", ["exchange_rate_usd_brl", "spread_percentage"]);
-      if (data) {
-        for (const row of data) {
-          if (row.key === "exchange_rate_usd_brl") setRate(parseFloat(row.value));
-          if (row.key === "spread_percentage") setSpread(parseFloat(row.value));
-        }
+      const { data, error } = await supabase.functions.invoke("get-exchange-rate");
+      if (!error && data) {
+        setEffectiveRate(data.effective_rate);
       }
     }
     fetch();
   }, []);
 
   function convert(usd: number) {
-    return usd * rate * (1 + spread / 100);
+    return usd * effectiveRate;
   }
 
-  return { rate, spread, convert };
+  return { convert };
 }
 
 export default function Catalog() {
@@ -85,48 +78,19 @@ export default function Catalog() {
     if (!user) return;
     setSubmitting(true);
 
-    const priceBrl = convert(product.price_usd);
+    const { data, error } = await supabase.functions.invoke("create-order", {
+      body: { product_id: product.id },
+    });
 
-    // Create order
-    const { data: order, error: orderError } = await supabase
-      .from("orders")
-      .insert({
-        client_id: user.id,
-        status: "novo",
-        total_usd: product.price_usd,
-        total_brl: Math.round(priceBrl * 100) / 100,
-        notes: null,
-      })
-      .select()
-      .single();
-
-    if (orderError || !order) {
+    if (error || !data) {
       toast({ title: "Erro", description: "Não foi possível criar o pedido.", variant: "destructive" });
       setSubmitting(false);
       return;
     }
 
-    // Create order item
-    await supabase.from("order_items").insert({
-      order_id: order.id,
-      product_name: product.name,
-      product_image_url: product.image_url,
-      price_usd: product.price_usd,
-      price_brl: Math.round(priceBrl * 100) / 100,
-      quantity: 1,
-    });
-
-    // Create initial event
-    await supabase.from("order_events").insert({
-      order_id: order.id,
-      event_type: "novo",
-      title: "Pedido criado",
-      description: `Produto: ${product.name}`,
-    });
-
     toast({
       title: "Pedido criado!",
-      description: `Pedido ${order.order_number} criado com sucesso.`,
+      description: `Pedido ${data.order_number} criado com sucesso.`,
     });
     setSelectedProduct(null);
     setSubmitting(false);
@@ -137,61 +101,24 @@ export default function Catalog() {
     if (!user) return;
     setSubmitting(true);
 
-    let imageUrl: string | null = null;
+    const formData = new FormData();
+    if (linkUrl) formData.append("url", linkUrl);
+    if (linkNotes) formData.append("notes", linkNotes);
+    if (linkFile) formData.append("file", linkFile);
 
-    // Upload file if provided
-    if (linkFile) {
-      const ext = linkFile.name.split(".").pop();
-      const path = `${user.id}/${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from("order-attachments")
-        .upload(path, linkFile);
-      if (!uploadError) {
-        const { data: urlData } = supabase.storage
-          .from("order-attachments")
-          .getPublicUrl(path);
-        imageUrl = urlData.publicUrl;
-      }
-    }
+    const { data, error } = await supabase.functions.invoke("create-order-link", {
+      body: formData,
+    });
 
-    // Create order
-    const { data: order, error: orderError } = await supabase
-      .from("orders")
-      .insert({
-        client_id: user.id,
-        status: "novo",
-        notes: [linkUrl && `URL: ${linkUrl}`, linkNotes].filter(Boolean).join("\n"),
-      })
-      .select()
-      .single();
-
-    if (orderError || !order) {
+    if (error || !data) {
       toast({ title: "Erro", description: "Não foi possível criar o pedido.", variant: "destructive" });
       setSubmitting(false);
       return;
     }
 
-    // Create order item
-    await supabase.from("order_items").insert({
-      order_id: order.id,
-      product_name: linkUrl || "Produto via screenshot",
-      product_url: linkUrl || null,
-      product_image_url: imageUrl,
-      quantity: 1,
-      notes: linkNotes || null,
-    });
-
-    // Create initial event
-    await supabase.from("order_events").insert({
-      order_id: order.id,
-      event_type: "novo",
-      title: "Pedido criado via link/screenshot",
-      description: linkUrl || "Produto enviado via imagem",
-    });
-
     toast({
       title: "Pedido enviado!",
-      description: `Pedido ${order.order_number} criado. Entraremos em contato com o orçamento.`,
+      description: `Pedido ${data.order_number} criado. Entraremos em contato com o orçamento.`,
     });
 
     setShowLinkModal(false);
