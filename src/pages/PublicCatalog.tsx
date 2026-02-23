@@ -31,30 +31,23 @@ function useCatalog() {
 }
 
 function useExchangeRate() {
-  const [rate, setRate] = useState(6.05);
-  const [spread, setSpread] = useState(8);
+  const [effectiveRate, setEffectiveRate] = useState(6.05 * 1.08);
 
   useEffect(() => {
     async function fetch() {
-      const { data } = await supabase
-        .from("settings")
-        .select("key, value")
-        .in("key", ["exchange_rate_usd_brl", "spread_percentage"]);
-      if (data) {
-        for (const row of data) {
-          if (row.key === "exchange_rate_usd_brl") setRate(parseFloat(row.value));
-          if (row.key === "spread_percentage") setSpread(parseFloat(row.value));
-        }
+      const { data, error } = await supabase.functions.invoke("get-exchange-rate");
+      if (!error && data) {
+        setEffectiveRate(data.effective_rate);
       }
     }
     fetch();
   }, []);
 
   function convert(usd: number) {
-    return usd * rate * (1 + spread / 100);
+    return usd * effectiveRate;
   }
 
-  return { rate, spread, convert };
+  return { convert };
 }
 
 export default function PublicCatalog() {
