@@ -26,7 +26,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Parse optional amount parameter
     const url = new URL(req.url);
     const amountUsd = parseFloat(url.searchParams.get("amount") || "0");
 
