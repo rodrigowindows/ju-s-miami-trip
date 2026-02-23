@@ -34,7 +34,7 @@ export default function ClientLayout() {
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t safe-area-pb">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t pb-[env(safe-area-inset-bottom,0px)]">
         <div className="flex items-center justify-around py-2.5 max-w-lg mx-auto">
           {navItems.map((item) => (
             <NavLink key={item.to} to={item.to} end={item.end} className={linkClass}>
