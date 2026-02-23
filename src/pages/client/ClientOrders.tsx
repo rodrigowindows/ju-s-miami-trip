@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   MessageSquare,
@@ -12,15 +13,26 @@ import {
   XCircle,
   Receipt,
   CircleDollarSign,
+  Star,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import EmptyState from "@/components/shared/EmptyState";
 import { CardSkeleton } from "@/components/shared/LoadingSkeleton";
 import { useClientOrders } from "@/hooks/useOrders";
+import { useClientOrderReviews, useCreateOrderReview } from "@/hooks/useOrderReviews";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { formatBRL, formatDate } from "@/lib/format";
 import type { Order, OrderStatus } from "@/types";
 
@@ -71,14 +83,36 @@ function getEstimate(order: Order) {
   return { minDate, maxDate };
 }
 
-function OrderCard({ order, whatsappNumber }: { order: Order; whatsappNumber: string }) {
+function InlineReview({ rating }: { rating: number }) {
+  return (
+    <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-50 rounded-md">
+      <span className="text-xs font-medium text-amber-700">Sua avaliação:</span>
+      <div className="flex items-center gap-0.5">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star key={i} size={12} className={i < rating ? "fill-amber-400 text-amber-400" : "text-gray-300"} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function OrderCard({
+  order,
+  whatsappNumber,
+  review,
+  onReview,
+}: {
+  order: Order;
+  whatsappNumber: string;
+  review?: { rating: number } | null;
+  onReview: () => void;
+}) {
   const display = STATUS_DISPLAY[order.status] ?? STATUS_DISPLAY.novo;
   const StatusIcon = display.icon;
   const estimate = getEstimate(order);
 
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      {/* Status header bar */}
       <div className={`px-4 py-2.5 ${display.bg} flex items-center justify-between`}>
         <div className="flex items-center gap-2">
           <StatusIcon size={16} className={display.color} />
@@ -91,10 +125,8 @@ function OrderCard({ order, whatsappNumber }: { order: Order; whatsappNumber: st
 
       <Link to={`/client/orders/${order.id}`}>
         <CardContent className="pt-3 pb-3 space-y-3">
-          {/* Mini progress */}
           <MiniProgress status={order.status} />
 
-          {/* Delivery estimate */}
           {estimate && (
             <div className="flex items-center gap-2">
               <Truck size={14} className="text-[#007600] shrink-0" />
@@ -104,17 +136,17 @@ function OrderCard({ order, whatsappNumber }: { order: Order; whatsappNumber: st
             </div>
           )}
 
-          {order.status === "entregue" && (
+          {order.status === "entregue" && !review && (
             <div className="flex items-center gap-2">
               <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
               <p className="text-xs text-emerald-600 font-medium">Entregue com sucesso!</p>
             </div>
           )}
 
-          {/* Items */}
+          {review && <InlineReview rating={review.rating} />}
+
           <p className="text-sm text-gray-700 line-clamp-2">{order.items}</p>
 
-          {/* Price + date + chevron */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="font-bold text-sm">{formatBRL(order.total_amount ?? 0)}</span>
@@ -126,7 +158,6 @@ function OrderCard({ order, whatsappNumber }: { order: Order; whatsappNumber: st
             <ChevronRight size={18} className="text-muted-foreground" />
           </div>
 
-          {/* Payment status */}
           <div className="flex items-center gap-2">
             <div className={`w-1.5 h-1.5 rounded-full ${order.deposit_paid ? "bg-emerald-500" : "bg-amber-400"}`} />
             <span className="text-[11px] text-muted-foreground">
@@ -142,8 +173,18 @@ function OrderCard({ order, whatsappNumber }: { order: Order; whatsappNumber: st
         </CardContent>
       </Link>
 
-      {/* Actions */}
       <div className="px-4 pb-3 flex gap-2">
+        {order.status === "entregue" && !review && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-xs text-amber-600 border-amber-200 hover:bg-amber-50"
+            onClick={onReview}
+          >
+            <Star size={14} className="fill-amber-400 text-amber-400" />
+            Avaliar
+          </Button>
+        )}
         <a
           href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Olá! Gostaria de saber sobre o pedido ${order.order_number}`)}`}
           target="_blank"
@@ -179,11 +220,102 @@ function OrderCard({ order, whatsappNumber }: { order: Order; whatsappNumber: st
   );
 }
 
+function ReviewDialog({
+  open,
+  onOpenChange,
+  orderId,
+  clientId,
+  onSuccess,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  orderId: string;
+  clientId: string;
+  onSuccess: () => void;
+}) {
+  const [rating, setRating] = useState(0);
+  const [hovered, setHovered] = useState(0);
+  const [comment, setComment] = useState("");
+  const createReview = useCreateOrderReview();
+
+  const handleSubmit = async () => {
+    if (rating === 0) return;
+    try {
+      await createReview.mutateAsync({
+        order_id: orderId,
+        client_id: clientId,
+        rating,
+        comment: comment.trim() || undefined,
+      });
+      onSuccess();
+      onOpenChange(false);
+      setRating(0);
+      setComment("");
+    } catch {
+      // error handled by mutation
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Avaliar Pedido</DialogTitle>
+          <DialogDescription>Como foi sua experiência?</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="flex justify-center gap-2">
+            {[1, 2, 3, 4, 5].map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setRating(s)}
+                onMouseEnter={() => setHovered(s)}
+                onMouseLeave={() => setHovered(0)}
+                className="p-1 transition-transform hover:scale-110"
+              >
+                <Star
+                  size={32}
+                  className={
+                    s <= (hovered || rating)
+                      ? "fill-amber-400 text-amber-400"
+                      : "text-gray-300"
+                  }
+                />
+              </button>
+            ))}
+          </div>
+          <Textarea
+            placeholder="Comentário opcional (máx. 500 caracteres)"
+            maxLength={500}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows={3}
+          />
+          <Button
+            onClick={handleSubmit}
+            disabled={rating === 0 || createReview.isPending}
+            className="w-full"
+          >
+            {createReview.isPending ? "Enviando..." : "Enviar Avaliação"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function ClientOrders() {
   const { user } = useAuth();
   const { data: orders, isLoading } = useClientOrders(user?.id ?? "");
+  const { data: reviews } = useClientOrderReviews(user?.id ?? "");
   const { data: settings } = useSettings();
+  const { toast } = useToast();
   const whatsappNumber = settings?.whatsapp_number ?? "5561999999999";
+
+  const [reviewOrderId, setReviewOrderId] = useState<string | null>(null);
+
+  const reviewMap = new Map((reviews ?? []).map((r) => [r.order_id, r]));
 
   const activeOrders = (orders ?? []).filter((o) => o.status !== "entregue" && o.status !== "cancelado");
   const completedOrders = (orders ?? []).filter((o) => o.status === "entregue" || o.status === "cancelado");
@@ -203,7 +335,6 @@ export default function ClientOrders() {
         </EmptyState>
       ) : (
         <div className="space-y-6">
-          {/* Active orders */}
           {activeOrders.length > 0 && (
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -211,12 +342,17 @@ export default function ClientOrders() {
                 Em andamento ({activeOrders.length})
               </h3>
               {activeOrders.map((o) => (
-                <OrderCard key={o.id} order={o} whatsappNumber={whatsappNumber} />
+                <OrderCard
+                  key={o.id}
+                  order={o}
+                  whatsappNumber={whatsappNumber}
+                  review={reviewMap.get(o.id)}
+                  onReview={() => setReviewOrderId(o.id)}
+                />
               ))}
             </div>
           )}
 
-          {/* Completed orders */}
           {completedOrders.length > 0 && (
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
@@ -224,11 +360,27 @@ export default function ClientOrders() {
                 Finalizados ({completedOrders.length})
               </h3>
               {completedOrders.map((o) => (
-                <OrderCard key={o.id} order={o} whatsappNumber={whatsappNumber} />
+                <OrderCard
+                  key={o.id}
+                  order={o}
+                  whatsappNumber={whatsappNumber}
+                  review={reviewMap.get(o.id)}
+                  onReview={() => setReviewOrderId(o.id)}
+                />
               ))}
             </div>
           )}
         </div>
+      )}
+
+      {reviewOrderId && user && (
+        <ReviewDialog
+          open={!!reviewOrderId}
+          onOpenChange={(open) => { if (!open) setReviewOrderId(null); }}
+          orderId={reviewOrderId}
+          clientId={user.id}
+          onSuccess={() => toast({ title: "Avaliação enviada!", description: "Obrigado pelo seu feedback!" })}
+        />
       )}
     </div>
   );
