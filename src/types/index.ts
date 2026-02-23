@@ -10,6 +10,7 @@ export type {
   Payment,
   Promotion,
   PromotionWithProduct,
+  ProductReview as ProductReviewApp,
   Referral,
   Trip,
   TripWithAllocated,
@@ -78,9 +79,8 @@ export const KANBAN_COLUMNS: KanbanColumn[] = [
 // ── Catalog Product ────────────────────────
 export type CatalogProduct = import('@/integrations/supabase/types').Tables<'catalog_products'>;
 
-// ── Product Review (placeholder) ─────────────────────────
-// product_reviews table does not exist yet
-export type ProductReview = Record<string, never>;
+// ── Product Review ─────────────────────────
+export type ProductReview = import('@/integrations/supabase/types').Tables<'product_reviews'>;
 
 // ── Product Question (Q&A) ─────────────────
 export type ProductQuestion = import('@/integrations/supabase/types').Tables<'product_questions'>;
