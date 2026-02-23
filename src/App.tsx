@@ -20,6 +20,7 @@ import ClientOrders from "./pages/client/ClientOrders";
 import ClientOrderDetail from "./pages/client/ClientOrderDetail";
 import ClientPromotions from "./pages/client/ClientPromotions";
 import ClientProfile from "./pages/client/ClientProfile";
+import ClientWishlist from "./pages/client/ClientWishlist";
 
 // Admin pages
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -128,6 +129,7 @@ const App = () => (
               <Route path="catalog" element={<ClientCatalog />} />
               <Route path="orders" element={<ClientOrders />} />
               <Route path="orders/:id" element={<ClientOrderDetail />} />
+              <Route path="wishlist" element={<ClientWishlist />} />
               <Route path="promos" element={<ClientPromotions />} />
               <Route path="profile" element={<ClientProfile />} />
             </Route>
