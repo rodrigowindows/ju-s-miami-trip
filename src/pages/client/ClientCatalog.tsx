@@ -118,7 +118,7 @@ export default function ClientCatalog() {
           <button
             key={c}
             onClick={() => setCategory(c)}
-            className={`shrink-0 text-sm font-medium transition-colors whitespace-nowrap pb-0.5 ${
+            className={`shrink-0 text-sm font-medium transition-colors whitespace-nowrap py-1.5 ${
               category === c
                 ? "text-white border-b-2 border-amber-400"
                 : "text-gray-300 hover:text-white"

@@ -302,12 +302,12 @@ export default function PublicCatalog() {
         </div>
 
         {/* Category Nav */}
-        <div className="bg-[#232F3E] px-4 py-1.5 flex gap-3 overflow-x-auto scrollbar-hide">
+        <div className="bg-[#232F3E] px-4 py-2 flex gap-3 overflow-x-auto scrollbar-hide">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`shrink-0 text-sm font-medium transition-colors whitespace-nowrap pb-0.5 ${
+              className={`shrink-0 text-sm font-medium transition-colors whitespace-nowrap py-1.5 ${
                 activeCategory === cat
                   ? "text-white border-b-2 border-amber-400"
                   : "text-gray-300 hover:text-white"

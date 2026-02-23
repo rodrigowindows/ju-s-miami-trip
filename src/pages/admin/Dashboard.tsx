@@ -108,11 +108,11 @@ export default function Dashboard() {
       {/* Kanban */}
       <div>
         <h2 className="font-display text-lg font-bold mb-4">Kanban de Pedidos</h2>
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex flex-col sm:flex-row gap-4 sm:overflow-x-auto pb-4">
           {KANBAN_COLUMNS.map((col) => {
             const colOrders = columns[col.id] ?? [];
             return (
-              <div key={col.id} className="min-w-[240px] flex-shrink-0">
+              <div key={col.id} className="sm:min-w-[240px] sm:flex-shrink-0">
                 <div className="flex items-center gap-2 mb-3">
                   <h3 className="text-sm font-semibold">{col.title}</h3>
                   <span className="text-xs bg-muted rounded-full px-2 py-0.5 font-medium">
