@@ -311,7 +311,7 @@ export default function ClientCatalog() {
 
       {/* Product Detail Modal */}
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-lg overflow-hidden">
+        <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-lg max-h-[90vh] overflow-y-auto">
           {selected && (() => {
             const { rating, reviews } = fakeRating(selected.name);
             const brl = calcBRL(selected.price_usd);
