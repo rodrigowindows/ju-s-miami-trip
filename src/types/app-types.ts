@@ -6,7 +6,7 @@ export type Profile = {
   full_name: string;
   phone: string | null;
   address: string | null;
-  role: 'admin' | 'client';
+  role: 'admin' | 'cliente';
   referral_code: string | null;
   wallet_balance: number;
   created_at: string;
