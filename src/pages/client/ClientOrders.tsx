@@ -1,285 +1,180 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { MessageSquare, Package, ChevronDown, ChevronUp, Truck, CheckCircle2, Clock, ShoppingCart, CreditCard, Plane, MapPin, XCircle } from "lucide-react";
+import {
+  MessageSquare,
+  Package,
+  Plane,
+  ShoppingCart,
+  CheckCircle2,
+  Truck,
+  ChevronRight,
+  MapPin,
+  Clock,
+  XCircle,
+  Receipt,
+  CircleDollarSign,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import EmptyState from "@/components/shared/EmptyState";
 import { CardSkeleton } from "@/components/shared/LoadingSkeleton";
 import { useClientOrders } from "@/hooks/useOrders";
-import { useOrderEvents, type OrderEvent } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/constants";
-import { formatBRL, formatDateTime, formatShortDate } from "@/lib/format";
+import { formatBRL, formatDate } from "@/lib/format";
 import type { Order, OrderStatus } from "@/types";
 
-// Order of statuses for progress tracking
-const STATUS_PIPELINE: OrderStatus[] = [
-  "novo",
-  "orcamento",
-  "aprovado",
-  "comprando",
-  "comprado",
-  "em_transito",
-  "chegou_brasil",
-  "entregue",
+const STATUS_FLOW: OrderStatus[] = [
+  "novo", "orcamento", "aprovado", "comprando", "comprado",
+  "em_transito", "chegou_brasil", "entregue",
 ];
 
-const STATUS_ICONS: Record<string, typeof Package> = {
-  novo: ShoppingCart,
-  orcamento: CreditCard,
-  aprovado: CheckCircle2,
-  comprando: ShoppingCart,
-  comprado: Package,
-  em_transito: Plane,
-  chegou_brasil: MapPin,
-  entregue: CheckCircle2,
-  cancelado: XCircle,
+const STATUS_DISPLAY: Record<string, { label: string; icon: typeof Package; color: string; bg: string }> = {
+  novo: { label: "Pedido Recebido", icon: Receipt, color: "text-gray-600", bg: "bg-gray-50" },
+  orcamento: { label: "Orçamento Enviado", icon: CircleDollarSign, color: "text-amber-600", bg: "bg-amber-50" },
+  aprovado: { label: "Aprovado", icon: CheckCircle2, color: "text-blue-600", bg: "bg-blue-50" },
+  comprando: { label: "Comprando", icon: ShoppingCart, color: "text-orange-600", bg: "bg-orange-50" },
+  comprado: { label: "Comprado", icon: Package, color: "text-teal-600", bg: "bg-teal-50" },
+  em_transito: { label: "Em Trânsito", icon: Plane, color: "text-purple-600", bg: "bg-purple-50" },
+  chegou_brasil: { label: "No Brasil", icon: MapPin, color: "text-green-600", bg: "bg-green-50" },
+  entregue: { label: "Entregue", icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
+  cancelado: { label: "Cancelado", icon: XCircle, color: "text-red-500", bg: "bg-red-50" },
 };
 
-const STATUS_DESCRIPTIONS: Record<string, string> = {
-  novo: "Seu pedido foi recebido",
-  orcamento: "Estamos calculando o valor",
-  aprovado: "Pagamento confirmado",
-  comprando: "Comprando nos EUA",
-  comprado: "Produto comprado com sucesso",
-  em_transito: "A caminho do Brasil",
-  chegou_brasil: "Chegou! Preparando entrega",
-  entregue: "Pedido entregue",
-  cancelado: "Pedido cancelado",
-};
-
-function getStatusStep(status: string): number {
-  const idx = STATUS_PIPELINE.indexOf(status as OrderStatus);
-  return idx >= 0 ? idx : -1;
-}
-
-function OrderTracker({ order }: { order: Order }) {
-  const currentStep = getStatusStep(order.status);
-  const isCancelled = order.status === "cancelado";
-
-  // Simplified pipeline for visual tracker (5 key steps)
-  const VISUAL_STEPS = [
-    { statuses: ["novo", "orcamento"], label: "Pedido", icon: ShoppingCart },
-    { statuses: ["aprovado", "comprando"], label: "Comprando", icon: ShoppingCart },
-    { statuses: ["comprado"], label: "Comprado", icon: Package },
-    { statuses: ["em_transito"], label: "Em Transito", icon: Plane },
-    { statuses: ["chegou_brasil", "entregue"], label: "Entregue", icon: CheckCircle2 },
-  ];
-
+function MiniProgress({ status }: { status: string }) {
+  if (status === "cancelado") return null;
+  const idx = STATUS_FLOW.indexOf(status as OrderStatus);
+  const pct = Math.max(5, (idx / (STATUS_FLOW.length - 1)) * 100);
   return (
-    <div className="py-2">
-      {isCancelled ? (
-        <div className="flex items-center gap-2 bg-red-50 rounded-lg p-3">
-          <XCircle size={18} className="text-red-500" />
-          <span className="text-sm font-medium text-red-700">Pedido cancelado</span>
-        </div>
-      ) : (
-        <div className="flex items-center gap-0">
-          {VISUAL_STEPS.map((step, i) => {
-            const isActive = step.statuses.includes(order.status);
-            const isPast = currentStep > Math.max(...step.statuses.map((s) => getStatusStep(s)));
-            const Icon = step.icon;
-
-            return (
-              <div key={i} className="flex items-center flex-1 last:flex-none">
-                {/* Step dot */}
-                <div className="flex flex-col items-center gap-1">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all ${
-                      isActive
-                        ? "bg-violet-600 text-white ring-4 ring-violet-100"
-                        : isPast
-                        ? "bg-green-500 text-white"
-                        : "bg-gray-200 text-gray-400"
-                    }`}
-                  >
-                    {isPast ? <CheckCircle2 size={16} /> : <Icon size={14} />}
-                  </div>
-                  <span
-                    className={`text-[9px] font-medium text-center leading-tight w-14 ${
-                      isActive ? "text-violet-700" : isPast ? "text-green-700" : "text-gray-400"
-                    }`}
-                  >
-                    {step.label}
-                  </span>
-                </div>
-                {/* Connector line */}
-                {i < VISUAL_STEPS.length - 1 && (
-                  <div
-                    className={`h-0.5 flex-1 mx-1 rounded-full ${
-                      isPast ? "bg-green-400" : "bg-gray-200"
-                    }`}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+    <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+      <div
+        className={`h-full rounded-full transition-all duration-500 ${
+          status === "entregue" ? "bg-emerald-500" : "bg-[#007600]"
+        }`}
+        style={{ width: `${pct}%` }}
+      />
     </div>
   );
 }
 
-function EventTimeline({ orderId }: { orderId: string }) {
-  const { data: events, isLoading } = useOrderEvents(orderId);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center gap-2 py-3 text-xs text-muted-foreground">
-        <Clock size={12} className="animate-spin" />
-        Carregando historico...
-      </div>
-    );
-  }
-
-  if (!events || events.length === 0) {
-    return (
-      <p className="text-xs text-muted-foreground py-2">Nenhum evento registrado ainda.</p>
-    );
-  }
-
-  return (
-    <div className="relative pl-4 space-y-3 py-2">
-      {/* Vertical line */}
-      <div className="absolute left-[7px] top-4 bottom-4 w-0.5 bg-gray-200" />
-
-      {[...events].reverse().map((event, i) => {
-        const Icon = STATUS_ICONS[event.status] ?? Clock;
-        const isFirst = i === 0;
-
-        return (
-          <div key={event.id} className="flex items-start gap-3 relative">
-            <div
-              className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 z-10 -ml-4 ${
-                isFirst
-                  ? "bg-violet-600 text-white"
-                  : "bg-white border-2 border-gray-300 text-gray-400"
-              }`}
-            >
-              <Icon size={8} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className={`text-xs font-semibold ${isFirst ? "text-violet-700" : "text-gray-700"}`}>
-                  {event.title}
-                </p>
-                <span className="text-[10px] text-muted-foreground shrink-0">
-                  {formatDateTime(event.created_at)}
-                </span>
-              </div>
-              {event.description && (
-                <p className="text-[11px] text-muted-foreground mt-0.5">{event.description}</p>
-              )}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+function getEstimate(order: Order) {
+  if (order.status === "entregue" || order.status === "cancelado") return null;
+  const created = new Date(order.created_at);
+  const statusIdx = STATUS_FLOW.indexOf(order.status as OrderStatus);
+  const minDays = statusIdx >= 5 ? 2 : statusIdx >= 4 ? 7 : 15;
+  const maxDays = statusIdx >= 5 ? 5 : statusIdx >= 4 ? 14 : 25;
+  const minDate = new Date(created); minDate.setDate(minDate.getDate() + minDays);
+  const maxDate = new Date(created); maxDate.setDate(maxDate.getDate() + maxDays);
+  const now = new Date();
+  if (minDate < now) minDate.setTime(now.getTime() + 86400000);
+  if (maxDate < minDate) maxDate.setTime(minDate.getTime() + 3 * 86400000);
+  return { minDate, maxDate };
 }
 
 function OrderCard({ order, whatsappNumber }: { order: Order; whatsappNumber: string }) {
-  const [expanded, setExpanded] = useState(false);
-  const Icon = STATUS_ICONS[order.status] ?? Package;
+  const display = STATUS_DISPLAY[order.status] ?? STATUS_DISPLAY.novo;
+  const StatusIcon = display.icon;
+  const estimate = getEstimate(order);
 
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="pt-4 pb-3 space-y-3">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+      {/* Status header bar */}
+      <div className={`px-4 py-2.5 ${display.bg} flex items-center justify-between`}>
+        <div className="flex items-center gap-2">
+          <StatusIcon size={16} className={display.color} />
+          <span className={`text-sm font-semibold ${display.color}`}>{display.label}</span>
+        </div>
+        <Badge variant="outline" className="text-[10px] bg-white/70">
+          {order.order_number}
+        </Badge>
+      </div>
+
+      <Link to={`/client/orders/${order.id}`}>
+        <CardContent className="pt-3 pb-3 space-y-3">
+          {/* Mini progress */}
+          <MiniProgress status={order.status} />
+
+          {/* Delivery estimate */}
+          {estimate && (
+            <div className="flex items-center gap-2">
+              <Truck size={14} className="text-[#007600] shrink-0" />
+              <p className="text-xs text-[#007600] font-medium">
+                Entrega estimada: {formatDate(estimate.minDate)} - {formatDate(estimate.maxDate)}
+              </p>
+            </div>
+          )}
+
+          {order.status === "entregue" && (
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
+              <p className="text-xs text-emerald-600 font-medium">Entregue com sucesso!</p>
+            </div>
+          )}
+
+          {/* Items */}
+          <p className="text-sm text-gray-700 line-clamp-2">{order.items}</p>
+
+          {/* Price + date + chevron */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="font-bold text-sm">{formatBRL(order.total_amount ?? 0)}</span>
+              <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                <Clock size={10} />
+                {formatDate(order.created_at)}
+              </span>
+            </div>
+            <ChevronRight size={18} className="text-muted-foreground" />
+          </div>
+
+          {/* Payment status */}
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-violet-100 text-violet-600 flex items-center justify-center">
-              <Icon size={16} />
-            </div>
-            <div>
-              <p className="font-mono font-semibold text-sm">{order.order_number}</p>
-              <p className="text-[10px] text-muted-foreground">{formatShortDate(order.created_at)}</p>
-            </div>
+            <div className={`w-1.5 h-1.5 rounded-full ${order.deposit_paid ? "bg-emerald-500" : "bg-amber-400"}`} />
+            <span className="text-[11px] text-muted-foreground">
+              Sinal: {order.deposit_paid ? "Pago" : "Pendente"}
+            </span>
+            {order.balance_paid && (
+              <>
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="text-[11px] text-muted-foreground">Saldo: Pago</span>
+              </>
+            )}
           </div>
-          <Badge variant="outline" className={ORDER_STATUS_COLORS[order.status]}>
-            {ORDER_STATUS_LABELS[order.status] ?? order.status}
-          </Badge>
-        </div>
+        </CardContent>
+      </Link>
 
-        {/* Product info */}
-        <div className="flex items-center gap-3">
-          {order.product_image_url && (
-            <img
-              src={order.product_image_url}
-              alt={order.items}
-              className="w-12 h-12 rounded-lg object-cover border"
-            />
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm text-foreground line-clamp-1">{order.items}</p>
-            <p className="text-sm font-bold text-violet-600 mt-0.5">{formatBRL(order.total_amount ?? 0)}</p>
-          </div>
-        </div>
-
-        {/* Status tracker */}
-        <OrderTracker order={order} />
-
-        {/* Current status description */}
-        <div className="bg-muted/50 rounded-lg px-3 py-2 flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
-          <p className="text-xs text-muted-foreground">
-            {STATUS_DESCRIPTIONS[order.status] ?? "Processando..."}
-          </p>
-        </div>
-
-        {/* Expand/collapse for timeline */}
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-1 text-xs text-violet-600 font-medium hover:text-violet-800 transition-colors w-full justify-center py-1"
+      {/* Actions */}
+      <div className="px-4 pb-3 flex gap-2">
+        <a
+          href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Olá! Gostaria de saber sobre o pedido ${order.order_number}`)}`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex-1"
         >
-          {expanded ? (
-            <>
-              <ChevronUp size={14} />
-              Ocultar historico
-            </>
-          ) : (
-            <>
-              <ChevronDown size={14} />
-              Ver historico completo
-            </>
-          )}
-        </button>
-
-        {/* Timeline (collapsed by default) */}
-        {expanded && (
-          <div className="border-t pt-2">
-            <EventTimeline orderId={order.id} />
-          </div>
-        )}
-
-        {/* Action buttons */}
-        <div className="flex gap-2 pt-1">
+          <Button variant="outline" size="sm" className="w-full gap-1.5 text-emerald-600 border-emerald-200 hover:bg-emerald-50 text-xs">
+            <MessageSquare size={14} />
+            WhatsApp
+          </Button>
+        </a>
+        {order.status === "chegou_brasil" && (
           <a
-            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Ola! Gostaria de saber sobre o pedido ${order.order_number}`)}`}
+            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Olá! Gostaria de agendar a entrega do pedido ${order.order_number}`)}`}
             target="_blank"
             rel="noreferrer"
             className="flex-1"
           >
-            <Button variant="outline" size="sm" className="w-full text-emerald-600">
-              <MessageSquare className="h-4 w-4 mr-1" /> WhatsApp
+            <Button size="sm" className="w-full gap-1.5 text-xs">
+              <Truck size={14} />
+              Agendar Entrega
             </Button>
           </a>
-          {order.status === "chegou_brasil" && (
-            <a
-              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Ola! Gostaria de agendar a entrega do pedido ${order.order_number}`)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex-1"
-            >
-              <Button size="sm" className="w-full">
-                <Truck className="h-4 w-4 mr-1" /> Agendar Entrega
-              </Button>
-            </a>
-          )}
-        </div>
-      </CardContent>
+        )}
+        <Link to={`/client/orders/${order.id}`} className="flex-1">
+          <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs">
+            <Package size={14} />
+            Detalhes
+          </Button>
+        </Link>
+      </div>
     </Card>
   );
 }
@@ -290,15 +185,13 @@ export default function ClientOrders() {
   const { data: settings } = useSettings();
   const whatsappNumber = settings?.whatsapp_number ?? "5561999999999";
 
-  const activeOrders = (orders ?? []).filter((o) => !["entregue", "cancelado"].includes(o.status));
-  const pastOrders = (orders ?? []).filter((o) => ["entregue", "cancelado"].includes(o.status));
+  const activeOrders = (orders ?? []).filter((o) => o.status !== "entregue" && o.status !== "cancelado");
+  const completedOrders = (orders ?? []).filter((o) => o.status === "entregue" || o.status === "cancelado");
 
   return (
     <div>
-      <div className="flex items-center gap-2 mb-4">
-        <Package size={22} className="text-violet-600" />
-        <h2 className="font-display text-xl font-bold">Meus Pedidos</h2>
-      </div>
+      <h2 className="font-display text-xl font-bold mb-1">Meus Pedidos</h2>
+      <p className="text-xs text-muted-foreground mb-4">Acompanhe seus pedidos em tempo real</p>
 
       {isLoading ? (
         <div className="space-y-3"><CardSkeleton /><CardSkeleton /></div>
@@ -312,32 +205,27 @@ export default function ClientOrders() {
         <div className="space-y-6">
           {/* Active orders */}
           {activeOrders.length > 0 && (
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
-                <h3 className="text-sm font-semibold text-foreground">
-                  Em andamento ({activeOrders.length})
-                </h3>
-              </div>
-              <div className="space-y-3">
-                {activeOrders.map((o) => (
-                  <OrderCard key={o.id} order={o} whatsappNumber={whatsappNumber} />
-                ))}
-              </div>
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Truck size={14} />
+                Em andamento ({activeOrders.length})
+              </h3>
+              {activeOrders.map((o) => (
+                <OrderCard key={o.id} order={o} whatsappNumber={whatsappNumber} />
+              ))}
             </div>
           )}
 
-          {/* Past orders */}
-          {pastOrders.length > 0 && (
-            <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-                Anteriores ({pastOrders.length})
+          {/* Completed orders */}
+          {completedOrders.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+                <CheckCircle2 size={14} />
+                Finalizados ({completedOrders.length})
               </h3>
-              <div className="space-y-3">
-                {pastOrders.map((o) => (
-                  <OrderCard key={o.id} order={o} whatsappNumber={whatsappNumber} />
-                ))}
-              </div>
+              {completedOrders.map((o) => (
+                <OrderCard key={o.id} order={o} whatsappNumber={whatsappNumber} />
+              ))}
             </div>
           )}
         </div>
