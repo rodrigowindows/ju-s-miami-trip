@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import type { Promotion } from "@/types";
+import type { PromotionWithProduct, CatalogProduct } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,15 +22,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Loader2, Tag, Pencil, Trash2 } from "lucide-react";
+import { Plus, Loader2, Tag, Pencil, Trash2, ChevronsUpDown, Check, Package } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function AdminPromos() {
   const { toast } = useToast();
-  const [promos, setPromos] = useState<Promotion[]>([]);
+  const [promos, setPromos] = useState<PromotionWithProduct[]>([]);
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<Promotion | null>(null);
+  const [editing, setEditing] = useState<PromotionWithProduct | null>(null);
+  const [productPopoverOpen, setProductPopoverOpen] = useState(false);
   const [form, setForm] = useState({
     name: "",
     coupon_code: "",
@@ -41,28 +57,50 @@ export default function AdminPromos() {
     expires_at: "",
     max_uses: "",
     active: true,
+    product_id: "" as string,
   });
 
   async function fetchPromos() {
     const { data } = await supabase
       .from("promotions")
-      .select("*")
+      .select("*, catalog_products(id, name, brand, image_url, price_usd, category)")
       .order("created_at", { ascending: false });
-    setPromos((data as Promotion[]) ?? []);
+    setPromos((data as PromotionWithProduct[]) ?? []);
     setLoading(false);
+  }
+
+  async function fetchProducts() {
+    const { data } = await supabase
+      .from("catalog_products")
+      .select("*")
+      .eq("active", true)
+      .order("name");
+    setProducts((data as CatalogProduct[]) ?? []);
   }
 
   useEffect(() => {
     fetchPromos();
+    fetchProducts();
   }, []);
 
   function openCreate() {
     setEditing(null);
-    setForm({ name: "", coupon_code: "", discount_type: "percent", discount_value: "", min_order_value: "", starts_at: "", expires_at: "", max_uses: "", active: true });
+    setForm({
+      name: "",
+      coupon_code: "",
+      discount_type: "percent",
+      discount_value: "",
+      min_order_value: "",
+      starts_at: "",
+      expires_at: "",
+      max_uses: "",
+      active: true,
+      product_id: "",
+    });
     setOpen(true);
   }
 
-  function openEdit(promo: Promotion) {
+  function openEdit(promo: PromotionWithProduct) {
     setEditing(promo);
     setForm({
       name: promo.name,
@@ -74,6 +112,7 @@ export default function AdminPromos() {
       expires_at: promo.expires_at?.split("T")[0] ?? "",
       max_uses: promo.max_uses ? String(promo.max_uses) : "",
       active: promo.active,
+      product_id: promo.product_id ?? "",
     });
     setOpen(true);
   }
@@ -89,6 +128,7 @@ export default function AdminPromos() {
       expires_at: form.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       max_uses: form.max_uses ? Number(form.max_uses) : null,
       active: form.active,
+      product_id: form.product_id || null,
     };
 
     if (editing) {
@@ -111,17 +151,19 @@ export default function AdminPromos() {
     fetchPromos();
   }
 
-  async function toggleActive(promo: Promotion) {
+  async function toggleActive(promo: PromotionWithProduct) {
     await supabase.from("promotions").update({ active: !promo.active }).eq("id", promo.id);
     fetchPromos();
   }
+
+  const selectedProduct = products.find((p) => p.id === form.product_id);
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-2xl font-bold">Promoções</h1>
-          <p className="text-sm text-muted-foreground mt-1">Gerencie cupons e promoções</p>
+          <p className="text-sm text-muted-foreground mt-1">Gerencie cupons e promoções vinculadas a produtos</p>
         </div>
         <Button onClick={openCreate} className="gap-2 w-full sm:w-auto">
           <Plus size={16} />
@@ -141,7 +183,29 @@ export default function AdminPromos() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {promos.map((promo) => (
-            <Card key={promo.id}>
+            <Card key={promo.id} className="overflow-hidden">
+              {/* Product image banner */}
+              {promo.catalog_products && (
+                <div className="relative h-32 bg-muted overflow-hidden">
+                  <img
+                    src={promo.catalog_products.image_url}
+                    alt={promo.catalog_products.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-2 left-3 right-3">
+                    <p className="text-white text-xs font-medium truncate">
+                      {promo.catalog_products.brand}
+                    </p>
+                    <p className="text-white text-sm font-bold truncate">
+                      {promo.catalog_products.name}
+                    </p>
+                  </div>
+                  <Badge className="absolute top-2 right-2 bg-white/90 text-foreground text-[10px] border-0">
+                    {promo.catalog_products.category}
+                  </Badge>
+                </div>
+              )}
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base font-bold">{promo.name}</CardTitle>
@@ -162,6 +226,12 @@ export default function AdminPromos() {
                     {promo.active ? "Ativa" : "Inativa"}
                   </Badge>
                 </div>
+                {!promo.catalog_products && (
+                  <p className="text-xs text-amber-600 flex items-center gap-1">
+                    <Package size={12} />
+                    Sem produto vinculado
+                  </p>
+                )}
                 <p className="text-sm">
                   {promo.discount_type === "percent" ? `${promo.discount_value}% de desconto` : `R$ ${promo.discount_value.toFixed(2)} de desconto`}
                 </p>
@@ -179,12 +249,84 @@ export default function AdminPromos() {
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? "Editar Promoção" : "Nova Promoção"}</DialogTitle>
-            <DialogDescription>Preencha os dados da promoção</DialogDescription>
+            <DialogDescription>Preencha os dados da promoção e vincule a um produto</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            {/* Product selector */}
+            <div>
+              <Label>Produto vinculado</Label>
+              <Popover open={productPopoverOpen} onOpenChange={setProductPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    className="w-full justify-between mt-1 h-auto min-h-10"
+                  >
+                    {selectedProduct ? (
+                      <div className="flex items-center gap-2 text-left">
+                        <img
+                          src={selectedProduct.image_url}
+                          alt={selectedProduct.name}
+                          className="w-8 h-8 rounded object-cover shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">{selectedProduct.name}</p>
+                          <p className="text-xs text-muted-foreground">{selectedProduct.brand} · US$ {selectedProduct.price_usd.toFixed(2)}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">Selecione um produto...</span>
+                    )}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[400px] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Buscar produto..." />
+                    <CommandList>
+                      <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem
+                          value="__none__"
+                          onSelect={() => {
+                            setForm({ ...form, product_id: "" });
+                            setProductPopoverOpen(false);
+                          }}
+                        >
+                          <Check className={cn("mr-2 h-4 w-4", !form.product_id ? "opacity-100" : "opacity-0")} />
+                          <span className="text-muted-foreground">Nenhum (cupom genérico)</span>
+                        </CommandItem>
+                        {products.map((product) => (
+                          <CommandItem
+                            key={product.id}
+                            value={`${product.name} ${product.brand}`}
+                            onSelect={() => {
+                              setForm({ ...form, product_id: product.id });
+                              setProductPopoverOpen(false);
+                            }}
+                          >
+                            <Check className={cn("mr-2 h-4 w-4", form.product_id === product.id ? "opacity-100" : "opacity-0")} />
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="w-8 h-8 rounded object-cover mr-2 shrink-0"
+                            />
+                            <div className="min-w-0">
+                              <p className="text-sm truncate">{product.name}</p>
+                              <p className="text-xs text-muted-foreground">{product.brand} · US$ {product.price_usd.toFixed(2)}</p>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Nome</Label>

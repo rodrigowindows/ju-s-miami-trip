@@ -25,6 +25,10 @@ export type Database = {
           image_url: string
           name: string
           price_usd: number
+          rating: number
+          review_count: number
+          sales_count: number
+          trending: boolean
         }
         Insert: {
           active?: boolean
@@ -36,6 +40,10 @@ export type Database = {
           image_url?: string
           name: string
           price_usd?: number
+          rating?: number
+          review_count?: number
+          sales_count?: number
+          trending?: boolean
         }
         Update: {
           active?: boolean
@@ -47,8 +55,50 @@ export type Database = {
           image_url?: string
           name?: string
           price_usd?: number
+          rating?: number
+          review_count?: number
+          sales_count?: number
+          trending?: boolean
         }
         Relationships: []
+      }
+      product_reviews: {
+        Row: {
+          id: string
+          product_id: string
+          reviewer_name: string
+          rating: number
+          comment: string
+          verified_purchase: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          reviewer_name: string
+          rating: number
+          comment: string
+          verified_purchase?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          reviewer_name?: string
+          rating?: number
+          comment?: string
+          verified_purchase?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_events: {
         Row: {
@@ -300,6 +350,7 @@ export type Database = {
           max_uses: number | null
           min_order_value: number | null
           name: string
+          product_id: string | null
           starts_at: string
         }
         Insert: {
@@ -314,6 +365,7 @@ export type Database = {
           max_uses?: number | null
           min_order_value?: number | null
           name: string
+          product_id?: string | null
           starts_at: string
         }
         Update: {
@@ -328,9 +380,18 @@ export type Database = {
           max_uses?: number | null
           min_order_value?: number | null
           name?: string
+          product_id?: string | null
           starts_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "promotions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       referrals: {
         Row: {

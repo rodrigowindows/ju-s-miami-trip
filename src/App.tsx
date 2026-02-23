@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import PublicCatalog from "./pages/PublicCatalog";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 // Client pages
 import ClientLayout from "./components/client/ClientLayout";
@@ -92,6 +93,14 @@ const App = () => (
               element={
                 <RedirectIfAuthed>
                   <Login />
+                </RedirectIfAuthed>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <RedirectIfAuthed>
+                  <Register />
                 </RedirectIfAuthed>
               }
             />

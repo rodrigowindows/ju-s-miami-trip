@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Truck } from "lucide-react";
+import { ArrowLeft, Plus, Truck, MessageSquare, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,12 @@ import {
 import { useOrder, useOrderItems, useOrderEvents, useUpdateOrderStatus } from "@/hooks/useOrders";
 import { useOrderPayments, useCreatePayment } from "@/hooks/usePayments";
 import { useTrips, useAllocateOrder } from "@/hooks/useTrips";
+import {
+  useWhatsAppTemplates,
+  fillTemplate,
+  TEMPLATE_STATUS_MAP,
+} from "@/hooks/useMessages";
+import type { OrderWithClient as MsgOrderWithClient } from "@/hooks/useMessages";
 import { useToast } from "@/hooks/use-toast";
 import { formatBRL, formatDate, formatDateTime } from "@/lib/format";
 import { calculateTotalPaid } from "@/lib/calculations";
@@ -55,9 +61,16 @@ const OrderDetail = () => {
   const updateStatus = useUpdateOrderStatus();
   const allocateOrder = useAllocateOrder();
 
+  const { data: whatsappTemplates } = useWhatsAppTemplates();
+
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [tripOpen, setTripOpen] = useState(false);
+  const [whatsappOpen, setWhatsappOpen] = useState(false);
+  const [suggestedMessage, setSuggestedMessage] = useState("");
+  const [suggestedPhone, setSuggestedPhone] = useState("");
+  const [suggestedTitle, setSuggestedTitle] = useState("");
+  const [suggestedIcon, setSuggestedIcon] = useState("");
   const [newStatus, setNewStatus] = useState("");
   const [paymentForm, setPaymentForm] = useState({
     type: "deposit" as "deposit" | "balance" | "refund",
@@ -94,6 +107,17 @@ const OrderDetail = () => {
   const totalPaid = calculateTotalPaid(payments ?? []);
   const remaining = order.total_amount - totalPaid;
 
+  // Build reverse map: status → template slug(s)
+  const statusToSlugs = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const [slug, status] of Object.entries(TEMPLATE_STATUS_MAP)) {
+      const list = map.get(status) ?? [];
+      list.push(slug);
+      map.set(status, list);
+    }
+    return map;
+  }, []);
+
   const handleChangeStatus = async () => {
     if (!newStatus) return;
     const statusLabel = STATUS_FLOW.find((s) => s.value === newStatus)?.label ?? newStatus;
@@ -105,9 +129,43 @@ const OrderDetail = () => {
       });
       toast({ title: "Status atualizado!" });
       setStatusOpen(false);
+
+      // Suggest WhatsApp template if one matches the new status
+      const slugs = statusToSlugs.get(newStatus);
+      const match = slugs
+        ? whatsappTemplates?.find((t) => slugs.includes(t.slug))
+        : undefined;
+      if (match && order.client) {
+        const itemsSummary = items?.map((i) => i.product_name).join(", ") ?? order.items ?? "";
+        const msgOrder: MsgOrderWithClient = {
+          ...order,
+          trip_code: order.trip_code ?? "",
+          items_summary: itemsSummary,
+        };
+        const filled = fillTemplate(match.template_text, msgOrder);
+        setSuggestedMessage(filled);
+        setSuggestedPhone((order.client.phone ?? "").replace(/\D/g, ""));
+        setSuggestedTitle(match.title);
+        setSuggestedIcon(match.icon);
+        setWhatsappOpen(true);
+      }
     } catch {
       toast({ title: "Erro ao atualizar status", variant: "destructive" });
     }
+  };
+
+  const handleSendSuggestedWhatsApp = () => {
+    if (!suggestedPhone) {
+      toast({ title: "Cliente sem telefone cadastrado", variant: "destructive" });
+      return;
+    }
+    const encoded = encodeURIComponent(suggestedMessage);
+    window.open(`https://wa.me/${suggestedPhone}?text=${encoded}`, "_blank");
+  };
+
+  const handleCopySuggestedMessage = () => {
+    navigator.clipboard.writeText(suggestedMessage);
+    toast({ title: "Mensagem copiada!" });
   };
 
   const handleCreatePayment = async () => {
@@ -428,6 +486,39 @@ const OrderDetail = () => {
             <Button variant="outline" onClick={() => setPaymentOpen(false)}>Cancelar</Button>
             <Button onClick={handleCreatePayment} disabled={!paymentForm.amount || createPayment.isPending}>
               {createPayment.isPending ? "Registrando..." : "Registrar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* WhatsApp template suggestion dialog */}
+      <Dialog open={whatsappOpen} onOpenChange={setWhatsappOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <span>{suggestedIcon}</span>
+              {suggestedTitle}
+            </DialogTitle>
+            <DialogDescription>
+              Deseja enviar esta mensagem ao cliente via WhatsApp?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="bg-muted/50 border rounded-lg p-4 text-sm whitespace-pre-wrap max-h-60 overflow-y-auto">
+            {suggestedMessage}
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setWhatsappOpen(false)}>
+              Agora não
+            </Button>
+            <Button variant="outline" className="gap-2" onClick={handleCopySuggestedMessage}>
+              <Copy size={14} /> Copiar
+            </Button>
+            <Button
+              onClick={handleSendSuggestedWhatsApp}
+              className="gap-2 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white"
+            >
+              <MessageSquare size={16} />
+              Enviar no WhatsApp
             </Button>
           </DialogFooter>
         </DialogContent>
