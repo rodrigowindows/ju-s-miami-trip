@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { fetchProfileMapNames } from "@/lib/profileMap";
 import type { TripWithAllocated, Order } from "@/types";
 
 export function useTrips() {
@@ -52,16 +53,7 @@ export function useTrip(id: string) {
 
       // Get client names for each order
       const clientIds = [...new Set((orders ?? []).map((o: Order) => o.client_id))];
-      let profileMap = new Map<string, string | null>();
-
-      if (clientIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, full_name")
-          .in("id", clientIds);
-
-        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
-      }
+      const profileMap = await fetchProfileMapNames(clientIds);
 
       const allocated_weight_kg = (orders ?? []).reduce(
         (sum: number, o: Order) => sum + (o.estimated_weight_kg ?? 0),
@@ -99,16 +91,7 @@ export function useUnassignedOrders() {
       if (error) throw error;
 
       const clientIds = [...new Set((orders ?? []).map((o: Order) => o.client_id))];
-      let profileMap = new Map<string, string | null>();
-
-      if (clientIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, full_name")
-          .in("id", clientIds);
-
-        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]));
-      }
+      const profileMap = await fetchProfileMapNames(clientIds);
 
       return (orders ?? []).map((o: Order) => ({
         ...o,

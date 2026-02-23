@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTrips, useCreateTrip } from "@/hooks/useTrips";
 import { useToast } from "@/hooks/use-toast";
+import { getWeightStatus } from "@/lib/calculations";
 
 const Trips = () => {
   const navigate = useNavigate();
@@ -61,10 +62,8 @@ const Trips = () => {
   };
 
   const getWeightColor = (allocated: number, max: number) => {
-    const pct = max > 0 ? (allocated / max) * 100 : 0;
-    if (pct > 90) return "bg-red-500";
-    if (pct >= 70) return "bg-yellow-500";
-    return "bg-green-500";
+    const status = getWeightStatus(allocated, max);
+    return status === 'red' ? 'bg-red-500' : status === 'yellow' ? 'bg-yellow-500' : 'bg-green-500';
   };
 
   const getWeightPct = (allocated: number, max: number) =>
@@ -107,7 +106,7 @@ const Trips = () => {
             <Card
               key={trip.id}
               className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => navigate(`/admin/viagens/${trip.id}`)}
+              onClick={() => navigate(`/admin/trips/${trip.id}`)}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">

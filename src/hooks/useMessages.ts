@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { formatBRL } from "@/lib/format";
+import { fetchProfileMapFull } from "@/lib/profileMap";
 import type { WhatsAppTemplate, Order } from "@/types";
 
 export type OrderWithClient = Order & {
@@ -35,16 +36,7 @@ export function useOrdersForMessages() {
 
       // Fetch client info
       const clientIds = [...new Set((orders ?? []).map((o: Order) => o.client_id))];
-      let profileMap = new Map<string, { full_name: string | null; phone: string | null; email: string }>();
-
-      if (clientIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, full_name, phone, email")
-          .in("id", clientIds);
-
-        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null; phone: string | null; email: string }) => [p.id, p]));
-      }
+      const profileMap = await fetchProfileMapFull(clientIds);
 
       // Fetch trip codes
       const tripIds = [

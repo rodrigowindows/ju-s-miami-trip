@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import type { Order } from "@/types";
+import { fetchProfileMapFull } from "@/lib/profileMap";
+import type { Order, TablesInsert } from "@/types";
 
 export type OrderWithClient = Order & {
   client: { full_name: string | null; phone: string | null; email: string } | null;
@@ -39,16 +40,7 @@ export function useOrders() {
       if (error) throw error;
 
       const clientIds = [...new Set((orders ?? []).map((o: Order) => o.client_id))];
-      let profileMap = new Map<string, { full_name: string | null; phone: string | null; email: string }>();
-
-      if (clientIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, full_name, phone, email")
-          .in("id", clientIds);
-
-        profileMap = new Map((profiles ?? []).map((p: { id: string; full_name: string | null; phone: string | null; email: string }) => [p.id, p]));
-      }
+      const profileMap = await fetchProfileMapFull(clientIds);
 
       return (orders ?? []).map((o: Order) => ({
         ...o,
@@ -172,10 +164,10 @@ export function useUpdateOrderStatus() {
 export function useCreateOrder() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (order: Partial<Order>) => {
+    mutationFn: async (order: TablesInsert<'orders'>) => {
       const { data, error } = await supabase
         .from("orders")
-        .insert(order as any)
+        .insert(order)
         .select()
         .single();
       if (error) throw error;
@@ -190,10 +182,10 @@ export function useCreateOrder() {
 export function useCreateOrderItem() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (item: Partial<OrderItem>) => {
+    mutationFn: async (item: TablesInsert<'order_items'>) => {
       const { data, error } = await supabase
         .from("order_items")
-        .insert(item as any)
+        .insert(item)
         .select()
         .single();
       if (error) throw error;

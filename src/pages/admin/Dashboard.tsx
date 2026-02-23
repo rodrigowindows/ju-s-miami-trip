@@ -4,29 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useOrders } from "@/hooks/useOrders";
 import { Loader2, ShoppingBag, DollarSign, Plane, Clock } from "lucide-react";
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 import type { OrderWithClient } from "@/types";
-
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  novo: { label: "Novo / Orçar", color: "bg-gray-100 text-gray-700" },
-  orcamento: { label: "Orçamento", color: "bg-yellow-100 text-yellow-800" },
-  aprovado: { label: "Aprovado", color: "bg-green-100 text-green-700" },
-  comprando: { label: "Comprando", color: "bg-blue-100 text-blue-700" },
-  comprado: { label: "Comprado", color: "bg-blue-100 text-blue-700" },
-  em_transito: { label: "Em trânsito", color: "bg-purple-100 text-purple-700" },
-  chegou_brasil: { label: "Chegou ao Brasil", color: "bg-indigo-100 text-indigo-700" },
-  entregue: { label: "Entregue", color: "bg-green-100 text-green-700" },
-  cancelado: { label: "Cancelado", color: "bg-red-100 text-red-700" },
-};
-
-const KANBAN_COLUMNS = [
-  { key: "novo", title: "Novo / Orçar" },
-  { key: "orcamento", title: "Orçamento" },
-  { key: "aprovado", title: "Aprovado" },
-  { key: "comprando", title: "Comprando" },
-  { key: "comprado", title: "Comprado" },
-  { key: "em_transito", title: "Em Trânsito" },
-  { key: "chegou_brasil", title: "Chegou Brasil" },
-];
+import { KANBAN_COLUMNS } from "@/types";
+import { formatBRL } from "@/lib/format";
 
 export default function Dashboard() {
   const { data: orders, isLoading } = useOrders();
@@ -35,7 +16,7 @@ export default function Dashboard() {
   const stats = useMemo(() => {
     if (!orders) return { total: 0, active: 0, revenue: 0, pending: 0 };
     const active = orders.filter((o) => !["entregue", "cancelado"].includes(o.status)).length;
-    const revenue = orders.reduce((sum, o) => sum + (o.total_brl ?? 0), 0);
+    const revenue = orders.reduce((sum, o) => sum + (o.total_amount ?? 0), 0);
     const pending = orders.filter((o) => o.status === "novo").length;
     return { total: orders.length, active, revenue, pending };
   }, [orders]);
@@ -44,7 +25,7 @@ export default function Dashboard() {
     if (!orders) return {};
     const grouped: Record<string, OrderWithClient[]> = {};
     for (const col of KANBAN_COLUMNS) {
-      grouped[col.key] = orders.filter((o) => o.status === col.key);
+      grouped[col.id] = orders.filter((o) => col.statuses.includes(o.status as typeof col.statuses[number]));
     }
     return grouped;
   }, [orders]);
@@ -102,7 +83,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  R$ {stats.revenue.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                  {formatBRL(stats.revenue)}
                 </p>
                 <p className="text-xs text-muted-foreground">Receita total</p>
               </div>
@@ -129,9 +110,9 @@ export default function Dashboard() {
         <h2 className="font-display text-lg font-bold mb-4">Kanban de Pedidos</h2>
         <div className="flex gap-4 overflow-x-auto pb-4">
           {KANBAN_COLUMNS.map((col) => {
-            const colOrders = columns[col.key] ?? [];
+            const colOrders = columns[col.id] ?? [];
             return (
-              <div key={col.key} className="min-w-[240px] flex-shrink-0">
+              <div key={col.id} className="min-w-[240px] flex-shrink-0">
                 <div className="flex items-center gap-2 mb-3">
                   <h3 className="text-sm font-semibold">{col.title}</h3>
                   <span className="text-xs bg-muted rounded-full px-2 py-0.5 font-medium">
@@ -155,8 +136,8 @@ export default function Dashboard() {
                             <span className="text-xs font-mono font-bold">
                               {order.order_number}
                             </span>
-                            <Badge className={`${STATUS_CONFIG[order.status]?.color ?? ""} text-[10px] border-0`}>
-                              {STATUS_CONFIG[order.status]?.label ?? order.status}
+                            <Badge className={`${ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG]?.color ?? ""} text-[10px] border-0`}>
+                              {ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG]?.label ?? order.status}
                             </Badge>
                           </div>
                           <p className="text-sm font-medium truncate">
@@ -167,9 +148,9 @@ export default function Dashboard() {
                               {order.items}
                             </p>
                           )}
-                          {order.total_brl && (
+                          {order.total_amount && (
                             <p className="text-xs font-semibold text-violet-600">
-                              R$ {order.total_brl.toFixed(2).replace(".", ",")}
+                              {formatBRL(order.total_amount)}
                             </p>
                           )}
                         </CardContent>

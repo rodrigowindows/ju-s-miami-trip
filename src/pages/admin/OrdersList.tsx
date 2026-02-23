@@ -1,7 +1,5 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -20,18 +18,8 @@ import {
 } from "@/components/ui/table";
 import { useOrders } from "@/hooks/useOrders";
 import { Loader2, Filter, ShoppingBag } from "lucide-react";
-
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  novo: { label: "Novo", color: "bg-gray-100 text-gray-700" },
-  orcamento: { label: "Orçamento", color: "bg-yellow-100 text-yellow-800" },
-  aprovado: { label: "Aprovado", color: "bg-green-100 text-green-700" },
-  comprando: { label: "Comprando", color: "bg-blue-100 text-blue-700" },
-  comprado: { label: "Comprado", color: "bg-blue-100 text-blue-700" },
-  em_transito: { label: "Em trânsito", color: "bg-purple-100 text-purple-700" },
-  chegou_brasil: { label: "Chegou Brasil", color: "bg-indigo-100 text-indigo-700" },
-  entregue: { label: "Entregue", color: "bg-green-100 text-green-700" },
-  cancelado: { label: "Cancelado", color: "bg-red-100 text-red-700" },
-};
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
+import { formatBRL, formatDate } from "@/lib/format";
 
 export default function OrdersList() {
   const navigate = useNavigate();
@@ -65,7 +53,7 @@ export default function OrdersList() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos os status</SelectItem>
-              {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+              {Object.entries(ORDER_STATUS_CONFIG).map(([key, cfg]) => (
                 <SelectItem key={key} value={key}>
                   {cfg.label}
                 </SelectItem>
@@ -99,7 +87,7 @@ export default function OrdersList() {
             </TableHeader>
             <TableBody>
               {filtered.map((order) => {
-                const cfg = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.novo;
+                const cfg = ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG] ?? ORDER_STATUS_CONFIG.novo;
                 return (
                   <TableRow
                     key={order.id}
@@ -121,12 +109,12 @@ export default function OrdersList() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right font-medium text-sm hidden sm:table-cell">
-                      {order.total_brl
-                        ? `R$ ${order.total_brl.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                      {order.total_amount
+                        ? formatBRL(order.total_amount)
                         : "—"}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground hidden lg:table-cell">
-                      {format(new Date(order.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                      {formatDate(order.created_at)}
                     </TableCell>
                   </TableRow>
                 );
