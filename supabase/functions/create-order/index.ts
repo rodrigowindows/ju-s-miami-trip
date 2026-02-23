@@ -15,20 +15,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Client authenticated with user's JWT
     const supabaseUser = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    // Service role client for server-side operations
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Verify user
     const {
       data: { user },
       error: authError,
@@ -48,7 +45,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Fetch product server-side to ensure price integrity
     const { data: product, error: productError } = await supabaseAdmin
       .from("catalog_products")
       .select("*")
@@ -63,7 +59,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Fetch exchange rate and spread server-side
     const { data: settings } = await supabaseAdmin
       .from("settings")
       .select("key, value")
@@ -80,7 +75,6 @@ Deno.serve(async (req) => {
 
     const priceBrl = Math.round(product.price_usd * rate * (1 + spread / 100) * 100) / 100;
 
-    // Create order with server-calculated prices
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
       .insert({
@@ -99,7 +93,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create order item
     await supabaseAdmin.from("order_items").insert({
       order_id: order.id,
       product_name: product.name,
@@ -109,7 +102,6 @@ Deno.serve(async (req) => {
       quantity: 1,
     });
 
-    // Create initial event
     await supabaseAdmin.from("order_events").insert({
       order_id: order.id,
       event_type: "novo",

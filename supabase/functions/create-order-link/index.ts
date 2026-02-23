@@ -37,7 +37,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Parse multipart form data (link + optional file + notes)
     const formData = await req.formData();
     const linkUrl = formData.get("url") as string | null;
     const notes = formData.get("notes") as string | null;
@@ -53,7 +52,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Validate URL format if provided
     if (linkUrl) {
       try {
         new URL(linkUrl);
@@ -67,7 +65,6 @@ Deno.serve(async (req) => {
 
     let imageUrl: string | null = null;
 
-    // Upload file if provided (validate type and size server-side)
     if (file) {
       const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/heic"];
       if (!allowedTypes.includes(file.type)) {
@@ -80,7 +77,7 @@ Deno.serve(async (req) => {
         );
       }
 
-      const maxSize = 10 * 1024 * 1024; // 10MB
+      const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
         return new Response(
           JSON.stringify({ error: "File too large (max 10MB)" }),
@@ -105,7 +102,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Create order
     const orderNotes = [linkUrl && `URL: ${linkUrl}`, notes]
       .filter(Boolean)
       .join("\n");
@@ -127,7 +123,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create order item
     await supabaseAdmin.from("order_items").insert({
       order_id: order.id,
       product_name: linkUrl || "Produto via screenshot",
@@ -137,7 +132,6 @@ Deno.serve(async (req) => {
       notes: notes || null,
     });
 
-    // Create initial event
     await supabaseAdmin.from("order_events").insert({
       order_id: order.id,
       event_type: "novo",
