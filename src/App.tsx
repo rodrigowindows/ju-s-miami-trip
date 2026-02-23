@@ -31,6 +31,7 @@ import Payments from "./pages/admin/Payments";
 import AdminPromos from "./pages/admin/AdminPromos";
 import Clients from "./pages/admin/Clients";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminQuestions from "./pages/admin/AdminQuestions";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
 
 import { Loader2 } from "lucide-react";
@@ -149,6 +150,7 @@ const App = () => (
               <Route path="catalogo" element={<AdminCatalog />} />
               <Route path="messages" element={<Messages />} />
               <Route path="payments" element={<Payments />} />
+              <Route path="perguntas" element={<AdminQuestions />} />
               <Route path="promos" element={<AdminPromos />} />
               <Route path="clients" element={<Clients />} />
               <Route path="settings" element={<AdminSettings />} />

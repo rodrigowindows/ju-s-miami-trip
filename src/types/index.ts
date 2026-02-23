@@ -81,6 +81,9 @@ export type CatalogProduct = import('@/integrations/supabase/types').Tables<'cat
 // ── Product Review ─────────────────────────
 export type ProductReview = import('@/integrations/supabase/types').Tables<'product_reviews'>;
 
+// ── Product Question (Q&A) ─────────────────
+export type ProductQuestion = import('@/integrations/supabase/types').Tables<'product_questions'>;
+
 // ── Order with Client (joined) ─────────────
 export type OrderWithClient = Order & {
   client: { full_name: string | null; phone: string | null; email: string } | null;

@@ -1,13 +1,27 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import type { CatalogProduct } from "@/types";
+import type { CatalogProduct, ProductQuestion } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Loader2, X, LogIn, Search, Star, Truck, ChevronDown, SlidersHorizontal } from "lucide-react";
+import {
+  Loader2,
+  X,
+  LogIn,
+  Search,
+  Star,
+  Truck,
+  ChevronDown,
+  SlidersHorizontal,
+  HelpCircle,
+  Send,
+  User,
+  CheckCircle2,
+} from "lucide-react";
 import Logo from "@/components/shared/Logo";
+import { useToast } from "@/hooks/use-toast";
 
 const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion"] as const;
 
@@ -36,6 +50,32 @@ function useCatalog() {
   }, []);
 
   return { products, loading };
+}
+
+function useQuestions(productId: string | null) {
+  const [questions, setQuestions] = useState<ProductQuestion[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  async function load() {
+    if (!productId) {
+      setQuestions([]);
+      return;
+    }
+    setLoading(true);
+    const { data } = await supabase
+      .from("product_questions")
+      .select("*")
+      .eq("product_id", productId)
+      .order("created_at", { ascending: false });
+    setQuestions((data as ProductQuestion[]) ?? []);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    load();
+  }, [productId]);
+
+  return { questions, loading, reload: load };
 }
 
 function useExchangeRate() {
@@ -106,6 +146,40 @@ export default function PublicCatalog() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [showSort, setShowSort] = useState(false);
+
+  const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
+  const { toast } = useToast();
+
+  // Q&A form state
+  const [askName, setAskName] = useState("");
+  const [askEmail, setAskEmail] = useState("");
+  const [askQuestion, setAskQuestion] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleAskQuestion(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedProduct || !askQuestion.trim()) return;
+
+    setSubmitting(true);
+    const { error } = await supabase.from("product_questions").insert({
+      product_id: selectedProduct.id,
+      asker_name: askName.trim() || "Visitante",
+      asker_email: askEmail.trim() || null,
+      question: askQuestion.trim(),
+    });
+    setSubmitting(false);
+
+    if (error) {
+      toast({ title: "Erro ao enviar pergunta", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    toast({ title: "Pergunta enviada!", description: "Voce sera notificado quando responderem." });
+    setAskName("");
+    setAskEmail("");
+    setAskQuestion("");
+    reloadQuestions();
+  }
 
   const filtered = useMemo(() => {
     let list = activeCategory === "Todos"
@@ -312,7 +386,7 @@ export default function PublicCatalog() {
 
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-lg overflow-hidden">
+        <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-lg overflow-hidden max-h-[90vh] overflow-y-auto">
           {selectedProduct && (() => {
             const { rating, reviews } = fakeRating(selectedProduct.name);
             const brl = convert(selectedProduct.price_usd);
@@ -384,6 +458,115 @@ export default function PublicCatalog() {
                       <Truck size={14} className="text-[#007600]" />
                       <span className="text-sm text-[#007600] font-medium">Entrega via viagem Miami</span>
                     </div>
+                  </div>
+
+                  {/* Q&A Section */}
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <HelpCircle size={16} className="text-[#007185]" />
+                      <h3 className="font-semibold text-sm text-gray-900">
+                        Perguntas e Respostas
+                      </h3>
+                      {questions.length > 0 && (
+                        <Badge variant="secondary" className="text-[10px]">{questions.length}</Badge>
+                      )}
+                    </div>
+
+                    {/* Ask question form */}
+                    <form onSubmit={handleAskQuestion} className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3 space-y-2">
+                      <p className="text-xs font-medium text-gray-700">Faca uma pergunta sobre este produto</p>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Seu nome"
+                          value={askName}
+                          onChange={(e) => setAskName(e.target.value)}
+                          className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#007185]"
+                        />
+                        <input
+                          type="email"
+                          placeholder="Email (opcional)"
+                          value={askEmail}
+                          onChange={(e) => setAskEmail(e.target.value)}
+                          className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#007185]"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Escreva sua pergunta..."
+                          value={askQuestion}
+                          onChange={(e) => setAskQuestion(e.target.value)}
+                          required
+                          className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#007185]"
+                        />
+                        <Button
+                          type="submit"
+                          size="sm"
+                          disabled={submitting || !askQuestion.trim()}
+                          className="bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 px-3 h-auto py-1.5 border border-[#FCD200]"
+                        >
+                          {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                        </Button>
+                      </div>
+                    </form>
+
+                    {/* Questions list */}
+                    {questionsLoading ? (
+                      <div className="flex items-center justify-center py-4">
+                        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                      </div>
+                    ) : questions.length === 0 ? (
+                      <p className="text-xs text-gray-500 text-center py-3">
+                        Nenhuma pergunta ainda. Seja o primeiro a perguntar!
+                      </p>
+                    ) : (
+                      <div className="space-y-3 max-h-60 overflow-y-auto">
+                        {questions.map((q) => (
+                          <div key={q.id} className="bg-gray-50 rounded-lg p-3 space-y-2">
+                            {/* Question */}
+                            <div className="flex items-start gap-2">
+                              <div className="w-5 h-5 rounded-full bg-[#007185]/10 text-[#007185] flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">
+                                <User size={10} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-xs font-semibold text-gray-900">{q.asker_name}</span>
+                                  <span className="text-[10px] text-gray-400">
+                                    {new Date(q.created_at).toLocaleDateString("pt-BR")}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-800 mt-0.5">{q.question}</p>
+                              </div>
+                            </div>
+
+                            {/* Answer */}
+                            {q.answer ? (
+                              <div className="flex items-start gap-2 ml-4 bg-green-50 rounded-lg p-2">
+                                <div className="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">
+                                  <CheckCircle2 size={10} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-xs font-semibold text-green-700">Ju Imports</span>
+                                    {q.answered_at && (
+                                      <span className="text-[10px] text-gray-400">
+                                        {new Date(q.answered_at).toLocaleDateString("pt-BR")}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-green-800 mt-0.5">{q.answer}</p>
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="text-[10px] text-gray-400 ml-7 italic">
+                                Aguardando resposta...
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <Link
