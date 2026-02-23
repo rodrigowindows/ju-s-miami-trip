@@ -234,12 +234,33 @@ INSERT INTO whatsapp_templates (slug, title, icon, template_text) VALUES
   ('delivered', 'Entregue', 'Gift', E'Olá {nome_cliente}! 🎁 Pedido #{numero_pedido} entregue! Obrigado por usar a MalaBridge!')
 ON CONFLICT (slug) DO NOTHING;
 
--- Catalog Products
+-- Catalog Products (15 produtos com imagens Unsplash reais)
 INSERT INTO catalog_products (name, brand, category, price_usd, image_url, description) VALUES
-  ('AirPods Pro 2', 'Apple', 'Tech', 249.00, 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=400', 'Cancelamento de ruído ativo'),
-  ('iPhone 15 Pro Max 256GB', 'Apple', 'Tech', 1199.00, 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400', 'Chip A17 Pro, câmera 48MP'),
-  ('Stanley Quencher 40oz', 'Stanley', 'Lifestyle', 45.00, 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400', 'Copo térmico 40oz'),
-  ('Perfume Good Girl', 'Carolina Herrera', 'Beauty', 95.00, 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400', 'EDP 80ml'),
-  ('Nike Air Max 90', 'Nike', 'Fashion', 130.00, 'https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=400', 'Tênis icônico'),
-  ('MacBook Air M3', 'Apple', 'Tech', 1099.00, 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400', 'Chip M3, 8GB RAM')
+  -- Tech
+  ('AirPods Pro 2', 'Apple', 'Tech', 249.00, 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=400&h=400&fit=crop', 'AirPods Pro de segunda geracao com cancelamento ativo de ruido e audio espacial.'),
+  ('iPhone 15 Pro Max', 'Apple', 'Tech', 1199.00, 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop', 'iPhone 15 Pro Max 256GB com chip A17 Pro, camera de 48MP e corpo de titanio.'),
+  ('MacBook Air M3 15"', 'Apple', 'Tech', 1299.00, 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop', 'MacBook Air com chip M3, tela Liquid Retina de 15", 8GB RAM e 256GB SSD.'),
+  ('iPad Pro 13" M4', 'Apple', 'Tech', 1099.00, 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop', 'iPad Pro com chip M4, tela Ultra Retina XDR OLED de 13". Performance de notebook.'),
+  ('PS5 Slim Digital', 'Sony', 'Tech', 449.00, 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=400&fit=crop', 'PlayStation 5 Slim edicao digital. SSD de 1TB, DualSense incluso.'),
+  -- Beauty
+  ('Perfume Chanel N5', 'Chanel', 'Beauty', 135.00, 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop', 'Eau de Parfum 100ml. O perfume mais iconico do mundo.'),
+  ('Rare Beauty Soft Pinch Blush', 'Rare Beauty', 'Beauty', 23.00, 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop', 'Soft Pinch Liquid Blush da Selena Gomez. Ultra-pigmentada.'),
+  ('Dyson Airwrap Complete', 'Dyson', 'Beauty', 599.00, 'https://images.unsplash.com/photo-1522338242992-e1a54571a9f7?w=400&h=400&fit=crop', 'Modelador de cabelo Dyson com tecnologia Coanda. 6 acessorios.'),
+  ('Sol de Janeiro Bum Bum Cream', 'Sol de Janeiro', 'Beauty', 48.00, 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400&h=400&fit=crop', 'Creme corporal 240ml com guarana, cupuacu e acai.'),
+  -- Fashion
+  ('Nike Dunk Low Panda', 'Nike', 'Fashion', 110.00, 'https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=400&h=400&fit=crop', 'O classico Nike Dunk Low na colorway preto e branco "Panda".'),
+  ('Levi''s 501 Original', 'Levi''s', 'Fashion', 69.50, 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop', 'A calca jeans original desde 1873. Corte reto classico.'),
+  ('Ray-Ban Aviator Classic', 'Ray-Ban', 'Fashion', 163.00, 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=400&fit=crop', 'Oculos de sol aviador classico com armacao dourada e lentes verdes G-15.'),
+  -- Lifestyle
+  ('Stanley Quencher H2.0', 'Stanley', 'Lifestyle', 45.00, 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=400&fit=crop', 'Copo termico 40oz. Gelado por 11h, quente por 7h. Viral no TikTok!'),
+  ('Kindle Paperwhite 11th Gen', 'Amazon', 'Lifestyle', 149.99, 'https://images.unsplash.com/photo-1594980596870-8aa52a78571e?w=400&h=400&fit=crop', 'E-reader 6.8", 16GB, a prova d''agua, luz quente ajustavel.'),
+  ('Vitaminas Kirkland Combo', 'Kirkland', 'Lifestyle', 35.00, 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', 'Kit Vitamina D3 5000 IU + Omega-3 Fish Oil 1000mg.')
 ON CONFLICT DO NOTHING;
+
+-- Promotions (4 cupons ativos)
+INSERT INTO promotions (name, coupon_code, discount_type, discount_value, min_order_value, starts_at, expires_at, max_uses, active) VALUES
+  ('Primeira Compra', 'WELCOME10', 'percent', 10, 500, now(), now() + interval '90 days', 100, true),
+  ('Frete Miami', 'MIAMI15', 'percent', 15, 2000, now(), now() + interval '60 days', 50, true),
+  ('Desconto Tech', 'TECH50', 'fixed', 50, 1000, now(), now() + interval '45 days', 30, true),
+  ('Indicou Ganhou', 'AMIGO20', 'percent', 20, 800, now(), now() + interval '120 days', 200, true)
+ON CONFLICT (coupon_code) DO NOTHING;
