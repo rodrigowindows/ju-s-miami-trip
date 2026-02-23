@@ -22,6 +22,7 @@ import ClientPromotions from "./pages/client/ClientPromotions";
 import ClientProfile from "./pages/client/ClientProfile";
 import ClientWishlist from "./pages/client/ClientWishlist";
 import ClientCart from "./pages/client/ClientCart";
+import ClientNotifications from "./pages/client/ClientNotifications";
 
 // Admin pages
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -134,6 +135,7 @@ const App = () => (
               <Route path="promos" element={<ClientPromotions />} />
               <Route path="cart" element={<ClientCart />} />
               <Route path="profile" element={<ClientProfile />} />
+              <Route path="notifications" element={<ClientNotifications />} />
             </Route>
 
             {/* Admin login */}
@@ -164,9 +166,9 @@ const App = () => (
               <Route path="messages" element={<Messages />} />
               <Route path="payments" element={<Payments />} />
               <Route path="perguntas" element={<AdminQuestions />} />
+              <Route path="avaliacoes" element={<AdminReviews />} />
               <Route path="promos" element={<AdminPromos />} />
               <Route path="ofertas" element={<AdminDeals />} />
-              <Route path="avaliacoes" element={<AdminReviews />} />
               <Route path="clients" element={<Clients />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="orders/:id" element={<AdminOrderDetail />} />

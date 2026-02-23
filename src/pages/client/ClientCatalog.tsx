@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
-import { Heart, ShoppingCart, Search, Truck, Loader2, Plus, Check, Share2 } from "lucide-react";
+import { Heart, ShoppingCart, Search, Truck, Loader2, Plus, Check, Share2, Star, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import EmptyState from "@/components/shared/EmptyState";
 import { useCatalogProducts } from "@/hooks/useCatalog";
+import { useProductReviews, useCreateProductReview } from "@/hooks/useProductReviews";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
@@ -23,6 +24,33 @@ import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
 import { shareProductWhatsApp } from "@/lib/share";
 
+function getRating(product: CatalogProduct) {
+  if (product.review_count > 0) {
+    return { rating: Number(product.rating) || 0, reviews: product.review_count };
+  }
+  return fakeRating(product.name);
+}
+
+function ClickableStars({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <button
+          key={i}
+          type="button"
+          onClick={() => onChange(i + 1)}
+          className="p-0.5"
+        >
+          <Star
+            size={20}
+            className={i < value ? "fill-amber-400 text-amber-400" : "text-gray-300 hover:text-amber-300"}
+          />
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function ClientCatalog() {
   const [category, setCategory] = useState("Todos");
   const { data: products, isLoading } = useCatalogProducts(category);
@@ -37,6 +65,13 @@ export default function ClientCatalog() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [justAdded, setJustAdded] = useState<string | null>(null);
+
+  // Review form state
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+
+  const { data: productReviews, isLoading: reviewsLoading } = useProductReviews(selected?.id ?? null);
+  const createReview = useCreateProductReview();
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
@@ -89,6 +124,24 @@ export default function ClientCatalog() {
     setJustAdded(product.id);
     toast.success("Adicionado ao carrinho!");
     setTimeout(() => setJustAdded(null), 1500);
+  };
+
+  const handleSubmitReview = async () => {
+    if (!user || !profile || !selected || reviewRating === 0) return;
+    try {
+      await createReview.mutateAsync({
+        product_id: selected.id,
+        client_id: user.id,
+        rating: reviewRating,
+        comment: reviewComment.trim() || undefined,
+        reviewer_name: profile.full_name?.split(" ")[0] ?? "Cliente",
+      });
+      setReviewRating(0);
+      setReviewComment("");
+      toast.success("Avaliação enviada!");
+    } catch {
+      toast.error("Erro ao enviar avaliação.");
+    }
   };
 
   return (
@@ -175,10 +228,10 @@ export default function ClientCatalog() {
       </div>
 
       {/* Product Detail Modal */}
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-lg max-h-[90vh] overflow-y-auto">
+      <Dialog open={!!selected} onOpenChange={(o) => { if (!o) { setSelected(null); setReviewRating(0); setReviewComment(""); } }}>
+        <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-lg overflow-hidden max-h-[90vh] overflow-y-auto">
           {selected && (() => {
-            const { rating, reviews } = fakeRating(selected.name);
+            const { rating, reviews } = getRating(selected);
             const brl = calcBRL(selected.price_usd);
             const bestSeller = isBestSeller(selected.name);
             const prevPrice = fakePreviousPrice(brl, selected.name);
@@ -263,6 +316,81 @@ export default function ClientCatalog() {
                       <Truck size={14} className="text-[#007600]" />
                       <span className="text-sm text-[#007600] font-medium">Entrega via viagem Miami</span>
                     </div>
+                  </div>
+
+                  {/* Reviews Section */}
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MessageSquare size={16} className="text-[#007185]" />
+                      <h3 className="font-semibold text-sm text-gray-900">
+                        Avaliações de clientes
+                      </h3>
+                      {(productReviews?.length ?? 0) > 0 && (
+                        <Badge variant="secondary" className="text-[10px]">{productReviews!.length}</Badge>
+                      )}
+                    </div>
+
+                    {/* Review form */}
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3 space-y-2">
+                      <p className="text-xs font-medium text-gray-700">Avaliar este produto</p>
+                      <ClickableStars value={reviewRating} onChange={setReviewRating} />
+                      <textarea
+                        placeholder="Escreva sua avaliação (opcional)..."
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#007185] resize-none"
+                        rows={2}
+                      />
+                      <Button
+                        size="sm"
+                        disabled={reviewRating === 0 || createReview.isPending}
+                        onClick={handleSubmitReview}
+                        className="bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 px-4 h-auto py-1.5 border border-[#FCD200] text-xs"
+                      >
+                        {createReview.isPending ? <Loader2 size={14} className="animate-spin" /> : "Enviar avaliação"}
+                      </Button>
+                    </div>
+
+                    {/* Reviews list */}
+                    {reviewsLoading ? (
+                      <div className="flex items-center justify-center py-4">
+                        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                      </div>
+                    ) : !productReviews || productReviews.length === 0 ? (
+                      <p className="text-xs text-gray-500 text-center py-3">
+                        Nenhuma avaliação ainda. Seja o primeiro a avaliar!
+                      </p>
+                    ) : (
+                      <div className="space-y-3 max-h-60 overflow-y-auto">
+                        {productReviews.map((r) => (
+                          <div key={r.id} className="bg-gray-50 rounded-lg p-3">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    size={11}
+                                    className={i < r.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-xs font-semibold text-gray-900">{r.reviewer_name}</span>
+                              {r.verified_purchase && (
+                                <Badge variant="secondary" className="text-[9px] bg-green-50 text-green-700 border-green-200">
+                                  Compra verificada
+                                </Badge>
+                              )}
+                            </div>
+                            {r.comment && (
+                              <p className="text-xs text-gray-700 mt-1">{r.comment}</p>
+                            )}
+                            <p className="text-[10px] text-gray-400 mt-1">
+                              {new Date(r.created_at).toLocaleDateString("pt-BR")}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-2">

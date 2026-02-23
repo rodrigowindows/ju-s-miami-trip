@@ -62,6 +62,54 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          id: string
+          client_id: string
+          title: string
+          message: string
+          type: string
+          read: boolean
+          order_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          title: string
+          message: string
+          type?: string
+          read?: boolean
+          order_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          title?: string
+          message?: string
+          type?: string
+          read?: boolean
+          order_id?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_events: {
         Row: {
           created_at: string
@@ -175,6 +223,13 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: true
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_reviews_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -388,6 +443,7 @@ export type Database = {
       }
       product_reviews: {
         Row: {
+          client_id: string
           comment: string | null
           created_at: string
           id: string
@@ -397,6 +453,7 @@ export type Database = {
           verified_purchase: boolean
         }
         Insert: {
+          client_id: string
           comment?: string | null
           created_at?: string
           id?: string
@@ -406,6 +463,7 @@ export type Database = {
           verified_purchase?: boolean
         }
         Update: {
+          client_id?: string
           comment?: string | null
           created_at?: string
           id?: string
@@ -420,6 +478,13 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "catalog_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_reviews_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

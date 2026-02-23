@@ -7,6 +7,8 @@ export type { Database, Tables, TablesInsert, TablesUpdate } from '@/integration
 export type {
   Profile,
   Order,
+  OrderReview,
+  Notification,
   Payment,
   Promotion,
   PromotionWithProduct,

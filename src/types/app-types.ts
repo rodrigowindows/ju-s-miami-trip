@@ -133,3 +133,23 @@ export type Setting = {
   value: string;
   updated_at: string;
 };
+
+export type OrderReview = {
+  id: string;
+  order_id: string;
+  client_id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+};
+
+export type Notification = {
+  id: string;
+  client_id: string;
+  title: string;
+  message: string;
+  type: 'order_update' | 'promo' | 'system';
+  read: boolean;
+  order_id: string | null;
+  created_at: string;
+};
