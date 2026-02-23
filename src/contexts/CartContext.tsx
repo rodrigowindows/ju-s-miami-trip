@@ -1,5 +1,7 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import type { CatalogProduct } from "@/types";
+
+const CART_STORAGE_KEY = "malabridge_cart";
 
 export interface CartItem {
   product: CatalogProduct;
@@ -20,9 +22,22 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
+function loadCartFromStorage(): CartItem[] {
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(loadCartFromStorage);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
 
   const addItem = useCallback((product: CatalogProduct) => {
     setItems((prev) => {

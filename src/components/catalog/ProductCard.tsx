@@ -1,6 +1,7 @@
-import { Heart, Truck, Zap } from "lucide-react";
+import { Heart, Truck, Zap, Share2 } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "./catalog-utils";
+import { shareProductWhatsApp } from "@/lib/share";
 import type { CatalogProduct } from "@/types";
 
 export interface ActiveDeal {
@@ -103,9 +104,21 @@ export function ProductCard({ product, brl, onClick, activeDeal, wishlisted, onT
           </p>
         </div>
 
-        <div className="flex items-center gap-1 mt-1">
-          <Truck size={12} className="text-[#007600]" />
-          <span className="text-[11px] text-[#007600] font-medium">Entrega via viagem</span>
+        <div className="flex items-center justify-between mt-1">
+          <div className="flex items-center gap-1">
+            <Truck size={12} className="text-[#007600]" />
+            <span className="text-[11px] text-[#007600] font-medium">Entrega via viagem</span>
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              shareProductWhatsApp(product, activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl);
+            }}
+            className="p-1 text-gray-400 hover:text-[#25D366] transition-colors"
+            aria-label="Compartilhar"
+          >
+            <Share2 size={14} />
+          </button>
         </div>
       </div>
     </button>
