@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import PublicCatalog from "./pages/PublicCatalog";
+import Rastreio from "./pages/Rastreio";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -91,6 +92,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<PublicCatalog />} />
             <Route path="/catalog" element={<PublicCatalog />} />
+            <Route path="/rastreio" element={<Rastreio />} />
             <Route
               path="/login"
               element={
