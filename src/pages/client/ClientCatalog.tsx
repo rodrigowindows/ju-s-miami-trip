@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ShoppingCart, Search, Truck, Loader2, Plus, Check, Share2 } from "lucide-react";
+import { Heart, ShoppingCart, Search, Truck, Loader2, Plus, Check, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,9 @@ import { useCatalogProducts } from "@/hooks/useCatalog";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist, useToggleWishlist } from "@/hooks/useWishlist";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { RecentlyViewed } from "@/components/catalog/RecentlyViewed";
 import type { CatalogProduct } from "@/types";
 import { toast } from "sonner";
 import { calculatePriceBRL } from "@/lib/calculations";
@@ -26,6 +29,9 @@ export default function ClientCatalog() {
   const { data: settings } = useSettings();
   const { user, profile } = useAuth();
   const { addItem, items, openCart } = useCart();
+  const { data: wishlistIds } = useWishlist(user?.id);
+  const toggleWishlist = useToggleWishlist();
+  const { recentIds, addViewed } = useRecentlyViewed();
 
   const [selected, setSelected] = useState<CatalogProduct | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,6 +70,20 @@ export default function ClientCatalog() {
     }
   }, [products, searchQuery, sortBy]);
 
+  const handleToggleWishlist = (productId: string) => {
+    if (!user) return;
+    const wishlisted = (wishlistIds ?? []).includes(productId);
+    toggleWishlist.mutate(
+      { clientId: user.id, productId, wishlisted },
+      { onSuccess: () => toast.success(wishlisted ? "Removido dos desejos" : "Adicionado aos desejos!") }
+    );
+  };
+
+  const handleSelectProduct = (product: CatalogProduct) => {
+    addViewed(product.id);
+    setSelected(product);
+  };
+
   const handleAddToCart = (product: CatalogProduct) => {
     addItem(product);
     setJustAdded(product.id);
@@ -88,6 +108,15 @@ export default function ClientCatalog() {
 
       {/* Category Nav with Icons */}
       <CategoryNav active={category} onSelect={setCategory} variant="dark" />
+
+      {/* Recently Viewed */}
+      {recentIds.length > 0 && (
+        <RecentlyViewed
+          productIds={recentIds}
+          calcBRL={calcBRL}
+          onSelect={handleSelectProduct}
+        />
+      )}
 
       {/* Results Bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
@@ -136,7 +165,9 @@ export default function ClientCatalog() {
                 key={p.id}
                 product={p}
                 brl={calcBRL(p.price_usd)}
-                onClick={() => setSelected(p)}
+                onClick={() => handleSelectProduct(p)}
+                wishlisted={(wishlistIds ?? []).includes(p.id)}
+                onToggleWishlist={() => handleToggleWishlist(p.id)}
               />
             ))}
           </div>
@@ -171,6 +202,15 @@ export default function ClientCatalog() {
                       </span>
                     </div>
                   )}
+                  <button
+                    onClick={() => handleToggleWishlist(selected.id)}
+                    className="absolute top-3 right-3 bg-white/90 rounded-full p-2 shadow-md hover:bg-white transition-colors"
+                  >
+                    <Heart
+                      size={20}
+                      className={(wishlistIds ?? []).includes(selected.id) ? "fill-red-500 text-red-500" : "text-gray-400"}
+                    />
+                  </button>
                 </div>
 
                 <div className="p-5 space-y-3 bg-white">

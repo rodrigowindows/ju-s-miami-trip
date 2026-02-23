@@ -1,4 +1,4 @@
-import { Truck, Zap, Share2 } from "lucide-react";
+import { Heart, Truck, Zap, Share2 } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "./catalog-utils";
 import { shareProductWhatsApp } from "@/lib/share";
@@ -14,9 +14,11 @@ interface ProductCardProps {
   brl: number;
   onClick: () => void;
   activeDeal?: ActiveDeal | null;
+  wishlisted?: boolean;
+  onToggleWishlist?: (e: React.MouseEvent) => void;
 }
 
-export function ProductCard({ product, brl, onClick, activeDeal }: ProductCardProps) {
+export function ProductCard({ product, brl, onClick, activeDeal, wishlisted, onToggleWishlist }: ProductCardProps) {
   const { rating, reviews } = fakeRating(product.name);
   const bestSeller = isBestSeller(product.name);
   const prevPrice = fakePreviousPrice(brl, product.name);
@@ -36,13 +38,27 @@ export function ProductCard({ product, brl, onClick, activeDeal }: ProductCardPr
         </div>
       ) : null}
 
-      <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden">
+      <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden relative">
         <img
           src={product.image_url}
           alt={product.name}
           className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform"
           loading="lazy"
         />
+        {onToggleWishlist && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={(e) => { e.stopPropagation(); onToggleWishlist(e); }}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); onToggleWishlist(e as unknown as React.MouseEvent); } }}
+            className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-md hover:bg-white transition-colors z-10"
+          >
+            <Heart
+              size={16}
+              className={wishlisted ? "fill-red-500 text-red-500" : "text-gray-400"}
+            />
+          </div>
+        )}
       </div>
 
       <div className="p-3 pt-1 flex flex-col gap-1 flex-1 border-t border-gray-100">
