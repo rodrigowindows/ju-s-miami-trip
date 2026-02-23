@@ -278,20 +278,30 @@ export default function PublicCatalog() {
                       {product.name}
                     </p>
 
-                    {/* Rating + sales */}
-                    <div className="flex items-center gap-1.5 mt-1.5">
-                      {product.rating > 0 && (
+                    {/* Stars + review count */}
+                    {product.rating > 0 && (
+                      <div className="flex items-center gap-1 mt-1.5">
                         <div className="flex items-center gap-0.5">
-                          <Star size={10} className="text-amber-400 fill-amber-400" />
-                          <span className="text-[10px] font-semibold text-foreground">{product.rating}</span>
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              size={10}
+                              className={
+                                s <= Math.round(product.rating)
+                                  ? "text-amber-400 fill-amber-400"
+                                  : "text-gray-200"
+                              }
+                            />
+                          ))}
                         </div>
-                      )}
-                      {product.sales_count > 0 && (
-                        <span className="text-[10px] text-muted-foreground">
-                          ({product.sales_count} vendas)
-                        </span>
-                      )}
-                    </div>
+                        <span className="text-[10px] font-semibold text-foreground">{product.rating}</span>
+                        {product.review_count > 0 && (
+                          <span className="text-[10px] text-muted-foreground">
+                            ({product.review_count})
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                     <div className="mt-2 space-y-0.5">
                       <p className="text-xs text-muted-foreground">
@@ -409,6 +419,36 @@ export default function PublicCatalog() {
                     )}
                   </div>
 
+                  {/* Rating summary bar */}
+                  {reviews.length > 0 && (
+                    <div className="flex items-center gap-3 bg-amber-50 rounded-lg p-3 mb-3">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-foreground">{selectedProduct.rating}</p>
+                        <StarRating rating={selectedProduct.rating} size={12} />
+                        <p className="text-[10px] text-muted-foreground mt-0.5">{reviews.length} avaliacoes</p>
+                      </div>
+                      <div className="flex-1 space-y-0.5">
+                        {[5, 4, 3, 2, 1].map((star) => {
+                          const count = reviews.filter((r) => r.rating === star).length;
+                          const pct = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+                          return (
+                            <div key={star} className="flex items-center gap-1.5">
+                              <span className="text-[10px] text-muted-foreground w-3 text-right">{star}</span>
+                              <Star size={8} className="text-amber-400 fill-amber-400 shrink-0" />
+                              <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-amber-400 rounded-full transition-all"
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                              <span className="text-[10px] text-muted-foreground w-4">{count}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {reviewsLoading ? (
                     <div className="flex items-center justify-center py-4">
                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -423,11 +463,14 @@ export default function PublicCatalog() {
                         <div key={review.id} className="bg-muted/30 rounded-lg p-3 space-y-1.5">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-[10px] font-bold shrink-0">
+                                {review.reviewer_name.charAt(0)}
+                              </div>
                               <span className="text-xs font-semibold">{review.reviewer_name}</span>
                               {review.verified_purchase && (
                                 <span className="flex items-center gap-0.5 text-[10px] text-green-600 font-medium">
                                   <CheckCircle2 size={10} />
-                                  Compra verificada
+                                  Verificada
                                 </span>
                               )}
                             </div>
