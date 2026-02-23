@@ -5,19 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Loader2 } from "lucide-react";
 import { lovable } from "@/integrations/lovable/index";
 
-export default function Login() {
+export default function Register() {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn, profile, user } = useAuth();
+  const { signUp, user, profile } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect based on role once profile is loaded
   useEffect(() => {
     if (user && profile) {
       if (profile.role === "admin") {
@@ -33,35 +35,61 @@ export default function Login() {
     setError(null);
     setLoading(true);
 
-    const { error: signInError } = await signIn(email, password);
+    const { error: signUpError } = await signUp(email, password, fullName, phone || undefined);
 
-    if (signInError) {
-      setError(signInError);
+    if (signUpError) {
+      setError(signUpError);
       setLoading(false);
       return;
     }
 
-    // The useEffect above will handle redirect once profile loads
+    setSuccess(true);
     setLoading(false);
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader className="text-center">
+            <CardTitle className="font-display text-2xl">Conta criada! 🎉</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Sua conta foi criada com sucesso. Você já pode fazer login.
+            </p>
+            <Button className="w-full" onClick={() => navigate("/login")}>
+              Ir para Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="font-display text-2xl">
-            MalaBridge
-          </CardTitle>
-          <p className="text-sm text-muted-foreground mt-1">
-            Entre na sua conta de cliente
-          </p>
+          <CardTitle className="font-display text-2xl">MalaBridge</CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">Crie sua conta</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="fullName">Nome completo</Label>
               <Input
-                id="email"
+                id="fullName"
+                placeholder="Seu nome"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reg-email">Email</Label>
+              <Input
+                id="reg-email"
                 type="email"
                 placeholder="seu@email.com"
                 value={email}
@@ -70,13 +98,23 @@ export default function Login() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="phone">WhatsApp (opcional)</Label>
               <Input
-                id="password"
+                id="phone"
+                placeholder="+55 11 99999-9999"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reg-password">Senha</Label>
+              <Input
+                id="reg-password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="Mínimo 6 caracteres"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                minLength={6}
                 required
               />
             </div>
@@ -89,7 +127,7 @@ export default function Login() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Entrar
+              Criar conta
             </Button>
           </form>
 
@@ -117,13 +155,13 @@ export default function Login() {
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
-            Entrar com Google
+            Cadastrar com Google
           </Button>
 
           <p className="text-center text-sm text-muted-foreground mt-4">
-            Não tem conta?{" "}
-            <Link to="/register" className="text-primary hover:underline font-medium">
-              Cadastre-se
+            Já tem conta?{" "}
+            <Link to="/login" className="text-primary hover:underline font-medium">
+              Fazer login
             </Link>
           </p>
         </CardContent>
