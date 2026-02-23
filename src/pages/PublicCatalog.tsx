@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/button";
 import {
   Loader2, X, LogIn, Search, Truck,
   HelpCircle, Send, User, CheckCircle2,
-  Zap, Timer, Flame,
+  Zap, Timer, Flame, Share2,
   ShoppingCart, Plane, Package, MessageCircle,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
+import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
@@ -650,13 +651,21 @@ export default function PublicCatalog() {
                     )}
                   </div>
 
-                  <Link
-                    to="/login"
-                    className="flex items-center justify-center gap-2 w-full bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm mt-2 transition-colors border border-[#FCD200]"
-                  >
-                    <LogIn size={16} />
-                    Fazer login para comprar
-                  </Link>
+                  <div className="flex gap-2 mt-2">
+                    <Link
+                      to="/login"
+                      className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]"
+                    >
+                      <LogIn size={16} />
+                      Login para comprar
+                    </Link>
+                    <button
+                      onClick={() => shareProductWhatsApp(selectedProduct, brl)}
+                      className="flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-full py-2.5 px-4 font-medium text-sm transition-colors"
+                    >
+                      <Share2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </>
             );
