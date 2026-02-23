@@ -3,34 +3,19 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import type { CatalogProduct, ProductQuestion } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
-  Loader2,
-  X,
-  LogIn,
-  Search,
-  Star,
-  Truck,
-  ChevronDown,
-  SlidersHorizontal,
-  HelpCircle,
-  Send,
-  User,
-  CheckCircle2,
+  Loader2, X, LogIn, Search, Truck,
+  HelpCircle, Send, User, CheckCircle2,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
 import { useToast } from "@/hooks/use-toast";
-
-const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion"] as const;
-
-const SORT_OPTIONS = [
-  { value: "relevance", label: "Relevância" },
-  { value: "price_asc", label: "Menor preço" },
-  { value: "price_desc", label: "Maior preço" },
-  { value: "name", label: "A-Z" },
-] as const;
+import { ProductCard } from "@/components/catalog/ProductCard";
+import { SortDropdown } from "@/components/catalog/SortDropdown";
+import { StarRating } from "@/components/catalog/StarRating";
+import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORIES } from "@/components/catalog/catalog-utils";
 
 function useCatalog() {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
@@ -98,45 +83,6 @@ function useExchangeRate() {
   return { convert, effectiveRate };
 }
 
-function fakeRating(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
-  const rating = 3.5 + (Math.abs(hash) % 15) / 10;
-  const reviews = 50 + (Math.abs(hash) % 950);
-  return { rating: Math.min(rating, 5), reviews };
-}
-
-function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
-  const full = Math.floor(rating);
-  const half = rating - full >= 0.5;
-  return (
-    <div className="flex items-center gap-1">
-      <div className="flex items-center">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Star
-            key={i}
-            size={12}
-            className={
-              i < full
-                ? "fill-amber-400 text-amber-400"
-                : i === full && half
-                ? "fill-amber-400/50 text-amber-400"
-                : "text-gray-300"
-            }
-          />
-        ))}
-      </div>
-      <span className="text-xs text-sky-700">{reviews.toLocaleString("pt-BR")}</span>
-    </div>
-  );
-}
-
-function isBestSeller(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
-  return Math.abs(hash) % 4 === 0;
-}
-
 export default function PublicCatalog() {
   const { products, loading } = useCatalog();
   const { convert } = useExchangeRate();
@@ -145,7 +91,6 @@ export default function PublicCatalog() {
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("relevance");
-  const [showSort, setShowSort] = useState(false);
 
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { toast } = useToast();
@@ -210,7 +155,7 @@ export default function PublicCatalog() {
 
   return (
     <div className="min-h-screen bg-[#EAEDED]">
-      {/* Amazon-style Header */}
+      {/* Header */}
       <header className="sticky top-0 z-40 bg-[#131921] text-white">
         <div className="px-4 py-2 flex items-center gap-3">
           <Link to="/" className="shrink-0">
@@ -265,34 +210,7 @@ export default function PublicCatalog() {
             </>
           )}
         </p>
-        <div className="relative">
-          <button
-            onClick={() => setShowSort(!showSort)}
-            className="flex items-center gap-1 text-sm text-gray-700 hover:text-gray-900 bg-gray-100 border border-gray-300 rounded-lg px-3 py-1.5"
-          >
-            <SlidersHorizontal size={14} />
-            Ordenar
-            <ChevronDown size={14} />
-          </button>
-          {showSort && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setShowSort(false)} />
-              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1 min-w-[160px]">
-                {SORT_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => { setSortBy(opt.value); setShowSort(false); }}
-                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                      sortBy === opt.value ? "font-semibold text-[#C45500]" : "text-gray-700"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+        <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
       </div>
 
       {/* Product Grid */}
@@ -315,71 +233,14 @@ export default function PublicCatalog() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {filtered.map((product) => {
-              const { rating, reviews } = fakeRating(product.name);
-              const bestSeller = isBestSeller(product.name);
-              const brl = convert(product.price_usd);
-              const fakePreviousPrice = brl * (1 + (Math.abs(product.name.charCodeAt(0)) % 30 + 10) / 100);
-
-              return (
-                <button
-                  key={product.id}
-                  onClick={() => setSelectedProduct(product)}
-                  className="bg-white rounded-lg overflow-hidden text-left hover:shadow-lg transition-shadow group flex flex-col border border-gray-200"
-                >
-                  {/* Badge */}
-                  {bestSeller && (
-                    <div className="bg-[#E47911] text-white text-[10px] font-bold px-2 py-0.5">
-                      Mais vendido
-                    </div>
-                  )}
-
-                  {/* Product Image */}
-                  <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden">
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="p-3 pt-1 flex flex-col gap-1 flex-1 border-t border-gray-100">
-                    <p className="text-sm text-gray-900 leading-tight line-clamp-2 group-hover:text-[#C45500] transition-colors">
-                      {product.name}
-                    </p>
-
-                    <p className="text-[11px] text-gray-500">{product.brand}</p>
-
-                    <StarRating rating={rating} reviews={reviews} />
-
-                    <div className="mt-auto pt-1">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-xs text-gray-900">R$</span>
-                        <span className="text-xl font-bold text-gray-900">
-                          {Math.floor(brl).toLocaleString("pt-BR")}
-                        </span>
-                        <span className="text-xs text-gray-900">
-                          {(brl % 1).toFixed(2).slice(1).replace(".", ",")}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-500 line-through">
-                        R$ {fakePreviousPrice.toFixed(2).replace(".", ",")}
-                      </p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">
-                        US$ {product.price_usd.toFixed(2)}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-1 mt-1">
-                      <Truck size={12} className="text-[#007600]" />
-                      <span className="text-[11px] text-[#007600] font-medium">Entrega via viagem</span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
+            {filtered.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                brl={convert(product.price_usd)}
+                onClick={() => setSelectedProduct(product)}
+              />
+            ))}
           </div>
         )}
       </main>
@@ -391,7 +252,7 @@ export default function PublicCatalog() {
             const { rating, reviews } = fakeRating(selectedProduct.name);
             const brl = convert(selectedProduct.price_usd);
             const bestSeller = isBestSeller(selectedProduct.name);
-            const fakePreviousPrice = brl * (1 + (Math.abs(selectedProduct.name.charCodeAt(0)) % 30 + 10) / 100);
+            const prevPrice = fakePreviousPrice(brl, selectedProduct.name);
 
             return (
               <>
@@ -443,7 +304,7 @@ export default function PublicCatalog() {
 
                   <div className="border-t border-gray-200 pt-3">
                     <p className="text-xs text-gray-500 line-through">
-                      R$ {fakePreviousPrice.toFixed(2).replace(".", ",")}
+                      R$ {prevPrice.toFixed(2).replace(".", ",")}
                     </p>
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-2xl font-bold text-gray-900">
