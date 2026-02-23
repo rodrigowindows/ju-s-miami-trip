@@ -144,7 +144,7 @@ export default function Register() {
             className="w-full"
             onClick={async () => {
               const { error } = await lovable.auth.signInWithOAuth("google", {
-                redirect_uri: window.location.origin,
+                redirect_uri: window.location.origin + "/login",
               });
               if (error) setError(String(error));
             }}
