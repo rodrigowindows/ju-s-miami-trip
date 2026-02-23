@@ -294,6 +294,13 @@ export default function PublicCatalog() {
             />
           </div>
           <Link
+            to="/rastreio"
+            className="shrink-0 flex items-center gap-1.5 text-white text-xs hover:text-amber-300 transition-colors"
+          >
+            <Truck size={16} />
+            <span className="hidden sm:inline">Rastrear</span>
+          </Link>
+          <Link
             to="/login"
             className="shrink-0 flex items-center gap-1.5 text-white text-xs hover:text-amber-300 transition-colors"
           >
