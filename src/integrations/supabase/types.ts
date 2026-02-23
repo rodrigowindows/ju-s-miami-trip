@@ -263,6 +263,53 @@ export type Database = {
           },
         ]
       }
+      product_deals: {
+        Row: {
+          active: boolean
+          claimed_count: number
+          created_at: string
+          deal_type: string
+          discount_percent: number
+          ends_at: string
+          id: string
+          max_claims: number | null
+          product_id: string
+          starts_at: string
+        }
+        Insert: {
+          active?: boolean
+          claimed_count?: number
+          created_at?: string
+          deal_type?: string
+          discount_percent?: number
+          ends_at?: string
+          id?: string
+          max_claims?: number | null
+          product_id: string
+          starts_at?: string
+        }
+        Update: {
+          active?: boolean
+          claimed_count?: number
+          created_at?: string
+          deal_type?: string
+          discount_percent?: number
+          ends_at?: string
+          id?: string
+          max_claims?: number | null
+          product_id?: string
+          starts_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_deals_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_questions: {
         Row: {
           answer: string | null
@@ -297,6 +344,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "product_questions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          product_id: string
+          rating: number
+          reviewer_name: string
+          verified_purchase: boolean
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          product_id: string
+          rating?: number
+          reviewer_name?: string
+          verified_purchase?: boolean
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          product_id?: string
+          rating?: number
+          reviewer_name?: string
+          verified_purchase?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "catalog_products"
@@ -339,44 +424,6 @@ export type Database = {
           wallet_balance?: number
         }
         Relationships: []
-      }
-      product_reviews: {
-        Row: {
-          comment: string | null
-          created_at: string
-          id: string
-          product_id: string
-          rating: number
-          reviewer_name: string
-          verified_purchase: boolean
-        }
-        Insert: {
-          comment?: string | null
-          created_at?: string
-          id?: string
-          product_id: string
-          rating?: number
-          reviewer_name?: string
-          verified_purchase?: boolean
-        }
-        Update: {
-          comment?: string | null
-          created_at?: string
-          id?: string
-          product_id?: string
-          rating?: number
-          reviewer_name?: string
-          verified_purchase?: boolean
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_reviews_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "catalog_products"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       promotions: {
         Row: {
