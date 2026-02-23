@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import type { CatalogProduct, ProductQuestion, ProductReview } from "@/types";
 import type { Tables } from "@/integrations/supabase/types";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -539,6 +539,7 @@ export default function PublicCatalog() {
                       <DialogTitle className="text-base font-normal text-gray-900 leading-snug">
                         {selectedProduct.name}
                       </DialogTitle>
+                      <DialogDescription className="sr-only">Detalhes do produto {selectedProduct.name}</DialogDescription>
                     </DialogHeader>
                     <p className="text-sm text-sky-700 mt-1">
                       Visitar loja de {selectedProduct.brand}

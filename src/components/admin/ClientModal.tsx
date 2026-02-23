@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Wallet, Phone, MapPin, Calendar, Users, Package } from 'lucide-react';
 import StatusBadge from '@/components/shared/StatusBadge';
@@ -26,6 +26,7 @@ export default function ClientModal({ open, onClose, client, onAdjustWallet }: C
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{client.full_name}</DialogTitle>
+          <DialogDescription className="sr-only">Detalhes do cliente</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-5">
