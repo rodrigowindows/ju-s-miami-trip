@@ -22,7 +22,14 @@ export function useWhatsAppTemplates() {
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      return (data ?? []) as WhatsAppTemplate[];
+      return (data ?? []).map((d) => ({
+        id: d.id,
+        slug: d.name,
+        title: d.name,
+        icon: 'MessageSquare',
+        template_text: d.template,
+        created_at: d.created_at,
+      })) as WhatsAppTemplate[];
     },
   });
 }
@@ -105,7 +112,7 @@ export function useCreateTemplate() {
     }) => {
       const { data, error } = await supabase
         .from("whatsapp_templates")
-        .insert(input)
+        .insert({ name: input.title, template: input.template_text })
         .select()
         .single();
       if (error) throw error;
@@ -128,9 +135,12 @@ export function useUpdateTemplate() {
       icon?: string;
       template_text?: string;
     }) => {
+      const dbUpdates: Record<string, string> = {};
+      if (updates.title) dbUpdates.name = updates.title;
+      if (updates.template_text) dbUpdates.template = updates.template_text;
       const { data, error } = await supabase
         .from("whatsapp_templates")
-        .update(updates)
+        .update(dbUpdates)
         .eq("id", id)
         .select()
         .single();
