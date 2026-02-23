@@ -1,21 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import type { CatalogProduct } from "@/types";
+import type { CatalogProduct, ProductReview } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, X, ArrowLeft, LogIn } from "lucide-react";
+import {
+  Loader2,
+  X,
+  ArrowLeft,
+  LogIn,
+  Star,
+  TrendingUp,
+  Flame,
+  ShoppingBag,
+  MessageCircle,
+  CheckCircle2,
+} from "lucide-react";
 import Logo from "@/components/shared/Logo";
 
-const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion"] as const;
+const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion", "Supplements"] as const;
+
+type SortTab = "todos" | "mais_vendidos" | "trending";
 
 function useCatalog() {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetch() {
+    async function load() {
       const { data } = await supabase
         .from("catalog_products")
         .select("*")
@@ -24,23 +37,47 @@ function useCatalog() {
       setProducts((data as CatalogProduct[]) ?? []);
       setLoading(false);
     }
-    fetch();
+    load();
   }, []);
 
   return { products, loading };
+}
+
+function useReviews(productId: string | null) {
+  const [reviews, setReviews] = useState<ProductReview[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!productId) {
+      setReviews([]);
+      return;
+    }
+    setLoading(true);
+    supabase
+      .from("product_reviews")
+      .select("*")
+      .eq("product_id", productId)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        setReviews((data as ProductReview[]) ?? []);
+        setLoading(false);
+      });
+  }, [productId]);
+
+  return { reviews, loading };
 }
 
 function useExchangeRate() {
   const [effectiveRate, setEffectiveRate] = useState(6.05 * 1.08);
 
   useEffect(() => {
-    async function fetch() {
+    async function load() {
       const { data, error } = await supabase.functions.invoke("get-exchange-rate");
       if (!error && data) {
         setEffectiveRate(data.effective_rate);
       }
     }
-    fetch();
+    load();
   }, []);
 
   function convert(usd: number) {
@@ -50,17 +87,56 @@ function useExchangeRate() {
   return { convert };
 }
 
+function StarRating({ rating, size = 12 }: { rating: number; size?: number }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={size}
+          className={
+            star <= Math.round(rating)
+              ? "text-amber-400 fill-amber-400"
+              : "text-gray-300"
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function PublicCatalog() {
   const { products, loading } = useCatalog();
   const { convert } = useExchangeRate();
 
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
+  const [activeTab, setActiveTab] = useState<SortTab>("todos");
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
+  const { reviews, loading: reviewsLoading } = useReviews(selectedProduct?.id ?? null);
 
-  const filtered =
-    activeCategory === "Todos"
-      ? products
-      : products.filter((p) => p.category === activeCategory);
+  const filtered = useMemo(() => {
+    let list = products;
+
+    // Category filter
+    if (activeCategory !== "Todos") {
+      list = list.filter((p) => p.category === activeCategory);
+    }
+
+    // Sort tab
+    if (activeTab === "mais_vendidos") {
+      list = [...list].sort((a, b) => b.sales_count - a.sales_count);
+    } else if (activeTab === "trending") {
+      list = list.filter((p) => p.trending);
+    }
+
+    return list;
+  }, [products, activeCategory, activeTab]);
+
+  const sortTabs: { key: SortTab; label: string; icon: typeof ShoppingBag }[] = [
+    { key: "todos", label: "Todos", icon: ShoppingBag },
+    { key: "mais_vendidos", label: "Mais Vendidos", icon: Flame },
+    { key: "trending", label: "Trending", icon: TrendingUp },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -87,6 +163,27 @@ export default function PublicCatalog() {
           Produtos populares dos EUA
         </p>
 
+        {/* Sort tabs */}
+        <div className="flex gap-1 mb-2">
+          {sortTabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  activeTab === tab.key
+                    ? "bg-violet-600 text-white"
+                    : "bg-muted/60 text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Icon size={13} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Category filters */}
         <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
           {CATEGORIES.map((cat) => (
@@ -95,7 +192,7 @@ export default function PublicCatalog() {
               onClick={() => setActiveCategory(cat)}
               className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
                 activeCategory === cat
-                  ? "bg-violet-600 text-white"
+                  ? "bg-foreground text-background"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
@@ -112,50 +209,109 @@ export default function PublicCatalog() {
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : filtered.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground py-20">
-            Nenhum produto encontrado.
-          </p>
-        ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {filtered.map((product) => (
-              <button
-                key={product.id}
-                onClick={() => setSelectedProduct(product)}
-                className="bg-white rounded-xl border border-border overflow-hidden text-left hover:shadow-md transition-shadow"
-              >
-                <div className="aspect-square bg-muted/50 relative overflow-hidden">
-                  <img
-                    src={product.image_url}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-3">
-                  <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">
-                    {product.brand}
-                  </p>
-                  <p className="text-sm font-semibold text-foreground leading-tight mt-0.5 line-clamp-2">
-                    {product.name}
-                  </p>
-                  <div className="mt-2 space-y-0.5">
-                    <p className="text-xs text-muted-foreground">
-                      US$ {product.price_usd.toFixed(2)}
-                    </p>
-                    <p className="text-sm font-bold text-violet-600">
-                      R$ {convert(product.price_usd).toFixed(2).replace(".", ",")}
-                    </p>
-                  </div>
-                </div>
-              </button>
-            ))}
+          <div className="text-center py-20">
+            {activeTab === "trending" ? (
+              <>
+                <TrendingUp size={40} className="mx-auto text-muted-foreground/30 mb-3" />
+                <p className="text-sm text-muted-foreground">Nenhum produto em alta nesta categoria.</p>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">Nenhum produto encontrado.</p>
+            )}
           </div>
+        ) : (
+          <>
+            {/* Count + sort info */}
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs text-muted-foreground">
+                {filtered.length} produto{filtered.length !== 1 ? "s" : ""}
+              </p>
+              {activeTab === "mais_vendidos" && (
+                <p className="text-xs text-amber-600 font-medium flex items-center gap-1">
+                  <Flame size={12} />
+                  Ordenados por vendas
+                </p>
+              )}
+              {activeTab === "trending" && (
+                <p className="text-xs text-violet-600 font-medium flex items-center gap-1">
+                  <TrendingUp size={12} />
+                  Em alta agora
+                </p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {filtered.map((product) => (
+                <button
+                  key={product.id}
+                  onClick={() => setSelectedProduct(product)}
+                  className="bg-white rounded-xl border border-border overflow-hidden text-left hover:shadow-md transition-shadow group"
+                >
+                  <div className="aspect-square bg-muted/50 relative overflow-hidden">
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                    {/* Badges */}
+                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+                      {product.trending && (
+                        <Badge className="bg-violet-600 text-white text-[9px] border-0 gap-0.5 px-1.5">
+                          <TrendingUp size={9} />
+                          Trending
+                        </Badge>
+                      )}
+                      {product.sales_count >= 150 && (
+                        <Badge className="bg-amber-500 text-white text-[9px] border-0 gap-0.5 px-1.5">
+                          <Flame size={9} />
+                          Best Seller
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">
+                      {product.brand}
+                    </p>
+                    <p className="text-sm font-semibold text-foreground leading-tight mt-0.5 line-clamp-2">
+                      {product.name}
+                    </p>
+
+                    {/* Rating + sales */}
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      {product.rating > 0 && (
+                        <div className="flex items-center gap-0.5">
+                          <Star size={10} className="text-amber-400 fill-amber-400" />
+                          <span className="text-[10px] font-semibold text-foreground">{product.rating}</span>
+                        </div>
+                      )}
+                      {product.sales_count > 0 && (
+                        <span className="text-[10px] text-muted-foreground">
+                          ({product.sales_count} vendas)
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="mt-2 space-y-0.5">
+                      <p className="text-xs text-muted-foreground">
+                        US$ {product.price_usd.toFixed(2)}
+                      </p>
+                      <p className="text-sm font-bold text-violet-600">
+                        R$ {convert(product.price_usd).toFixed(2).replace(".", ",")}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </>
         )}
       </main>
 
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-sm mx-auto p-0 gap-0 rounded-2xl overflow-hidden">
+        <DialogContent className="max-w-sm mx-auto p-0 gap-0 rounded-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
           {selectedProduct && (
             <>
               <div className="aspect-square bg-muted/50 relative">
@@ -170,12 +326,36 @@ export default function PublicCatalog() {
                 >
                   <X size={16} />
                 </button>
+                {/* Badges on image */}
+                <div className="absolute bottom-3 left-3 flex gap-1.5">
+                  {selectedProduct.trending && (
+                    <Badge className="bg-violet-600 text-white text-[10px] border-0 gap-1">
+                      <TrendingUp size={10} />
+                      Trending
+                    </Badge>
+                  )}
+                  {selectedProduct.sales_count >= 150 && (
+                    <Badge className="bg-amber-500 text-white text-[10px] border-0 gap-1">
+                      <Flame size={10} />
+                      Best Seller
+                    </Badge>
+                  )}
+                </div>
               </div>
-              <div className="p-5 space-y-3">
+              <div className="p-5 space-y-4">
                 <div>
-                  <Badge variant="secondary" className="text-[10px] font-medium mb-2">
-                    {selectedProduct.category}
-                  </Badge>
+                  <div className="flex items-start justify-between gap-2">
+                    <Badge variant="secondary" className="text-[10px] font-medium mb-2">
+                      {selectedProduct.category}
+                    </Badge>
+                    {/* Rating */}
+                    {selectedProduct.rating > 0 && (
+                      <div className="flex items-center gap-1">
+                        <StarRating rating={selectedProduct.rating} size={11} />
+                        <span className="text-xs font-semibold">{selectedProduct.rating}</span>
+                      </div>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wide">
                     {selectedProduct.brand}
                   </p>
@@ -185,6 +365,16 @@ export default function PublicCatalog() {
                     </DialogTitle>
                   </DialogHeader>
                 </div>
+
+                {/* Sales social proof */}
+                {selectedProduct.sales_count > 0 && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+                    <ShoppingBag size={14} className="text-violet-600" />
+                    <span>
+                      <strong className="text-foreground">{selectedProduct.sales_count}</strong> pessoas ja compraram
+                    </span>
+                  </div>
+                )}
 
                 {selectedProduct.description && (
                   <p className="text-sm text-muted-foreground leading-relaxed">
@@ -205,6 +395,51 @@ export default function PublicCatalog() {
                       R$ {convert(selectedProduct.price_usd).toFixed(2).replace(".", ",")}
                     </p>
                   </div>
+                </div>
+
+                {/* Reviews section */}
+                <div className="border-t pt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <MessageCircle size={16} className="text-violet-600" />
+                    <h3 className="font-semibold text-sm">
+                      Avaliacoes de clientes
+                    </h3>
+                    {reviews.length > 0 && (
+                      <Badge variant="secondary" className="text-[10px]">{reviews.length}</Badge>
+                    )}
+                  </div>
+
+                  {reviewsLoading ? (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : reviews.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-3">
+                      Nenhuma avaliacao ainda.
+                    </p>
+                  ) : (
+                    <div className="space-y-3 max-h-60 overflow-y-auto">
+                      {reviews.map((review) => (
+                        <div key={review.id} className="bg-muted/30 rounded-lg p-3 space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-semibold">{review.reviewer_name}</span>
+                              {review.verified_purchase && (
+                                <span className="flex items-center gap-0.5 text-[10px] text-green-600 font-medium">
+                                  <CheckCircle2 size={10} />
+                                  Compra verificada
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <StarRating rating={review.rating} size={10} />
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            {review.comment}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <Link
