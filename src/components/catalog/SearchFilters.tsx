@@ -41,7 +41,7 @@ export default function SearchFilters({ minPrice, maxPrice, setMinPrice, setMaxP
         <div className="px-4 pb-4 border-t pt-3">
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex-1 min-w-[100px]">
-              <label className="text-xs text-gray-500 mb-1 block font-medium">Mín (USD)</label>
+              <label className="text-xs text-gray-500 mb-1 block font-medium">Mín (R$)</label>
               <Input
                 className="h-9 text-sm"
                 type="number"
@@ -52,7 +52,7 @@ export default function SearchFilters({ minPrice, maxPrice, setMinPrice, setMaxP
               />
             </div>
             <div className="flex-1 min-w-[100px]">
-              <label className="text-xs text-gray-500 mb-1 block font-medium">Máx (USD)</label>
+              <label className="text-xs text-gray-500 mb-1 block font-medium">Máx (R$)</label>
               <Input
                 className="h-9 text-sm"
                 type="number"

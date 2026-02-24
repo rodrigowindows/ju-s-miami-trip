@@ -328,8 +328,8 @@ export default function PublicCatalog() {
       list = list.filter((p) => p.availability_type === availabilityFilter);
     }
 
-    if (minPrice > 0) list = list.filter((p) => p.price_usd >= minPrice);
-    if (maxPrice > 0) list = list.filter((p) => p.price_usd <= maxPrice);
+    if (minPrice > 0) list = list.filter((p) => convert(p.price_usd) >= minPrice);
+    if (maxPrice > 0) list = list.filter((p) => convert(p.price_usd) <= maxPrice);
 
     switch (sortBy) {
       case "price_asc":
@@ -341,7 +341,7 @@ export default function PublicCatalog() {
       default:
         return list;
     }
-  }, [products, activeCategory, searchQuery, availabilityFilter, minPrice, maxPrice, sortBy]);
+  }, [products, activeCategory, searchQuery, availabilityFilter, minPrice, maxPrice, sortBy, convert]);
 
   return (
     <div className="min-h-screen bg-white">
