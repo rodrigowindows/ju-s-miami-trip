@@ -1,11 +1,22 @@
 export interface MegaMenuCategory {
   label: string;
+  filterCategory: string;
   subcategories: string[];
+}
+
+const BEAUTY_LABELS = ["Maquiagem", "Skincare", "Perfumes"];
+
+export function getCategoryFilter(label: string): string {
+  if (BEAUTY_LABELS.includes(label)) return "Beauty";
+  if (label === "Eletrônicos") return "Tech";
+  if (label === "Roupas") return "Fashion";
+  return "Lifestyle";
 }
 
 export const MEGA_MENU_CATEGORIES: MegaMenuCategory[] = [
   {
     label: "Maquiagem",
+    filterCategory: "Beauty",
     subcategories: [
       "Rare Beauty",
       "Fenty Beauty",
@@ -43,6 +54,7 @@ export const MEGA_MENU_CATEGORIES: MegaMenuCategory[] = [
   },
   {
     label: "Skincare",
+    filterCategory: "Beauty",
     subcategories: [
       "CeraVe",
       "La Roche-Posay",
@@ -65,6 +77,7 @@ export const MEGA_MENU_CATEGORIES: MegaMenuCategory[] = [
   },
   {
     label: "Perfumes",
+    filterCategory: "Beauty",
     subcategories: [
       "Chanel",
       "Dior",
@@ -86,6 +99,7 @@ export const MEGA_MENU_CATEGORIES: MegaMenuCategory[] = [
   },
   {
     label: "Eletrônicos",
+    filterCategory: "Tech",
     subcategories: [
       "Apple",
       "Samsung",
@@ -103,6 +117,7 @@ export const MEGA_MENU_CATEGORIES: MegaMenuCategory[] = [
   },
   {
     label: "Roupas",
+    filterCategory: "Fashion",
     subcategories: [
       "Nike",
       "Adidas",
@@ -120,6 +135,7 @@ export const MEGA_MENU_CATEGORIES: MegaMenuCategory[] = [
   },
   {
     label: "Bolsas",
+    filterCategory: "Lifestyle",
     subcategories: [
       "Coach",
       "Michael Kors",

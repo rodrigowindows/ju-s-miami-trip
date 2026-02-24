@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { MEGA_MENU_CATEGORIES } from "./mega-menu-data";
+import { MEGA_MENU_CATEGORIES, getCategoryFilter } from "./mega-menu-data";
 
 interface MegaMenuProps {
   onSelectCategory: (category: string) => void;
@@ -33,6 +33,32 @@ export function MegaMenu({ onSelectCategory }: MegaMenuProps) {
     }, 150);
   }, []);
 
+  // Close on ESC key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpenCategory(null);
+        setMobileOpen(null);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Close on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpenCategory(null);
+      }
+    };
+    if (openCategory) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openCategory]);
+
+  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -43,26 +69,33 @@ export function MegaMenu({ onSelectCategory }: MegaMenuProps) {
     setMobileOpen((prev) => (prev === label ? null : label));
   };
 
+  const handleBrandClick = (filterCategory: string, closeMobile?: boolean) => {
+    onSelectCategory(filterCategory);
+    setOpenCategory(null);
+    if (closeMobile) setMobileOpen(null);
+  };
+
   const activeData = MEGA_MENU_CATEGORIES.find((c) => c.label === openCategory);
 
   return (
     <>
       {/* Desktop Mega Menu */}
       <div className="hidden md:block relative" ref={menuRef}>
-        <nav className="bg-[#232F3E] px-4">
+        <nav className="bg-[#232F3E] px-4" aria-label="Categorias de produtos">
           <div className="max-w-6xl mx-auto flex items-center gap-0">
             {MEGA_MENU_CATEGORIES.map((cat) => (
               <button
                 key={cat.label}
                 onMouseEnter={() => handleMouseEnter(cat.label)}
                 onMouseLeave={handleMouseLeave}
-                onClick={() => onSelectCategory(cat.label === "Maquiagem" || cat.label === "Skincare" || cat.label === "Perfumes" ? "Beauty" : cat.label === "Eletrônicos" ? "Tech" : cat.label === "Roupas" ? "Fashion" : "Lifestyle")}
-                className={`px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap ${
+                onClick={() => onSelectCategory(cat.filterCategory)}
+                aria-expanded={openCategory === cat.label}
+                aria-haspopup="true"
+                className={`px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap font-[Poppins,sans-serif] ${
                   openCategory === cat.label
                     ? "text-amber-300 bg-white/10"
                     : "text-gray-200 hover:text-white hover:bg-white/5"
                 }`}
-                style={{ fontFamily: "'Poppins', sans-serif" }}
               >
                 {cat.label}
               </button>
@@ -73,19 +106,14 @@ export function MegaMenu({ onSelectCategory }: MegaMenuProps) {
         {/* Dropdown Panel */}
         {openCategory && activeData && (
           <div
-            className="mega-menu-dropdown absolute left-0 right-0 bg-white z-[100]"
-            style={{
-              boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-              padding: "30px 40px",
-            }}
+            className="mega-menu-dropdown absolute left-0 right-0 bg-white z-[100] shadow-xl p-[30px_40px]"
+            role="menu"
+            aria-label={`Marcas de ${activeData.label}`}
             onMouseEnter={handleDropdownEnter}
             onMouseLeave={handleDropdownLeave}
           >
             <div className="max-w-6xl mx-auto">
-              <h3
-                className="text-base font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100"
-                style={{ fontFamily: "'Poppins', sans-serif", fontSize: "16px" }}
-              >
+              <h3 className="text-base font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100 font-[Poppins,sans-serif]">
                 {activeData.label}
               </h3>
               <div
@@ -95,31 +123,14 @@ export function MegaMenu({ onSelectCategory }: MegaMenuProps) {
                 }}
               >
                 {activeData.subcategories.map((brand) => (
-                  <a
+                  <button
                     key={brand}
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onSelectCategory(
-                        activeData.label === "Maquiagem" || activeData.label === "Skincare" || activeData.label === "Perfumes"
-                          ? "Beauty"
-                          : activeData.label === "Eletrônicos"
-                          ? "Tech"
-                          : activeData.label === "Roupas"
-                          ? "Fashion"
-                          : "Lifestyle"
-                      );
-                      setOpenCategory(null);
-                    }}
-                    className="text-gray-800 hover:text-[#E47911] transition-colors block"
-                    style={{
-                      fontFamily: "'Poppins', sans-serif",
-                      fontSize: "14px",
-                      lineHeight: "2",
-                    }}
+                    role="menuitem"
+                    onClick={() => handleBrandClick(activeData.filterCategory)}
+                    className="text-left text-gray-800 hover:text-[#E47911] transition-colors block font-[Poppins,sans-serif] text-sm leading-8"
                   >
                     {brand}
-                  </a>
+                  </button>
                 ))}
               </div>
             </div>
@@ -135,8 +146,8 @@ export function MegaMenu({ onSelectCategory }: MegaMenuProps) {
             <div key={cat.label} className="border-b border-white/10 last:border-b-0">
               <button
                 onClick={() => toggleMobileAccordion(cat.label)}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-200 hover:text-white hover:bg-white/5 transition-colors"
-                style={{ fontFamily: "'Poppins', sans-serif" }}
+                aria-expanded={isOpen}
+                className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-200 hover:text-white hover:bg-white/5 transition-colors font-[Poppins,sans-serif]"
               >
                 <span className="font-medium">{cat.label}</span>
                 <ChevronDown
@@ -151,34 +162,17 @@ export function MegaMenu({ onSelectCategory }: MegaMenuProps) {
                   opacity: isOpen ? 1 : 0,
                 }}
               >
-                <div className="px-4 pb-3 space-y-0.5">
+                <div className="px-4 pb-3 space-y-0.5" role="menu">
                   {cat.subcategories.map((brand) => (
-                    <a
+                    <button
                       key={brand}
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onSelectCategory(
-                          cat.label === "Maquiagem" || cat.label === "Skincare" || cat.label === "Perfumes"
-                            ? "Beauty"
-                            : cat.label === "Eletrônicos"
-                            ? "Tech"
-                            : cat.label === "Roupas"
-                            ? "Fashion"
-                            : "Lifestyle"
-                        );
-                        setMobileOpen(null);
-                      }}
-                      className="flex items-center gap-2 py-1.5 pl-3 text-gray-400 hover:text-[#E47911] transition-colors"
-                      style={{
-                        fontFamily: "'Poppins', sans-serif",
-                        fontSize: "13px",
-                        lineHeight: "2",
-                      }}
+                      role="menuitem"
+                      onClick={() => handleBrandClick(cat.filterCategory, true)}
+                      className="flex items-center gap-2 py-1.5 pl-3 text-gray-400 hover:text-[#E47911] transition-colors w-full text-left font-[Poppins,sans-serif] text-[13px] leading-8"
                     >
                       <ChevronRight size={12} className="shrink-0 opacity-50" />
                       {brand}
-                    </a>
+                    </button>
                   ))}
                 </div>
               </div>
