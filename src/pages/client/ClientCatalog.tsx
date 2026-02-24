@@ -212,13 +212,14 @@ export default function ClientCatalog() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((p) => (
               <ProductCard
                 key={p.id}
                 product={p}
                 brl={calcBRL(p.price_usd)}
                 onClick={() => handleSelectProduct(p)}
+                onAddToCart={() => handleAddToCart(p)}
                 wishlisted={(wishlistIds ?? []).includes(p.id)}
                 onToggleWishlist={() => handleToggleWishlist(p.id)}
               />
