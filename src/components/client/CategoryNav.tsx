@@ -15,62 +15,31 @@ interface Category {
 
 const categories: Category[] = [
   {
-    label: "Maquiagem",
-    slug: "maquiagem",
-    subcategories: [
-      {
-        title: "Rosto",
-        brands: ["Base", "Corretivo", "Contorno", "Blush", "Iluminador", "Primer", "Pó"],
-      },
-      {
-        title: "Olhos",
-        brands: ["Paleta de Sombras", "Máscara", "Delineador", "Lápis", "Glitter"],
-      },
-      {
-        title: "Lábios",
-        brands: ["Batom", "Gloss", "Lip Liner", "Lip Tint", "Bálsamo"],
-      },
-    ],
+    label: "Todos",
+    slug: "Todos",
+    subcategories: [],
   },
   {
-    label: "Skincare",
-    slug: "skincare",
+    label: "Beleza",
+    slug: "Beauty",
     subcategories: [
       {
-        title: "Limpeza",
-        brands: ["Sabonete Facial", "Água Micelar", "Esfoliante", "Tônico"],
+        title: "Maquiagem",
+        brands: ["Base", "Corretivo", "Contorno", "Blush", "Iluminador", "Paleta de Sombras", "Batom"],
       },
       {
-        title: "Hidratação",
-        brands: ["Sérum", "Creme Facial", "Máscara Facial", "Óleo Facial"],
+        title: "Skincare",
+        brands: ["Sérum", "Protetor Solar", "Vitamina C", "Creme Facial", "Água Micelar"],
       },
       {
-        title: "Proteção",
-        brands: ["Protetor Solar", "Anti-idade", "Vitamina C", "Retinol"],
-      },
-    ],
-  },
-  {
-    label: "Perfumes",
-    slug: "perfumes",
-    subcategories: [
-      {
-        title: "Feminino",
-        brands: ["Chanel", "Dior", "Lancôme", "Carolina Herrera", "Dolce & Gabbana"],
-      },
-      {
-        title: "Masculino",
-        brands: ["Dior Sauvage", "Bleu de Chanel", "Versace", "Paco Rabanne", "Hugo Boss"],
-      },
-      {
-        title: "Unissex",
-        brands: ["CK One", "Tom Ford", "Jo Malone", "Le Labo", "Maison Margiela"],
+        title: "Perfumes",
+        brands: ["Chanel", "Dior", "Lancôme", "Carolina Herrera", "Tom Ford"],
       },
     ],
   },
   {
     label: "Eletrônicos",
-    slug: "eletronicos",
+    slug: "Tech",
     subcategories: [
       {
         title: "Apple",
@@ -87,16 +56,16 @@ const categories: Category[] = [
     ],
   },
   {
-    label: "Roupas",
-    slug: "roupas",
+    label: "Moda",
+    slug: "Fashion",
     subcategories: [
       {
-        title: "Feminino",
-        brands: ["Vestidos", "Blusas", "Calças", "Saias", "Jaquetas"],
+        title: "Roupas",
+        brands: ["Vestidos", "Blusas", "Calças", "Camisetas", "Jaquetas"],
       },
       {
-        title: "Masculino",
-        brands: ["Camisetas", "Camisas", "Calças", "Bermudas", "Casacos"],
+        title: "Bolsas",
+        brands: ["Louis Vuitton", "Gucci", "Prada", "Michael Kors", "Coach"],
       },
       {
         title: "Marcas",
@@ -105,36 +74,32 @@ const categories: Category[] = [
     ],
   },
   {
-    label: "Bolsas",
-    slug: "bolsas",
+    label: "Lifestyle",
+    slug: "Lifestyle",
     subcategories: [
       {
-        title: "Luxo",
-        brands: ["Louis Vuitton", "Gucci", "Prada", "Michael Kors", "Coach"],
+        title: "Casa",
+        brands: ["Velas", "Difusores", "Organização", "Decoração"],
       },
       {
-        title: "Tipos",
-        brands: ["Tote", "Crossbody", "Clutch", "Mochila", "Carteira"],
+        title: "Bem-estar",
+        brands: ["Suplementos", "Fitness", "Yoga", "Aromaterapia"],
       },
       {
-        title: "Estilos",
-        brands: ["Casual", "Trabalho", "Festa", "Viagem", "Esportiva"],
+        title: "Viagem",
+        brands: ["Malas", "Nécessaires", "Adaptadores", "Acessórios"],
       },
     ],
-  },
-  {
-    label: "Todos os Produtos",
-    slug: "todos",
-    subcategories: [],
   },
 ];
 
 interface CategoryNavProps {
   mobile?: boolean;
+  compact?: boolean;
   onNavigate?: () => void;
 }
 
-export default function CategoryNav({ mobile = false, onNavigate }: CategoryNavProps) {
+export default function CategoryNav({ mobile = false, compact = false, onNavigate }: CategoryNavProps) {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [expandedMobile, setExpandedMobile] = useState<string | null>(null);
@@ -143,6 +108,23 @@ export default function CategoryNav({ mobile = false, onNavigate }: CategoryNavP
     navigate(`/client/catalog?category=${slug}`);
     onNavigate?.();
   };
+
+  // Compact version - horizontal scrollable chips
+  if (compact) {
+    return (
+      <nav className="px-4 py-2 flex gap-2 overflow-x-auto scrollbar-hide bg-white">
+        {categories.map((cat) => (
+          <button
+            key={cat.slug}
+            onClick={() => handleCategoryClick(cat.slug)}
+            className="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium font-poppins transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-black"
+          >
+            {cat.label}
+          </button>
+        ))}
+      </nav>
+    );
+  }
 
   // Mobile version - accordion style
   if (mobile) {

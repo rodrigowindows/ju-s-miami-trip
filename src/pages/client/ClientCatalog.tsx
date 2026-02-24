@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import { Heart, ShoppingCart, Search, Truck, Loader2, Plus, Check, Share2, Star, MessageSquare } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Heart, ShoppingCart, Truck, Loader2, Plus, Check, Share2, Star, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import EmptyState from "@/components/shared/EmptyState";
@@ -20,7 +20,6 @@ import { formatBRL } from "@/lib/format";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
-import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
 import { shareProductWhatsApp } from "@/lib/share";
 
@@ -52,7 +51,8 @@ function ClickableStars({ value, onChange }: { value: number; onChange: (v: numb
 }
 
 export default function ClientCatalog() {
-  const [category, setCategory] = useState("Todos");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const category = searchParams.get("category") || "Todos";
   const { data: products, isLoading } = useCatalogProducts(category);
   const { data: settings } = useSettings();
   const { user, profile } = useAuth();
@@ -62,7 +62,7 @@ export default function ClientCatalog() {
   const { recentIds, addViewed } = useRecentlyViewed();
 
   const [selected, setSelected] = useState<CatalogProduct | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchQuery = searchParams.get("q") || "";
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [justAdded, setJustAdded] = useState<string | null>(null);
 
@@ -146,22 +146,6 @@ export default function ClientCatalog() {
 
   return (
     <div className="space-y-0 -mx-4 -mt-4">
-      {/* Search Bar */}
-      <div className="bg-[#232F3E] px-4 py-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-          <Input
-            placeholder="Buscar produtos..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 h-9 rounded-lg bg-white text-gray-900 border-none text-sm focus-visible:ring-2 focus-visible:ring-amber-400"
-          />
-        </div>
-      </div>
-
-      {/* Category Nav with Icons */}
-      <CategoryNav active={category} onSelect={setCategory} variant="dark" />
-
       {/* Recently Viewed */}
       {recentIds.length > 0 && (
         <RecentlyViewed
@@ -203,7 +187,7 @@ export default function ClientCatalog() {
             {searchQuery && (
               <div className="text-center mt-2">
                 <button
-                  onClick={() => setSearchQuery("")}
+                  onClick={() => { const p = new URLSearchParams(searchParams); p.delete("q"); setSearchParams(p); }}
                   className="text-sm text-sky-700 hover:underline"
                 >
                   Limpar busca
