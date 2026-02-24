@@ -9,20 +9,10 @@ interface CategoryNavProps {
   variant?: "dark" | "light";
 }
 
-/** Map mega-menu labels → DB category */
-const SUBCATEGORY_MAP: Record<string, string> = {
-  Maquiagem: "Beauty",
-  Skincare: "Beauty",
-  Perfumes: "Beauty",
-  "Eletrônicos": "Tech",
-  Roupas: "Fashion",
-  Bolsas: "Fashion",
-};
-
 /** Which pills get a subcategory dropdown (desktop only) */
 const PILL_SUBCATEGORIES: Record<string, string[]> = {};
 for (const cat of MEGA_MENU_CATEGORIES) {
-  const dbCat = SUBCATEGORY_MAP[cat.label] ?? "Lifestyle";
+  const dbCat = cat.filterCategory;
   if (!PILL_SUBCATEGORIES[dbCat]) PILL_SUBCATEGORIES[dbCat] = [];
   PILL_SUBCATEGORIES[dbCat].push(cat.label);
 }
@@ -119,8 +109,9 @@ export function CategoryNav({ active, onSelect, variant = "dark" }: CategoryNavP
                     {group.subcategories.slice(0, 10).map((brand) => (
                       <button
                         key={brand}
+                        type="button"
                         onClick={() => {
-                          onSelect(SUBCATEGORY_MAP[group.label] ?? "Lifestyle");
+                          onSelect(group.filterCategory);
                           setHovered(null);
                         }}
                         className="block w-full text-left text-sm text-gray-600 hover:text-[#E47911] transition-colors py-0.5"
@@ -130,8 +121,9 @@ export function CategoryNav({ active, onSelect, variant = "dark" }: CategoryNavP
                     ))}
                     {group.subcategories.length > 10 && (
                       <button
+                        type="button"
                         onClick={() => {
-                          onSelect(SUBCATEGORY_MAP[group.label] ?? "Lifestyle");
+                          onSelect(group.filterCategory);
                           setHovered(null);
                         }}
                         className="text-xs text-[#007185] hover:text-[#E47911] font-medium mt-1"
