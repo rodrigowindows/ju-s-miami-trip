@@ -17,6 +17,7 @@ interface ThemedProductSectionsProps {
   deals: DealInfo[];
   convert: (usd: number) => number;
   onSelectProduct: (p: CatalogProduct) => void;
+  onViewAll?: () => void;
 }
 
 /* ── Countdown hook ───────────────────── */
@@ -145,6 +146,7 @@ export function ThemedProductSections({
   deals,
   convert,
   onSelectProduct,
+  onViewAll,
 }: ThemedProductSectionsProps) {
   const countdown = useSectionCountdown(deals);
 
@@ -173,7 +175,7 @@ export function ThemedProductSections({
         <section>
           <DividerTitle>MAIS VENDIDOS</DividerTitle>
           <div className="flex justify-end mb-4">
-            <ViewAllButton />
+            <ViewAllButton onClick={onViewAll} />
           </div>
           <ProductGrid
             products={bestSellers}
@@ -211,7 +213,7 @@ export function ThemedProductSections({
           </div>
 
           <div className="flex justify-end mb-4">
-            <ViewAllButton />
+            <ViewAllButton onClick={onViewAll} />
           </div>
 
           <ProductGrid
@@ -241,7 +243,7 @@ export function ThemedProductSections({
           </div>
 
           <div className="flex justify-end mb-4">
-            <ViewAllButton />
+            <ViewAllButton onClick={onViewAll} />
           </div>
 
           <ProductGrid
@@ -276,7 +278,7 @@ export function ThemedProductSections({
           </div>
 
           <div className="flex justify-end mb-4">
-            <ViewAllButton />
+            <ViewAllButton onClick={onViewAll} />
           </div>
 
           <ProductGrid

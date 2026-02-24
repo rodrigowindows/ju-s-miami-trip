@@ -31,7 +31,7 @@ const Footer = () => {
                   <Instagram size={24} />
                 </a>
                 <a
-                  href="https://wa.me/"
+                  href="https://wa.me/5511999999999"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-500 hover:text-orange-500 transition-colors"
@@ -189,7 +189,7 @@ const Footer = () => {
             }}
           >
             <p style={{ color: "#999", fontSize: "12px" }}>
-              AjuVaiParaMiami © 2025. Todos os direitos reservados.
+              AjuVaiParaMiami © {new Date().getFullYear()}. Todos os direitos reservados.
             </p>
           </div>
         </div>
