@@ -20,6 +20,7 @@ import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
 import { CategoryNav } from "@/components/catalog/CategoryNav";
+import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
 
 type ProductDeal = Tables<"product_deals">;
@@ -414,7 +415,7 @@ export default function PublicCatalog() {
         </div>
       )}
 
-      {/* Product Grid */}
+      {/* Product Grid / Themed Sections */}
       <main className="px-3 py-3 max-w-6xl mx-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -432,6 +433,19 @@ export default function PublicCatalog() {
               </button>
             )}
           </div>
+        ) : activeCategory === "Todos" && !searchQuery.trim() ? (
+          /* Themed sections when viewing all products without search */
+          <ThemedProductSections
+            products={products}
+            deals={deals.map((d) => ({
+              product_id: d.product_id,
+              discount_percent: d.discount_percent,
+              deal_type: d.deal_type,
+              ends_at: d.ends_at,
+            }))}
+            convert={convert}
+            onSelectProduct={setSelectedProduct}
+          />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((product) => {
