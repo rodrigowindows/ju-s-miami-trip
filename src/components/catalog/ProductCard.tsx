@@ -2,6 +2,7 @@ import { Heart, Truck, Zap, Share2 } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "./catalog-utils";
 import { shareProductWhatsApp } from "@/lib/share";
+import { formatBRL } from "@/lib/format";
 import type { CatalogProduct } from "@/types";
 
 export interface ActiveDeal {
@@ -73,29 +74,26 @@ export function ProductCard({ product, brl, onClick, activeDeal, wishlisted, onT
         <div className="mt-auto pt-1">
           {activeDeal ? (
             <>
-              <div className="flex items-baseline gap-1">
-                <span className="text-xs text-[#CC0C39]">R$</span>
-                <span className="text-xl font-bold text-[#CC0C39]">
-                  {Math.floor(brl * (1 - activeDeal.discount_percent / 100)).toLocaleString("pt-BR")}
-                </span>
-              </div>
               <p className="text-xs text-gray-500 line-through">
-                R$ {brl.toFixed(2).replace(".", ",")}
+                {formatBRL(brl)}
+              </p>
+              <span className="text-lg font-bold text-gray-900">
+                {formatBRL(brl * (1 - activeDeal.discount_percent / 100))}
+              </span>
+              <p className="text-xs text-gray-500 mt-0.5">
+                ou 3x de {formatBRL((brl * (1 - activeDeal.discount_percent / 100)) / 3)} sem juros
               </p>
             </>
           ) : (
             <>
-              <div className="flex items-baseline gap-1">
-                <span className="text-xs text-gray-900">R$</span>
-                <span className="text-xl font-bold text-gray-900">
-                  {Math.floor(brl).toLocaleString("pt-BR")}
-                </span>
-                <span className="text-xs text-gray-900">
-                  {(brl % 1).toFixed(2).slice(1).replace(".", ",")}
-                </span>
-              </div>
               <p className="text-xs text-gray-500 line-through">
-                R$ {prevPrice.toFixed(2).replace(".", ",")}
+                {formatBRL(prevPrice)}
+              </p>
+              <span className="text-lg font-bold text-gray-900">
+                {formatBRL(brl)}
+              </span>
+              <p className="text-xs text-gray-500 mt-0.5">
+                ou 3x de {formatBRL(brl / 3)} sem juros
               </p>
             </>
           )}

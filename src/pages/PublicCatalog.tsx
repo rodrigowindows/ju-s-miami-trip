@@ -554,16 +554,29 @@ export default function PublicCatalog() {
                   )}
 
                   <div className="border-t border-gray-200 pt-3">
-                    <p className="text-xs text-gray-500 line-through">
+                    <p className="text-base text-[#999] line-through">
                       R$ {prevPrice.toFixed(2).replace(".", ",")}
                     </p>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-2xl font-bold text-gray-900">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[28px] font-bold text-gray-900">
                         R$ {brl.toFixed(2).replace(".", ",")}
                       </span>
+                      <span className="bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                        -{Math.round(((prevPrice - brl) / prevPrice) * 100)}% OFF
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      US$ {selectedProduct.price_usd.toFixed(2)}
+                    <p className="text-sm text-[#28a745] font-medium mt-0.5">
+                      Economize R$ {(prevPrice - brl).toFixed(2).replace(".", ",")}
+                    </p>
+
+                    <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1.5">
+                      <p className="text-sm text-gray-700">1x de <span className="font-semibold">R$ {brl.toFixed(2).replace(".", ",")}</span> sem juros</p>
+                      <p className="text-sm text-gray-700">2x de <span className="font-semibold">R$ {(brl / 2).toFixed(2).replace(".", ",")}</span> sem juros</p>
+                      <p className="text-sm text-gray-700">3x de <span className="font-semibold">R$ {(brl / 3).toFixed(2).replace(".", ",")}</span> sem juros</p>
+                    </div>
+
+                    <p className="text-sm text-gray-400 mt-2">
+                      Preco nos EUA: US$ {selectedProduct.price_usd.toFixed(2)}
                     </p>
 
                     <div className="flex items-center gap-1.5 mt-2">

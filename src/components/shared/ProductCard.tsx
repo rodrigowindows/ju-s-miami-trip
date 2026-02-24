@@ -48,8 +48,11 @@ export default function ProductCard({ product, priceBRL, onClick }: Props) {
         <p className="text-xs text-gray-800 leading-tight line-clamp-2">{product.name}</p>
 
         <div className="mt-auto pt-1">
-          <p className="text-sm font-bold text-gray-900">{formatBRL(priceBRL)}</p>
           <p className="text-[10px] text-gray-400 line-through">{formatBRL(originalPrice)}</p>
+          <p className="text-lg font-bold text-gray-900">{formatBRL(priceBRL)}</p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            ou 3x de {formatBRL(priceBRL / 3)} sem juros
+          </p>
           <p className="text-[10px] text-gray-400 mt-0.5">
             US$ {product.price_usd.toFixed(2)}
           </p>
