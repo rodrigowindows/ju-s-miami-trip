@@ -445,30 +445,32 @@ export default function PublicCatalog() {
         />
       </div>
 
-      {/* Deals Section */}
-      {!dealsLoading && deals.length > 0 && (
-        <div className="bg-white border-b border-gray-200 py-4">
-          <div className="px-4 max-w-6xl mx-auto">
-            <div className="flex items-center gap-2 mb-3">
-              <Flame size={18} className="text-[#CC0C39]" />
-              <h2 className="text-base font-bold text-gray-900">Ofertas do Dia</h2>
-              <Badge className="bg-[#CC0C39] text-white text-[10px] hover:bg-[#CC0C39]">
-                {deals.length} ofertas
-              </Badge>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
-              {deals.map((deal) => (
-                <DealCard
-                  key={deal.id}
-                  deal={deal}
-                  convert={convert}
-                  onSelect={setSelectedProduct}
-                />
-              ))}
+      {/* Deals Section - always render container to prevent CLS */}
+      <div className="bg-white border-b border-gray-200" style={{ minHeight: deals.length > 0 || dealsLoading ? 200 : 0 }}>
+        {!dealsLoading && deals.length > 0 && (
+          <div className="py-4">
+            <div className="px-4 max-w-6xl mx-auto">
+              <div className="flex items-center gap-2 mb-3">
+                <Flame size={18} className="text-[#CC0C39]" />
+                <h2 className="text-base font-bold text-gray-900">Ofertas do Dia</h2>
+                <Badge className="bg-[#CC0C39] text-white text-[10px] hover:bg-[#CC0C39]">
+                  {deals.length} ofertas
+                </Badge>
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+                {deals.map((deal) => (
+                  <DealCard
+                    key={deal.id}
+                    deal={deal}
+                    convert={convert}
+                    onSelect={setSelectedProduct}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Pre-Sale Banner */}
       <div className="max-w-6xl mx-auto">
