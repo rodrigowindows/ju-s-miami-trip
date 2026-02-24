@@ -141,6 +141,21 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Announcement bar marquee animation */
+.announcement-track {
+  display: inline-flex;
+  animation: marquee 30s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 /* Hide scrollbar for cleaner mobile look */
 @media (max-width: 768px) {
   .no-scrollbar::-webkit-scrollbar {
