@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import type { CatalogProduct, ProductQuestion, ProductReview } from "@/types";
 import type { Tables } from "@/integrations/supabase/types";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
 import { CategoryNav } from "@/components/catalog/CategoryNav";
+import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
 import { PreSaleBanner, FreeShippingBanner } from "@/components/SectionBanners";
 
@@ -420,7 +421,7 @@ export default function PublicCatalog() {
         <PreSaleBanner />
       </div>
 
-      {/* Product Grid */}
+      {/* Product Grid / Themed Sections */}
       <main className="px-3 py-3 max-w-6xl mx-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -438,6 +439,19 @@ export default function PublicCatalog() {
               </button>
             )}
           </div>
+        ) : activeCategory === "Todos" && !searchQuery.trim() ? (
+          /* Themed sections when viewing all products without search */
+          <ThemedProductSections
+            products={products}
+            deals={deals.map((d) => ({
+              product_id: d.product_id,
+              discount_percent: d.discount_percent,
+              deal_type: d.deal_type,
+              ends_at: d.ends_at,
+            }))}
+            convert={convert}
+            onSelectProduct={setSelectedProduct}
+          />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((product) => {
@@ -550,6 +564,7 @@ export default function PublicCatalog() {
                       <DialogTitle className="text-base font-normal text-gray-900 leading-snug">
                         {selectedProduct.name}
                       </DialogTitle>
+                      <DialogDescription className="sr-only">Detalhes do produto {selectedProduct.name}</DialogDescription>
                     </DialogHeader>
                     <p className="text-sm text-sky-700 mt-1">
                       Visitar loja de {selectedProduct.brand}

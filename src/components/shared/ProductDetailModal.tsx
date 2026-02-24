@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import type { CatalogProduct } from "@/types";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { X, Truck, ShoppingBag, ChevronRight, Flame } from "lucide-react";
 import { fakeRating, isBestSeller, fakeDiscount, StarRating } from "@/lib/product-display";
@@ -62,6 +62,7 @@ export default function ProductDetailModal({ product, onClose, convert }: Props)
               <DialogTitle className="text-base font-normal text-gray-900 leading-snug">
                 {product.name}
               </DialogTitle>
+              <DialogDescription className="sr-only">Detalhes do produto {product.name}</DialogDescription>
             </DialogHeader>
             <p className="text-sm text-rose-500 mt-1 font-medium">{product.brand}</p>
           </div>

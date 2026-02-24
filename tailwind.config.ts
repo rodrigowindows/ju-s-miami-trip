@@ -22,6 +22,10 @@ export default {
   				'Outfit',
   				'sans-serif'
   			],
+  			poppins: [
+  				'Poppins',
+  				'sans-serif'
+  			],
   			sans: [
   				'Roboto',
   				'ui-sans-serif',

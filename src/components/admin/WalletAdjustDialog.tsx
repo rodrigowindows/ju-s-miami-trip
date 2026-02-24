@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -39,6 +39,7 @@ export default function WalletAdjustDialog({ open, onClose, clientId, clientName
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Ajustar Wallet - {clientName}</DialogTitle>
+          <DialogDescription className="sr-only">Adicionar crédito ou débito na wallet do cliente</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
-import Index from "./pages/Index";
 import PublicCatalog from "./pages/PublicCatalog";
 import Rastreio from "./pages/Rastreio";
 import NotFound from "./pages/NotFound";
@@ -43,6 +42,8 @@ import AdminReviews from "./pages/admin/AdminReviews";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
 
 import { Loader2 } from "lucide-react";
+import CookieBanner from "./components/CookieBanner";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 const queryClient = new QueryClient();
 
@@ -93,6 +94,8 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <CookieBanner />
+        <WhatsAppButton />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<PublicCatalog />} />
