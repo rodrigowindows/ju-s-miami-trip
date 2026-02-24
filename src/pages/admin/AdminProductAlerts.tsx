@@ -17,7 +17,7 @@ export default function AdminProductAlerts() {
   const [alerts, setAlerts] = useState<AlertRow[]>([]);
 
   async function load() {
-    const { data } = await (supabase.from("product_alerts") as any)
+    const { data } = await (supabase as any).from("product_alerts")
       .select("*, catalog_products(name)")
       .order("created_at", { ascending: false });
 
@@ -29,7 +29,7 @@ export default function AdminProductAlerts() {
   }
 
   async function markNotified(id: string) {
-    await (supabase.from("product_alerts") as any).update({ notified_at: new Date().toISOString() }).eq("id", id);
+    await (supabase as any).from("product_alerts").update({ notified_at: new Date().toISOString() }).eq("id", id);
     load();
   }
 
