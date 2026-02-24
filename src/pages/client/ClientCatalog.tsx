@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Heart, ShoppingCart, Truck, Loader2, Plus, Check, Share2, Star, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
 import { shareProductWhatsApp } from "@/lib/share";
+import { useSearchTracker } from "@/hooks/useSearchTracker";
 
 function getRating(product: CatalogProduct) {
   if (product.review_count > 0) {
@@ -72,6 +73,7 @@ export default function ClientCatalog() {
 
   const { data: productReviews, isLoading: reviewsLoading } = useProductReviews(selected?.id ?? null);
   const createReview = useCreateProductReview();
+  const trackSearch = useSearchTracker("client", user?.id);
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
@@ -104,6 +106,13 @@ export default function ClientCatalog() {
         return list;
     }
   }, [products, searchQuery, sortBy]);
+
+  // Track search queries
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      trackSearch(searchQuery, filtered.length);
+    }
+  }, [searchQuery, filtered.length, trackSearch]);
 
   const handleToggleWishlist = (productId: string) => {
     if (!user) return;

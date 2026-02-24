@@ -45,6 +45,7 @@ import AdminQuestions from "./pages/admin/AdminQuestions";
 import AdminDeals from "./pages/admin/AdminDeals";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
 
 import { Loader2 } from "lucide-react";
 import CookieBanner from "./components/CookieBanner";
@@ -182,6 +183,7 @@ const App = () => (
               <Route path="promos" element={<AdminPromos />} />
               <Route path="ofertas" element={<AdminDeals />} />
               <Route path="clients" element={<Clients />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="alertas-produtos" element={<AdminProductAlerts />} />
               <Route path="orders/:id" element={<AdminOrderDetail />} />
