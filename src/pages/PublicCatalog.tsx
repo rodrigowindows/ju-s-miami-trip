@@ -23,6 +23,7 @@ import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
 import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
+import { MegaMenu } from "@/components/catalog/MegaMenu";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
 import { PreSaleBanner, FreeShippingBanner } from "@/components/SectionBanners";
 
@@ -347,6 +348,9 @@ export default function PublicCatalog() {
 
         {/* Category Nav with Icons */}
         <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="dark" />
+
+        {/* Mega Menu Dropdown */}
+        <MegaMenu onSelectCategory={setActiveCategory} />
       </header>
 
       {/* Hero Banner */}
