@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -170,9 +170,10 @@ export default function Rastreio() {
   }
 
   // Auto-search if URL has ?pedido=
-  useState(() => {
+  useEffect(() => {
     if (initialCode) handleSearch();
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialCode]);
 
   const meta = order ? STATUS_META[order.status] ?? STATUS_META.novo : null;
   const estimate = order ? getDeliveryEstimate(order) : null;
@@ -186,7 +187,7 @@ export default function Rastreio() {
             <Logo size="sm" />
           </Link>
           <div className="flex-1 text-center">
-            <h1 className="text-sm font-bold">Rastreio de Pedido</h1>
+            <h1 className="text-sm font-bold">Rastreamento de Pedido</h1>
           </div>
           <Link
             to="/login"
@@ -207,7 +208,7 @@ export default function Rastreio() {
               </div>
               <h2 className="text-base font-bold text-gray-900">Rastrear Encomenda</h2>
               <p className="text-xs text-gray-500 mt-1">
-                Digite o numero do seu pedido (ex: PED-0001)
+                Digite o número do seu pedido (ex: PED-0001)
               </p>
             </div>
 
@@ -325,7 +326,7 @@ export default function Rastreio() {
                 <CardContent className="pt-4">
                   <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
                     <Clock size={16} className="text-gray-400" />
-                    Historico
+                    Histórico
                   </h3>
                   <div className="relative">
                     <div className="absolute left-[9px] top-2 bottom-2 w-px bg-gray-200" />
@@ -372,7 +373,7 @@ export default function Rastreio() {
             {/* CTA */}
             <div className="text-center space-y-3 py-2">
               <p className="text-xs text-gray-500">
-                Quer ver mais detalhes? Faca login na sua conta.
+                Quer ver mais detalhes? Faça login na sua conta.
               </p>
               <Link to="/login">
                 <Button variant="outline" className="gap-2">
