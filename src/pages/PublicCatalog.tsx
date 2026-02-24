@@ -12,6 +12,7 @@ import {
   HelpCircle, Send, User, CheckCircle2,
   Zap, Timer, Flame, Share2,
   MessageCircle, MessageSquare,
+  ShoppingCart, Plane, Package,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
 import TrustBadges from "@/components/TrustBadges";
