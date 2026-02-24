@@ -1,4 +1,4 @@
-// Centralized TypeScript types for MalaBridge
+// Centralized TypeScript types for AjuVaiParaMiami
 
 // Re-export Supabase-generated types
 export type { Database, Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';

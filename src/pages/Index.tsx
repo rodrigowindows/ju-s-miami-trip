@@ -257,7 +257,7 @@ const Index = () => {
         <div className="bg-white border-t border-gray-100 px-4 py-6 text-center">
           <p className="text-xs text-gray-500 mb-3">Duvidas? Fale com a gente</p>
           <a
-            href={`https://wa.me/${whatsapp}?text=Ola! Vim do site MalaBridge`}
+            href={`https://wa.me/${whatsapp}?text=Ola! Vim do site AjuVaiParaMiami`}
             target="_blank"
             rel="noreferrer"
           >

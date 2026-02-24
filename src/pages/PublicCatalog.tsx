@@ -493,7 +493,7 @@ export default function PublicCatalog() {
             Personal shopper em Miami. Produtos originais dos EUA com entrega segura no Brasil.
           </p>
           <a
-            href="https://wa.me/5511999999999?text=Olá! Vim do site MalaBridge"
+            href="https://wa.me/5511999999999?text=Olá! Vim do site AjuVaiParaMiami"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors"
@@ -502,7 +502,7 @@ export default function PublicCatalog() {
             Falar pelo WhatsApp
           </a>
           <p className="text-[10px] text-gray-500 pt-2">
-            MalaBridge &copy; {new Date().getFullYear()}. Todos os direitos reservados.
+            AjuVaiParaMiami &copy; {new Date().getFullYear()}. Todos os direitos reservados.
           </p>
         </div>
       </footer>

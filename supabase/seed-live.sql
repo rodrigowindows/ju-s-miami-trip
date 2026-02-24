@@ -1,5 +1,5 @@
 -- ══════════════════════════════════════════════════════════════
--- MalaBridge — SEED DATA COMPLETO (para Supabase SQL Editor)
+-- AjuVaiParaMiami — SEED DATA COMPLETO (para Supabase SQL Editor)
 -- Cole este SQL inteiro no Supabase Dashboard > SQL Editor > Run
 -- ══════════════════════════════════════════════════════════════
 
@@ -106,11 +106,11 @@ INSERT INTO auth.users (id, instance_id, email, encrypted_password, email_confir
 VALUES (
   '00000000-0000-0000-0000-000000000001',
   '00000000-0000-0000-0000-000000000000',
-  'admin@malabridge.com',
+  'admin@ajuvaiparamiami.com',
   crypt('Admin123!', gen_salt('bf')),
   now(),
   '{"provider":"email","providers":["email"]}',
-  '{"full_name":"Admin MalaBridge"}',
+  '{"full_name":"Admin AjuVaiParaMiami"}',
   now(), now(), 'authenticated', 'authenticated', ''
 ) ON CONFLICT (id) DO NOTHING;
 
@@ -157,7 +157,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Profiles
 INSERT INTO profiles (id, email, full_name, phone, address, role) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'admin@malabridge.com', 'Admin MalaBridge', '+5561999999999', null, 'admin'),
+  ('00000000-0000-0000-0000-000000000001', 'admin@ajuvaiparamiami.com', 'Admin AjuVaiParaMiami', '+5561999999999', null, 'admin'),
   ('00000000-0000-0000-0000-000000000010', 'carlos.silva@email.com', 'Carlos Silva', '+5511988887777', 'Jardins, Sao Paulo-SP', 'cliente'),
   ('00000000-0000-0000-0000-000000000011', 'ana.costa@email.com', 'Ana Beatriz Costa', '+5511977776666', 'Copacabana, Rio de Janeiro-RJ', 'cliente'),
   ('00000000-0000-0000-0000-000000000012', 'roberto.almeida@email.com', 'Roberto Almeida', '+5511966665555', 'Asa Sul, Brasilia-DF', 'cliente'),
@@ -370,7 +370,7 @@ INSERT INTO payments (order_id, type, amount, notes, created_at) VALUES
 -- ✅ 7 pagamentos
 --
 -- Logins demo:
--- Admin:   admin@malabridge.com / Admin123!
+-- Admin:   admin@ajuvaiparamiami.com / Admin123!
 -- Cliente: carlos.silva@email.com / Cliente123!
 -- Cliente: ana.costa@email.com / Cliente123!
 -- ══════════════════════════════════════════════════════════════
