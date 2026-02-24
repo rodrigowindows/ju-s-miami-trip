@@ -1,4 +1,4 @@
-import { Heart, Truck, Zap, Share2 } from "lucide-react";
+import { Heart, Truck, Zap, Share2, ShoppingBag } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "./catalog-utils";
 import { shareProductWhatsApp } from "@/lib/share";
@@ -14,111 +14,135 @@ interface ProductCardProps {
   product: CatalogProduct;
   brl: number;
   onClick: () => void;
+  onAddToCart?: (e: React.MouseEvent) => void;
   activeDeal?: ActiveDeal | null;
   wishlisted?: boolean;
   onToggleWishlist?: (e: React.MouseEvent) => void;
 }
 
-export function ProductCard({ product, brl, onClick, activeDeal, wishlisted, onToggleWishlist }: ProductCardProps) {
+export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wishlisted, onToggleWishlist }: ProductCardProps) {
   const { rating, reviews } = fakeRating(product.name);
   const bestSeller = isBestSeller(product.name);
   const prevPrice = fakePreviousPrice(brl, product.name);
+  const finalPrice = activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl;
+  const installment = finalPrice / 3;
+  const discountPct = activeDeal
+    ? activeDeal.discount_percent
+    : Math.round(((prevPrice - brl) / prevPrice) * 100);
 
   return (
-    <button
+    <div
       onClick={onClick}
-      className="bg-white rounded-lg overflow-hidden text-left hover:shadow-lg transition-shadow group flex flex-col border border-gray-200"
+      className="bg-white rounded-lg overflow-hidden text-left group flex flex-col cursor-pointer"
+      style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.1)", transition: "box-shadow 0.3s ease" }}
+      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)")}
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)")}
     >
-      {activeDeal ? (
-        <div className="bg-[#CC0C39] text-white text-[10px] font-bold px-2 py-0.5 flex items-center gap-1">
-          <Zap size={10} /> {activeDeal.discount_percent}% OFF
-        </div>
-      ) : bestSeller ? (
-        <div className="bg-[#E47911] text-white text-[10px] font-bold px-2 py-0.5">
-          Mais vendido
-        </div>
-      ) : null}
-
-      <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden relative">
+      {/* Image */}
+      <div className="aspect-square relative overflow-hidden">
         <img
           src={product.image_url}
           alt={product.name}
-          className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform"
+          className="w-full h-full object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300"
           loading="lazy"
         />
-        {onToggleWishlist && (
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={(e) => { e.stopPropagation(); onToggleWishlist(e); }}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); onToggleWishlist(e as unknown as React.MouseEvent); } }}
-            className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-md hover:bg-white transition-colors z-10"
+
+        {/* Discount badge */}
+        {discountPct > 0 && (
+          <span
+            className="absolute top-2 left-2 text-white text-xs font-bold px-2 py-1 rounded"
+            style={{ backgroundColor: "#a61f02" }}
           >
-            <Heart
-              size={16}
-              className={wishlisted ? "fill-red-500 text-red-500" : "text-gray-400"}
-            />
-          </div>
+            -{discountPct}% OFF
+          </span>
         )}
-      </div>
 
-      <div className="p-3 pt-1 flex flex-col gap-1 flex-1 border-t border-gray-100">
-        <p className="text-sm text-gray-900 leading-tight line-clamp-2 group-hover:text-[#C45500] transition-colors">
-          {product.name}
-        </p>
+        {/* Best seller badge (when no deal discount) */}
+        {!activeDeal && bestSeller && discountPct <= 0 && (
+          <span className="absolute top-2 left-2 bg-[#E47911] text-white text-xs font-bold px-2 py-1 rounded">
+            Mais vendido
+          </span>
+        )}
 
-        <p className="text-[11px] text-gray-500">{product.brand}</p>
-
-        <StarRating rating={rating} reviews={reviews} />
-
-        <div className="mt-auto pt-1">
-          {activeDeal ? (
-            <>
-              <p className="text-xs text-gray-500 line-through">
-                {formatBRL(brl)}
-              </p>
-              <span className="text-lg font-bold text-gray-900">
-                {formatBRL(brl * (1 - activeDeal.discount_percent / 100))}
-              </span>
-              <p className="text-xs text-gray-500 mt-0.5">
-                ou 3x de {formatBRL((brl * (1 - activeDeal.discount_percent / 100)) / 3)} sem juros
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-xs text-gray-500 line-through">
-                {formatBRL(prevPrice)}
-              </p>
-              <span className="text-lg font-bold text-gray-900">
-                {formatBRL(brl)}
-              </span>
-              <p className="text-xs text-gray-500 mt-0.5">
-                ou 3x de {formatBRL(brl / 3)} sem juros
-              </p>
-            </>
+        {/* Wishlist + Share buttons */}
+        <div className="absolute top-2 right-2 flex flex-col gap-1.5">
+          {onToggleWishlist && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleWishlist(e); }}
+              className="bg-white/90 rounded-full p-1.5 shadow-md hover:bg-white transition-colors"
+            >
+              <Heart
+                size={16}
+                className={wishlisted ? "fill-red-500 text-red-500" : "text-gray-400"}
+              />
+            </button>
           )}
-          <p className="text-[11px] text-gray-500 mt-0.5">
-            US$ {product.price_usd.toFixed(2).replace(".", ",")}
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between mt-1">
-          <div className="flex items-center gap-1">
-            <Truck size={12} className="text-[#007600]" />
-            <span className="text-[11px] text-[#007600] font-medium">Entrega via viagem</span>
-          </div>
           <button
             onClick={(e) => {
               e.stopPropagation();
-              shareProductWhatsApp(product, activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl);
+              shareProductWhatsApp(product, finalPrice);
             }}
-            className="p-1 text-gray-400 hover:text-[#25D366] transition-colors"
+            className="bg-white/90 rounded-full p-1.5 shadow-md hover:bg-white transition-colors"
             aria-label="Compartilhar"
           >
-            <Share2 size={14} />
+            <Share2 size={14} className="text-gray-400" />
           </button>
         </div>
       </div>
-    </button>
+
+      {/* Info */}
+      <div className="p-3 flex flex-col gap-1 flex-1">
+        <p className="text-sm text-black font-normal leading-tight line-clamp-2" style={{ fontFamily: "Poppins, sans-serif" }}>
+          {product.name}
+        </p>
+
+        <StarRating rating={rating} reviews={reviews} />
+
+        {/* Prices */}
+        <div className="mt-auto pt-1.5">
+          <p className="text-[13px] text-[#999] line-through">
+            R$ {prevPrice.toFixed(2).replace(".", ",")}
+          </p>
+          <p className="text-lg font-bold text-black" style={{ fontFamily: "Poppins, sans-serif" }}>
+            R$ {finalPrice.toFixed(2).replace(".", ",")}
+          </p>
+          <p className="text-xs text-[#666]">
+            ou 3x de R$ {installment.toFixed(2).replace(".", ",")} sem juros
+          </p>
+        </div>
+
+        {/* Frete gratis badge */}
+        <div className="flex items-center gap-1.5 mt-1.5">
+          <span
+            className="text-[11px] font-medium px-1.5 py-0.5 rounded"
+            style={{ color: "#28a745", border: "1px solid #28a745" }}
+          >
+            <Truck size={10} className="inline mr-0.5 -mt-0.5" />
+            Frete gratis
+          </span>
+        </div>
+
+        {/* Buy button */}
+        {onAddToCart ? (
+          <button
+            onClick={(e) => { e.stopPropagation(); onAddToCart(e); }}
+            className="w-full mt-2 bg-black text-white rounded font-bold text-sm flex items-center justify-center gap-1.5 hover:bg-[#333] transition-colors"
+            style={{ height: 40, fontFamily: "Poppins, sans-serif" }}
+          >
+            <ShoppingBag size={14} />
+            COMPRAR
+          </button>
+        ) : (
+          <button
+            onClick={(e) => { e.stopPropagation(); onClick(); }}
+            className="w-full mt-2 bg-black text-white rounded font-bold text-sm flex items-center justify-center gap-1.5 hover:bg-[#333] transition-colors"
+            style={{ height: 40, fontFamily: "Poppins, sans-serif" }}
+          >
+            <ShoppingBag size={14} />
+            COMPRAR
+          </button>
+        )}
+      </div>
+    </div>
   );
 }

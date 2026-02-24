@@ -3,7 +3,7 @@ import { Heart, ShoppingCart, Search, Truck, Loader2, Plus, Check, Share2, Star,
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import EmptyState from "@/components/shared/EmptyState";
 import { useCatalogProducts } from "@/hooks/useCatalog";
 import { useProductReviews, useCreateProductReview } from "@/hooks/useProductReviews";
@@ -212,13 +212,14 @@ export default function ClientCatalog() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((p) => (
               <ProductCard
                 key={p.id}
                 product={p}
                 brl={calcBRL(p.price_usd)}
                 onClick={() => handleSelectProduct(p)}
+                onAddToCart={() => handleAddToCart(p)}
                 wishlisted={(wishlistIds ?? []).includes(p.id)}
                 onToggleWishlist={() => handleToggleWishlist(p.id)}
               />
@@ -275,6 +276,7 @@ export default function ClientCatalog() {
                       <DialogTitle className="text-base font-normal text-gray-900 leading-snug">
                         {selected.name}
                       </DialogTitle>
+                      <DialogDescription className="sr-only">Detalhes do produto {selected.name}</DialogDescription>
                     </DialogHeader>
                     <p className="text-sm text-sky-700 mt-1">
                       Loja: {selected.brand}

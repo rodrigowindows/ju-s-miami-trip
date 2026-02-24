@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo, useCallback, type ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '@/types';
@@ -57,12 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return `${first}-MALA-${rand}`;
   };
 
-  const signIn = async (email: string, password: string): Promise<{ error: string | null }> => {
+  const signIn = useCallback(async (email: string, password: string): Promise<{ error: string | null }> => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
-  };
+  }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, phone?: string): Promise<{ error: string | null }> => {
+  const signUp = useCallback(async (email: string, password: string, fullName: string, phone?: string): Promise<{ error: string | null }> => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -83,20 +83,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (profileError) return { error: profileError.message };
     }
     return { error: null };
-  };
+  }, []);
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
-  }
+  }, []);
 
   const isAdmin = profile?.role === 'admin';
   const isClient = profile?.role === 'cliente';
 
   const value = useMemo(
     () => ({ user, profile, loading, isAdmin, isClient, signIn, signUp, signOut }),
-    [user, profile, loading, isAdmin, isClient]
+    [user, profile, loading, isAdmin, isClient, signIn, signUp, signOut]
   );
 
   return (
