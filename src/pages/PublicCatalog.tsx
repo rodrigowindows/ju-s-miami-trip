@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import type { CatalogProduct, ProductQuestion, ProductReview } from "@/types";
 import type { Tables } from "@/integrations/supabase/types";
@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Loader2, X, LogIn, Search, Star, Truck,
+  Loader2, X, LogIn, Search, Star, Truck, Heart, ShoppingBag,
   HelpCircle, Send, User, CheckCircle2,
   Zap, Timer, Flame, Share2,
   MessageCircle, MessageSquare,
@@ -19,6 +19,7 @@ import TrustBadges from "@/components/TrustBadges";
 import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
+import { useSettings } from "@/hooks/useSettings";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
@@ -30,6 +31,15 @@ import { PreSaleBanner, FreeShippingBanner } from "@/components/SectionBanners";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
+
+function slugify(text: string) {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 function useCatalog() {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
@@ -194,17 +204,10 @@ function useQuestions(productId: string | null) {
 }
 
 function useExchangeRate() {
-  const [effectiveRate, setEffectiveRate] = useState(6.05 * 1.08);
-
-  useEffect(() => {
-    async function fetch() {
-      const { data, error } = await supabase.functions.invoke("get-exchange-rate");
-      if (!error && data) {
-        setEffectiveRate(data.effective_rate);
-      }
-    }
-    fetch();
-  }, []);
+  const { data: settings } = useSettings();
+  const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
+  const spread = Number(settings?.spread_percent ?? "3");
+  const effectiveRate = exchangeRate * (1 + spread / 100);
 
   function convert(usd: number) {
     return usd * effectiveRate;
@@ -212,6 +215,7 @@ function useExchangeRate() {
 
   return { convert, effectiveRate };
 }
+
 
 function getRating(product: CatalogProduct) {
   if (product.review_count > 0) {
@@ -244,6 +248,7 @@ function useProductReviewsLocal(productId: string | null) {
 
 export default function PublicCatalog() {
   const { products, loading } = useCatalog();
+  const navigate = useNavigate();
   const { convert } = useExchangeRate();
   const { deals, loading: dealsLoading } = useDeals();
 
@@ -251,6 +256,9 @@ export default function PublicCatalog() {
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("relevance");
+  const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "pronta_entrega" | "sob_encomenda" | "esgotado">("all");
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
 
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { reviews: productReviews, loading: reviewsLoading } = useProductReviewsLocal(selectedProduct?.id ?? null);
@@ -280,12 +288,18 @@ export default function PublicCatalog() {
       return;
     }
 
-    toast({ title: "Pergunta enviada!", description: "Voce sera notificado quando responderem." });
+    toast({ title: "Pergunta enviada!", description: "Você será notificado quando responderem." });
     setAskName("");
     setAskEmail("");
     setAskQuestion("");
     reloadQuestions();
   }
+
+  const topBrands = useMemo(() => {
+    const counts = new Map<string, number>();
+    products.forEach((p) => { if (p.brand) counts.set(p.brand, (counts.get(p.brand) ?? 0) + 1); });
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([name]) => name);
+  }, [products]);
 
   const filtered = useMemo(() => {
     let list = activeCategory === "Todos"
@@ -302,6 +316,13 @@ export default function PublicCatalog() {
       );
     }
 
+    if (availabilityFilter !== "all") {
+      list = list.filter((p) => p.availability_type === availabilityFilter);
+    }
+
+    if (minPrice > 0) list = list.filter((p) => p.price_usd >= minPrice);
+    if (maxPrice > 0) list = list.filter((p) => p.price_usd <= maxPrice);
+
     switch (sortBy) {
       case "price_asc":
         return [...list].sort((a, b) => a.price_usd - b.price_usd);
@@ -312,50 +333,41 @@ export default function PublicCatalog() {
       default:
         return list;
     }
-  }, [products, activeCategory, searchQuery, sortBy]);
+  }, [products, activeCategory, searchQuery, availabilityFilter, minPrice, maxPrice, sortBy]);
 
   return (
-    <div className="min-h-screen bg-[#EAEDED]">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-[#131921] text-white">
-        <div className="px-4 py-2 flex items-center gap-3">
+      <header className="sticky top-0 z-40 bg-white border-b border-rose-100">
+        <div className="px-4 py-3 flex items-center gap-3">
           <button onClick={() => { setSearchQuery(""); setActiveCategory("Todos"); window.scrollTo(0, 0); }} className="shrink-0">
             <Logo size="sm" />
           </button>
-          <div className="flex-1 relative">
+          <div className="flex-1 relative max-w-xl mx-auto">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
-              placeholder="Buscar produtos..."
+              placeholder="Buscar skincare, maquiagem, perfumes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 h-9 rounded-lg bg-white text-gray-900 border-none text-sm focus-visible:ring-2 focus-visible:ring-amber-400"
+              className="w-full pl-9 pr-3 h-10 rounded-full bg-white text-gray-900 border border-rose-200 text-sm focus-visible:ring-2 focus-visible:ring-[#F43F5E]"
+            />
+            <SearchAutocomplete
+              query={searchQuery}
+              products={products}
+              onSelect={(p) => navigate(`/produto/${slugify(p.name)}`)}
             />
           </div>
-          <Link
-            to="/rastreio"
-            className="shrink-0 flex items-center gap-1.5 text-white text-xs hover:text-amber-300 transition-colors"
-          >
-            <Truck size={16} />
-            <span className="hidden sm:inline">Rastrear</span>
-          </Link>
-          <Link
-            to="/login"
-            className="shrink-0 flex items-center gap-1.5 text-white text-xs hover:text-amber-300 transition-colors"
-          >
-            <LogIn size={16} />
-            <span className="hidden sm:inline">Entrar</span>
-          </Link>
+          <Link to="/login" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><LogIn size={18} /></Link>
+          <Link to="/client/wishlist" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><Heart size={18} /></Link>
+          <Link to="/login" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><ShoppingBag size={18} /></Link>
         </div>
 
-        {/* Category Nav with Icons */}
-        <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="dark" />
-
-        {/* Mega Menu Dropdown */}
+        <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="light" />
         <MegaMenu onSelectCategory={setActiveCategory} />
       </header>
 
       {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-[#232F3E] via-[#37475A] to-[#232F3E] text-white px-4 py-3">
+      <div className="bg-gradient-to-r from-rose-50 via-white to-amber-50 text-gray-900 px-4 py-5">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex-1 min-w-0">
             <h2 className="text-sm sm:text-base font-bold">
@@ -385,6 +397,15 @@ export default function PublicCatalog() {
       {/* Trust Badges */}
       <TrustBadges />
 
+      <section className="max-w-6xl mx-auto px-4 py-4">
+        <h3 className="text-center text-sm tracking-[0.2em] text-gray-600 mb-3">MARCAS QUE AMAMOS</h3>
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {topBrands.map((b) => (
+            <button key={b} onClick={() => navigate(`/marca/${slugify(b)}`)} className="shrink-0 bg-white border rounded-full px-4 py-2 text-sm hover:shadow-sm">{b}</button>
+          ))}
+        </div>
+      </section>
+
       {/* Results Bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
         <p className="text-sm text-gray-700">
@@ -398,7 +419,18 @@ export default function PublicCatalog() {
             </>
           )}
         </p>
-        <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
+        <div className="flex items-center gap-2"><select aria-label="Filtrar por disponibilidade" title="Filtrar por disponibilidade" value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "pronta_entrega" | "sob_encomenda" | "esgotado")} className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs"><option value="all">Disponibilidade</option><option value="pronta_entrega">Pronta Entrega</option><option value="sob_encomenda">Sob Encomenda</option><option value="esgotado">Esgotado</option></select><SortDropdown sortBy={sortBy} onSortChange={setSortBy} /></div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 pt-3">
+        <SearchFilters
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+          setMinPrice={setMinPrice}
+          setMaxPrice={setMaxPrice}
+          availability={availabilityFilter}
+          setAvailability={setAvailabilityFilter}
+        />
       </div>
 
       {/* Deals Section */}
@@ -471,7 +503,7 @@ export default function PublicCatalog() {
                   key={product.id}
                   product={product}
                   brl={convert(product.price_usd)}
-                  onClick={() => setSelectedProduct(product)}
+                  onClick={() => navigate(`/produto/${slugify(product.name)}`)}
                   activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null}
                 />
               );
@@ -489,27 +521,26 @@ export default function PublicCatalog() {
       <HowItWorks />
 
       {/* Footer */}
-      <footer className="bg-[#232F3E] text-gray-300 py-6">
-        <div className="max-w-4xl mx-auto px-4 text-center space-y-4">
-          <div className="flex items-center justify-center gap-2">
+      <footer className="bg-black text-white mt-8">
+        <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="space-y-3">
             <Logo size="sm" />
+            <p className="text-sm text-gray-300">Personal shopper em Miami. Produtos originais dos EUA com entrega segura no Brasil.</p>
           </div>
-          <p className="text-xs">
-            Personal shopper em Miami. Produtos originais dos EUA com entrega segura no Brasil.
-          </p>
-          <a
-            href="https://wa.me/5511999999999?text=Olá! Vim do site AjuVaiParaMiami"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors"
-          >
-            <MessageCircle size={16} />
-            Falar pelo WhatsApp
-          </a>
-          <p className="text-[10px] text-gray-500 pt-2">
-            AjuVaiParaMiami &copy; {new Date().getFullYear()}. Todos os direitos reservados.
-          </p>
+          <div>
+            <h4 className="font-semibold mb-3 text-[#D4A574]">Categorias</h4>
+            <ul className="space-y-2 text-sm text-gray-300"><li>Skincare</li><li>Maquiagem</li><li>Perfumes</li><li>Cabelo & Corpo</li></ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-3 text-[#D4A574]">Atendimento</h4>
+            <ul className="space-y-2 text-sm text-gray-300"><li><Link to="/rastreio">Rastrear pedido</Link></li><li>Política de trocas</li><li>Privacidade</li></ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-3 text-[#D4A574]">Redes</h4>
+            <a href="https://wa.me/5511999999999?text=Olá! Vim do site" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white text-sm font-medium px-4 py-2 rounded-full transition-colors"><MessageCircle size={16} /> WhatsApp</a>
+          </div>
         </div>
+        <div className="border-t border-white/10 text-center text-xs text-gray-400 py-4">MalaBridge © 2026. Todos os direitos reservados.</div>
       </footer>
 
       {/* Product Detail Modal */}
@@ -551,6 +582,15 @@ export default function PublicCatalog() {
                     <Badge variant="secondary" className="text-[10px] font-medium mb-2">
                       {selectedProduct.category}
                     </Badge>
+                    <div className="mt-1 mb-2">
+                      {selectedProduct.availability_type === "pronta_entrega" ? (
+                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">Pronta Entrega</Badge>
+                      ) : selectedProduct.availability_type === "sob_encomenda" ? (
+                        <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">Sob Encomenda {selectedProduct.estimated_days ? `(${selectedProduct.estimated_days} dias)` : ""}</Badge>
+                      ) : (
+                        <Badge className="bg-gray-200 text-gray-700 hover:bg-gray-200">Esgotado</Badge>
+                      )}
+                    </div>
                     <DialogHeader>
                       <DialogTitle className="text-base font-normal text-gray-900 leading-snug">
                         {selectedProduct.name}
@@ -558,8 +598,9 @@ export default function PublicCatalog() {
                       <DialogDescription className="sr-only">Detalhes do produto {selectedProduct.name}</DialogDescription>
                     </DialogHeader>
                     <p className="text-sm text-sky-700 mt-1">
-                      Visitar loja de {selectedProduct.brand}
+                      <Link className="underline" to={`/marca/${slugify(selectedProduct.brand || "marca")}`}>Ver mais da marca {selectedProduct.brand}</Link>
                     </p>
+                    <p className="text-xs mt-1"><Link className="underline" to={`/produto/${slugify(selectedProduct.name)}`}>Ver página completa</Link></p>
                   </div>
 
                   <StarRating rating={rating} reviews={reviews} />
@@ -669,7 +710,7 @@ export default function PublicCatalog() {
 
                     {/* Ask question form */}
                     <form onSubmit={handleAskQuestion} className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3 space-y-2">
-                      <p className="text-xs font-medium text-gray-700">Faca uma pergunta sobre este produto</p>
+                      <p className="text-xs font-medium text-gray-700">Faça uma pergunta sobre este produto</p>
                       <div className="flex gap-2">
                         <input
                           type="text"
@@ -763,6 +804,8 @@ export default function PublicCatalog() {
                       </div>
                     )}
                   </div>
+
+                  {selectedProduct.availability_type === "esgotado" && (<div className="mt-2"><NotifyMeButton productId={selectedProduct.id} productName={selectedProduct.name} /></div>)}
 
                   <div className="flex gap-2 mt-2">
                     <Link
