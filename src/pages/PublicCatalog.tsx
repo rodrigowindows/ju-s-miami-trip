@@ -390,21 +390,21 @@ export default function PublicCatalog() {
             <h2 className="text-sm sm:text-base font-bold">
               Compre dos EUA, receba no Brasil
             </h2>
-            <p className="text-[11px] sm:text-xs text-gray-300 mt-0.5">
+            <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5">
               Personal shopper em Miami com entrega segura
             </p>
           </div>
           <div className="hidden sm:flex items-center gap-5 shrink-0">
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-300">
-              <ShoppingCart size={14} className="text-amber-400" />
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-600">
+              <ShoppingCart size={14} className="text-rose-400" />
               <span>Escolha</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-300">
-              <Plane size={14} className="text-amber-400" />
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-600">
+              <Plane size={14} className="text-rose-400" />
               <span>Compramos</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-300">
-              <Package size={14} className="text-amber-400" />
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-600">
+              <Package size={14} className="text-rose-400" />
               <span>Entregamos</span>
             </div>
           </div>

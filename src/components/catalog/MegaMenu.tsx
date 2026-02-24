@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { MEGA_MENU_CATEGORIES, getCategoryFilter } from "./mega-menu-data";
+import { MEGA_MENU_CATEGORIES } from "./mega-menu-data";
 
 interface MegaMenuProps {
   onSelectCategory: (category: string) => void;
