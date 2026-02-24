@@ -158,9 +158,14 @@ export default function PremiumHeader() {
           </div>
         </form>
 
-        {/* Category Navigation - desktop */}
+        {/* Category Navigation - desktop mega-menu */}
         <div className="hidden lg:block">
           <CategoryNav />
+        </div>
+
+        {/* Category Navigation - mobile compact bar */}
+        <div className="lg:hidden border-t border-[#eee]">
+          <CategoryNav compact />
         </div>
       </header>
 
