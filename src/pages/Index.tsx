@@ -18,6 +18,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
+import AnnouncementBar from "@/components/AnnouncementBar";
 import ProductCard from "@/components/shared/ProductCard";
 import ProductDetailModal from "@/components/shared/ProductDetailModal";
 import { useCatalogProducts } from "@/hooks/useCatalog";
@@ -96,11 +97,7 @@ const Index = () => {
       {/* ─── Sticky Header ─── */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
         {/* Promo ticker */}
-        <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-violet-500 text-white text-center py-1.5 px-4">
-          <p className="text-[11px] font-medium tracking-wide">
-            Compre dos EUA e receba no Brasil - Frete via viagem Miami
-          </p>
-        </div>
+        <AnnouncementBar />
 
         {/* Search bar */}
         <div className="px-4 py-2 flex items-center gap-3">
