@@ -7,18 +7,15 @@ import {
   Loader2,
   LogIn,
   Search,
-  Truck,
   ChevronDown,
   SlidersHorizontal,
-  ShoppingBag,
-  Zap,
-  Clock,
-  Shield,
   Tag,
   MessageCircle,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import TrustBadges from "@/components/TrustBadges";
+import HowItWorks from "@/components/HowItWorks";
 import ProductCard from "@/components/shared/ProductCard";
 import ProductDetailModal from "@/components/shared/ProductDetailModal";
 import { useCatalogProducts } from "@/hooks/useCatalog";
@@ -140,25 +137,8 @@ const Index = () => {
         </div>
       </header>
 
-      {/* ─── Trust Banner ─── */}
-      <div className="bg-white border-b border-gray-100 px-4 py-2.5">
-        <div className="flex items-center justify-around text-center max-w-lg mx-auto">
-          <div className="flex items-center gap-1.5">
-            <Truck size={14} className="text-rose-500" />
-            <span className="text-[10px] text-gray-600 font-medium">Entrega segura</span>
-          </div>
-          <div className="w-px h-4 bg-gray-200" />
-          <div className="flex items-center gap-1.5">
-            <Shield size={14} className="text-rose-500" />
-            <span className="text-[10px] text-gray-600 font-medium">Compra garantida</span>
-          </div>
-          <div className="w-px h-4 bg-gray-200" />
-          <div className="flex items-center gap-1.5">
-            <Zap size={14} className="text-rose-500" />
-            <span className="text-[10px] text-gray-600 font-medium">Precos dos EUA</span>
-          </div>
-        </div>
-      </div>
+      {/* ─── Trust Badges ─── */}
+      <TrustBadges />
 
       <main>
         {/* ─── Promo Coupons ─── */}
@@ -270,24 +250,8 @@ const Index = () => {
           )}
         </div>
 
-        {/* ─── How It Works (compact) ─── */}
-        <div className="bg-white border-t border-gray-100 px-4 py-8">
-          <h2 className="text-center text-sm font-bold text-gray-900 mb-5">Como funciona</h2>
-          <div className="flex items-start gap-4 max-w-sm mx-auto">
-            {[
-              { icon: ShoppingBag, text: "Escolha o produto" },
-              { icon: Clock, text: "Compramos nos EUA" },
-              { icon: Truck, text: "Receba no Brasil" },
-            ].map((s, i) => (
-              <div key={i} className="flex-1 text-center">
-                <div className="w-10 h-10 mx-auto rounded-full bg-rose-50 flex items-center justify-center mb-2">
-                  <s.icon size={18} className="text-rose-500" />
-                </div>
-                <p className="text-[10px] font-medium text-gray-700">{s.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* ─── How It Works ─── */}
+        <HowItWorks />
 
         {/* ─── WhatsApp CTA ─── */}
         <div className="bg-white border-t border-gray-100 px-4 py-6 text-center">
