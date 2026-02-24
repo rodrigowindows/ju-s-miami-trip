@@ -8,6 +8,7 @@ export function PreSaleBanner() {
         className="w-full rounded-xl overflow-hidden"
         style={{
           background: "linear-gradient(135deg, #FF69B4, #8B5CF6)",
+          minHeight: 200,
         }}
       >
         <div className="flex flex-col md:flex-row items-center h-auto md:h-[200px]">
