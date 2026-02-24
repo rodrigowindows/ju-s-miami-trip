@@ -33,16 +33,15 @@ export default function Login() {
     setError(null);
     setLoading(true);
 
-    const { error: signInError } = await signIn(email, password);
-
-    if (signInError) {
-      setError(signInError);
+    try {
+      const { error: signInError } = await signIn(email, password);
+      if (signInError) {
+        setError(signInError);
+      }
+    } finally {
+      // The useEffect above will handle redirect once profile loads
       setLoading(false);
-      return;
     }
-
-    // The useEffect above will handle redirect once profile loads
-    setLoading(false);
   }
 
   return (
@@ -79,6 +78,10 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+            </div>
+
+            <div className="text-right -mt-2">
+              <Link to="/forgot-password" className="text-xs text-primary hover:underline">Esqueci minha senha</Link>
             </div>
 
             {error && (

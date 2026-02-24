@@ -76,7 +76,7 @@ export default function ClientCatalog() {
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
 
-  const calcBRL = (usd: number) => calculatePriceBRL(usd, exchangeRate, spread);
+  const calcBRL = useMemo(() => (usd: number) => calculatePriceBRL(usd, exchangeRate, spread), [exchangeRate, spread]);
 
   const isInCart = (productId: string) => items.some((i) => i.product.id === productId);
 
@@ -198,7 +198,7 @@ export default function ClientCatalog() {
             <EmptyState
               icon="orders"
               title="Nenhum produto encontrado"
-              description={searchQuery ? "Tente outra busca." : "Novos produtos serao adicionados em breve!"}
+              description={searchQuery ? "Tente outra busca." : "Novos produtos serão adicionados em breve!"}
             />
             {searchQuery && (
               <div className="text-center mt-2">
