@@ -27,9 +27,9 @@ import { useToast } from "@/hooks/use-toast";
 const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion"] as const;
 
 const SORT_OPTIONS = [
-  { value: "relevance", label: "Relevancia" },
-  { value: "price_asc", label: "Menor preco" },
-  { value: "price_desc", label: "Maior preco" },
+  { value: "relevance", label: "Relevância" },
+  { value: "price_asc", label: "Menor preço" },
+  { value: "price_desc", label: "Maior preço" },
   { value: "name", label: "A-Z" },
 ] as const;
 
@@ -255,9 +255,9 @@ const Index = () => {
 
         {/* ─── WhatsApp CTA ─── */}
         <div className="bg-white border-t border-gray-100 px-4 py-6 text-center">
-          <p className="text-xs text-gray-500 mb-3">Duvidas? Fale com a gente</p>
+          <p className="text-xs text-gray-500 mb-3">Dúvidas? Fale com a gente</p>
           <a
-            href={`https://wa.me/${whatsapp}?text=Ola! Vim do site AjuVaiParaMiami`}
+            href={`https://wa.me/${whatsapp}?text=Olá! Vim do site AjuVaiParaMiami`}
             target="_blank"
             rel="noreferrer"
           >
