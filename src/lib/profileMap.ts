@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 type ProfileFull = { full_name: string | null; phone: string | null; email: string };
 

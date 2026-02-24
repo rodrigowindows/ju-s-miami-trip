@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Package, Plane, ShoppingCart, CheckCircle2, Clock, Truck,
   MapPin, Loader2, XCircle, Search, Receipt, CircleDollarSign,
