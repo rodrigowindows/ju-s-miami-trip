@@ -1,5 +1,5 @@
 -- ============================================================
--- MalaBridge - Unified Database Schema
+-- AjuVaiParaMiami - Unified Database Schema
 -- Run this ONCE in Supabase SQL Editor (fresh database)
 -- ============================================================
 

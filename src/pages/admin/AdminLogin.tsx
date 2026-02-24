@@ -50,7 +50,7 @@ export default function AdminLogin() {
           <div className="flex items-center justify-center gap-2 mb-1">
             <ShieldCheck className="h-6 w-6 text-primary" />
             <CardTitle className="font-display text-2xl">
-              MalaBridge
+              AjuVaiParaMiami
             </CardTitle>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -64,7 +64,7 @@ export default function AdminLogin() {
               <Input
                 id="admin-email"
                 type="email"
-                placeholder="admin@malabridge.com"
+                placeholder="admin@ajuvaiparamiami.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

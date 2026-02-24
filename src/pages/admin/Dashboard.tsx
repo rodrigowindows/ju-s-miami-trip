@@ -158,7 +158,7 @@ export default function Dashboard() {
     <div className="p-6 md:p-8 max-w-full mx-auto space-y-6">
       <div>
         <h1 className="font-display text-2xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">Visão geral do MalaBridge</p>
+        <p className="text-sm text-muted-foreground mt-1">Visão geral do AjuVaiParaMiami</p>
       </div>
 
       {/* Stats Cards */}

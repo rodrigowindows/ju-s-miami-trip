@@ -15,7 +15,7 @@ const Footer = () => {
             {/* Column 1: Logo + Description + Social Icons */}
             <div>
               <span className="font-display text-lg font-bold text-black">
-                MalaBridge ✈️
+                AjuVaiParaMiami ✈️
               </span>
               <p className="mt-2" style={{ color: "#999", fontSize: "13px" }}>
                 Personal Shopper dos EUA para o Brasil
@@ -106,7 +106,7 @@ const Footer = () => {
                 <li className="flex items-center gap-2">
                   <Mail size={16} className="text-gray-400" />
                   <span style={{ color: "#666", fontSize: "13px" }}>
-                    contato@malabridge.com
+                    contato@ajuvaiparamiami.com
                   </span>
                 </li>
                 <li className="flex items-center gap-2">
@@ -189,7 +189,7 @@ const Footer = () => {
             }}
           >
             <p style={{ color: "#999", fontSize: "12px" }}>
-              MalaBridge © 2025. Todos os direitos reservados.
+              AjuVaiParaMiami © 2025. Todos os direitos reservados.
             </p>
           </div>
         </div>
