@@ -11,8 +11,7 @@ import {
   Loader2, X, LogIn, Search, Star, Truck, Heart, ShoppingBag,
   HelpCircle, Send, User, CheckCircle2,
   Zap, Timer, Flame, Share2,
-  MessageCircle, MessageSquare,
-  ShoppingCart, Plane, Package,
+  MessageSquare,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
 
@@ -27,10 +26,12 @@ import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
 import { MegaMenu } from "@/components/catalog/MegaMenu";
 import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORY_LIST } from "@/components/catalog/catalog-utils";
-import { PreSaleBanner, FreeShippingBanner } from "@/components/SectionBanners";
 import SearchAutocomplete from "@/components/catalog/SearchAutocomplete";
 import SearchFilters from "@/components/catalog/SearchFilters";
 import NotifyMeButton from "@/components/catalog/NotifyMeButton";
+import Footer from "@/components/Footer";
+import AnnouncementBar from "@/components/AnnouncementBar";
+import HeroBannerCarousel from "@/components/HeroBannerCarousel";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
@@ -230,7 +231,6 @@ function getRating(product: CatalogProduct) {
   if (product.review_count > 0) {
     return { rating: Number(product.rating) || 0, reviews: product.review_count };
   }
-  // Fallback for products with no reviews yet
   return fakeRating(product.name);
 }
 
@@ -265,6 +265,7 @@ export default function PublicCatalog() {
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("relevance");
+  const [showAllFlat, setShowAllFlat] = useState(false);
   const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "pronta_entrega" | "sob_encomenda" | "esgotado">("all");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
@@ -274,7 +275,6 @@ export default function PublicCatalog() {
   const { toast } = useToast();
   const trackSearch = useSearchTracker("public");
 
-  // Q&A form state
   const [askName, setAskName] = useState("");
   const [askEmail, setAskEmail] = useState("");
   const [askQuestion, setAskQuestion] = useState("");
@@ -345,7 +345,6 @@ export default function PublicCatalog() {
     }
   }, [products, activeCategory, searchQuery, availabilityFilter, minPrice, maxPrice, sortBy, convert]);
 
-  // Track search queries
   useEffect(() => {
     if (searchQuery.trim()) {
       trackSearch(searchQuery, filtered.length);
@@ -354,10 +353,11 @@ export default function PublicCatalog() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
+      <AnnouncementBar />
+
       <header className="sticky top-0 z-40 bg-white border-b border-rose-100">
         <div className="px-4 py-3 flex items-center gap-3">
-          <button onClick={() => { setSearchQuery(""); setActiveCategory("Todos"); window.scrollTo(0, 0); }} className="shrink-0">
+          <button onClick={() => { setSearchQuery(""); setActiveCategory("Todos"); setShowAllFlat(false); window.scrollTo(0, 0); }} className="shrink-0">
             <Logo size="sm" />
           </button>
           <div className="flex-1 relative max-w-xl mx-auto">
@@ -383,33 +383,7 @@ export default function PublicCatalog() {
         <MegaMenu onSelectCategory={setActiveCategory} />
       </header>
 
-      {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-rose-50 via-white to-amber-50 text-gray-900 px-4 py-5">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h2 className="text-sm sm:text-base font-bold">
-              Compre dos EUA, receba no Brasil
-            </h2>
-            <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5">
-              Personal shopper em Miami com entrega segura
-            </p>
-          </div>
-          <div className="hidden sm:flex items-center gap-5 shrink-0">
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-600">
-              <ShoppingCart size={14} className="text-rose-400" />
-              <span>Escolha</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-600">
-              <Plane size={14} className="text-rose-400" />
-              <span>Compramos</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-600">
-              <Package size={14} className="text-rose-400" />
-              <span>Entregamos</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <HeroBannerCarousel />
 
       <section className="max-w-6xl mx-auto px-4 py-4">
         <h3 className="text-center text-sm tracking-[0.2em] text-gray-600 mb-3">MARCAS QUE AMAMOS</h3>
@@ -420,7 +394,6 @@ export default function PublicCatalog() {
         </div>
       </section>
 
-      {/* Results Bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
         <p className="text-sm text-gray-700">
           {loading ? "Carregando..." : (
@@ -472,13 +445,7 @@ export default function PublicCatalog() {
         )}
       </div>
 
-      {/* Pre-Sale Banner */}
-      <div className="max-w-6xl mx-auto">
-        <PreSaleBanner />
-      </div>
-
-      {/* Product Grid / Themed Sections */}
-      <main className="px-3 py-3 max-w-6xl mx-auto">
+      <main id="catalogo" className="px-3 py-3 max-w-6xl mx-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
@@ -495,8 +462,7 @@ export default function PublicCatalog() {
               </button>
             )}
           </div>
-        ) : activeCategory === "Todos" && !searchQuery.trim() ? (
-          /* Themed sections when viewing all products without search */
+        ) : activeCategory === "Todos" && !searchQuery.trim() && !showAllFlat ? (
           <ThemedProductSections
             products={products}
             deals={deals.map((d) => ({
@@ -507,6 +473,7 @@ export default function PublicCatalog() {
             }))}
             convert={convert}
             onSelectProduct={setSelectedProduct}
+            onViewAll={() => setShowAllFlat(true)}
           />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -526,38 +493,10 @@ export default function PublicCatalog() {
         )}
       </main>
 
-      {/* Free Shipping Banner */}
-      <div className="max-w-6xl mx-auto">
-        <FreeShippingBanner />
-      </div>
-
-      {/* How It Works */}
       <HowItWorks />
 
-      {/* Footer */}
-      <footer className="bg-black text-white mt-8">
-        <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="space-y-3">
-            <Logo size="sm" />
-            <p className="text-sm text-gray-300">Personal shopper em Miami. Produtos originais dos EUA com entrega segura no Brasil.</p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-3 text-[#D4A574]">Categorias</h4>
-            <ul className="space-y-2 text-sm text-gray-300"><li>Skincare</li><li>Maquiagem</li><li>Perfumes</li><li>Cabelo & Corpo</li></ul>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-3 text-[#D4A574]">Atendimento</h4>
-            <ul className="space-y-2 text-sm text-gray-300"><li><Link to="/rastreio">Rastrear pedido</Link></li><li>Política de trocas</li><li>Privacidade</li></ul>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-3 text-[#D4A574]">Redes</h4>
-            <a href="https://wa.me/5511999999999?text=Olá! Vim do site" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white text-sm font-medium px-4 py-2 rounded-full transition-colors"><MessageCircle size={16} /> WhatsApp</a>
-          </div>
-        </div>
-        <div className="border-t border-white/10 text-center text-xs text-gray-400 py-4">AjuVaiParaMiami &copy; {new Date().getFullYear()}. Todos os direitos reservados.</div>
-      </footer>
+      <Footer />
 
-      {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
         <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md mx-auto p-0 gap-0 rounded-lg overflow-hidden max-h-[90vh] overflow-y-auto">
           {selectedProduct && (() => {
@@ -657,13 +596,10 @@ export default function PublicCatalog() {
                     </div>
                   </div>
 
-                  {/* Reviews Section */}
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex items-center gap-2 mb-3">
                       <MessageSquare size={16} className="text-[#007185]" />
-                      <h3 className="font-semibold text-sm text-gray-900">
-                        Avaliações de clientes
-                      </h3>
+                      <h3 className="font-semibold text-sm text-gray-900">Avaliações de clientes</h3>
                       {productReviews.length > 0 && (
                         <Badge variant="secondary" className="text-[10px]">{productReviews.length}</Badge>
                       )}
@@ -684,134 +620,78 @@ export default function PublicCatalog() {
                             <div className="flex items-center gap-2 mb-1">
                               <div className="flex items-center">
                                 {Array.from({ length: 5 }).map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    size={11}
-                                    className={i < r.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"}
-                                  />
+                                  <Star key={i} size={11} className={i < r.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"} />
                                 ))}
                               </div>
                               <span className="text-xs font-semibold text-gray-900">{r.reviewer_name}</span>
                               {r.verified_purchase && (
-                                <Badge variant="secondary" className="text-[9px] bg-green-50 text-green-700 border-green-200">
-                                  Compra verificada
-                                </Badge>
+                                <Badge variant="secondary" className="text-[9px] bg-green-50 text-green-700 border-green-200">Compra verificada</Badge>
                               )}
                             </div>
-                            {r.comment && (
-                              <p className="text-xs text-gray-700 mt-1">{r.comment}</p>
-                            )}
-                            <p className="text-[10px] text-gray-400 mt-1">
-                              {new Date(r.created_at).toLocaleDateString("pt-BR")}
-                            </p>
+                            {r.comment && <p className="text-xs text-gray-700 mt-1">{r.comment}</p>}
+                            <p className="text-[10px] text-gray-400 mt-1">{new Date(r.created_at).toLocaleDateString("pt-BR")}</p>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
 
-                  {/* Q&A Section */}
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex items-center gap-2 mb-3">
                       <HelpCircle size={16} className="text-[#007185]" />
-                      <h3 className="font-semibold text-sm text-gray-900">
-                        Perguntas e Respostas
-                      </h3>
+                      <h3 className="font-semibold text-sm text-gray-900">Perguntas e Respostas</h3>
                       {questions.length > 0 && (
                         <Badge variant="secondary" className="text-[10px]">{questions.length}</Badge>
                       )}
                     </div>
 
-                    {/* Ask question form */}
                     <form onSubmit={handleAskQuestion} className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3 space-y-2">
                       <p className="text-xs font-medium text-gray-700">Faça uma pergunta sobre este produto</p>
                       <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Seu nome"
-                          value={askName}
-                          onChange={(e) => setAskName(e.target.value)}
-                          className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#007185]"
-                        />
-                        <input
-                          type="email"
-                          placeholder="Email (opcional)"
-                          value={askEmail}
-                          onChange={(e) => setAskEmail(e.target.value)}
-                          className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#007185]"
-                        />
+                        <input type="text" placeholder="Seu nome" value={askName} onChange={(e) => setAskName(e.target.value)} className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#007185]" />
+                        <input type="email" placeholder="Email (opcional)" value={askEmail} onChange={(e) => setAskEmail(e.target.value)} className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#007185]" />
                       </div>
                       <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Escreva sua pergunta..."
-                          value={askQuestion}
-                          onChange={(e) => setAskQuestion(e.target.value)}
-                          required
-                          className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#007185]"
-                        />
-                        <Button
-                          type="submit"
-                          size="sm"
-                          disabled={submitting || !askQuestion.trim()}
-                          className="bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 px-3 h-auto py-1.5 border border-[#FCD200]"
-                        >
+                        <input type="text" placeholder="Escreva sua pergunta..." value={askQuestion} onChange={(e) => setAskQuestion(e.target.value)} required className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#007185]" />
+                        <Button type="submit" size="sm" disabled={submitting || !askQuestion.trim()} className="bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 px-3 h-auto py-1.5 border border-[#FCD200]">
                           {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                         </Button>
                       </div>
                     </form>
 
-                    {/* Questions list */}
                     {questionsLoading ? (
                       <div className="flex items-center justify-center py-4">
                         <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
                       </div>
                     ) : questions.length === 0 ? (
-                      <p className="text-xs text-gray-500 text-center py-3">
-                        Nenhuma pergunta ainda. Seja o primeiro a perguntar!
-                      </p>
+                      <p className="text-xs text-gray-500 text-center py-3">Nenhuma pergunta ainda. Seja o primeiro a perguntar!</p>
                     ) : (
                       <div className="space-y-3 max-h-60 overflow-y-auto">
                         {questions.map((q) => (
                           <div key={q.id} className="bg-gray-50 rounded-lg p-3 space-y-2">
-                            {/* Question */}
                             <div className="flex items-start gap-2">
-                              <div className="w-5 h-5 rounded-full bg-[#007185]/10 text-[#007185] flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">
-                                <User size={10} />
-                              </div>
+                              <div className="w-5 h-5 rounded-full bg-[#007185]/10 text-[#007185] flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5"><User size={10} /></div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-xs font-semibold text-gray-900">{q.asker_name}</span>
-                                  <span className="text-[10px] text-gray-400">
-                                    {new Date(q.created_at).toLocaleDateString("pt-BR")}
-                                  </span>
+                                  <span className="text-[10px] text-gray-400">{new Date(q.created_at).toLocaleDateString("pt-BR")}</span>
                                 </div>
                                 <p className="text-xs text-gray-800 mt-0.5">{q.question}</p>
                               </div>
                             </div>
-
-                            {/* Answer */}
                             {q.answer ? (
                               <div className="flex items-start gap-2 ml-4 bg-green-50 rounded-lg p-2">
-                                <div className="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">
-                                  <CheckCircle2 size={10} />
-                                </div>
+                                <div className="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5"><CheckCircle2 size={10} /></div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-1.5">
                                     <span className="text-xs font-semibold text-green-700">Ju Imports</span>
-                                    {q.answered_at && (
-                                      <span className="text-[10px] text-gray-400">
-                                        {new Date(q.answered_at).toLocaleDateString("pt-BR")}
-                                      </span>
-                                    )}
+                                    {q.answered_at && <span className="text-[10px] text-gray-400">{new Date(q.answered_at).toLocaleDateString("pt-BR")}</span>}
                                   </div>
                                   <p className="text-xs text-green-800 mt-0.5">{q.answer}</p>
                                 </div>
                               </div>
                             ) : (
-                              <p className="text-[10px] text-gray-400 ml-7 italic">
-                                Aguardando resposta...
-                              </p>
+                              <p className="text-[10px] text-gray-400 ml-7 italic">Aguardando resposta...</p>
                             )}
                           </div>
                         ))}
@@ -822,10 +702,7 @@ export default function PublicCatalog() {
                   {selectedProduct.availability_type === "esgotado" && (<div className="mt-2"><NotifyMeButton productId={selectedProduct.id} productName={selectedProduct.name} /></div>)}
 
                   <div className="flex gap-2 mt-2">
-                    <Link
-                      to="/login"
-                      className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]"
-                    >
+                    <Link to="/login" className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]">
                       <LogIn size={16} />
                       Login para comprar
                     </Link>
