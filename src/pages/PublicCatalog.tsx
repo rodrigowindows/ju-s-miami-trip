@@ -114,7 +114,7 @@ function DealCard({
   return (
     <button
       onClick={() => onSelect(p)}
-      className="bg-white rounded-lg overflow-hidden text-left hover:shadow-lg transition-shadow group flex flex-col border border-gray-200 min-w-[180px] max-w-[200px] shrink-0"
+      className="bg-white rounded-lg overflow-hidden text-left hover:shadow-lg transition-shadow group flex flex-col border border-gray-200 min-w-[160px] sm:min-w-[180px] max-w-[200px] shrink-0"
     >
       <div className="bg-[#CC0C39] text-white text-xs font-bold px-2 py-1 flex items-center gap-1">
         {deal.deal_type === "lightning" ? <Zap size={12} /> : <Flame size={12} />}
@@ -509,7 +509,7 @@ export default function PublicCatalog() {
 
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-lg overflow-hidden max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md mx-auto p-0 gap-0 rounded-lg overflow-hidden max-h-[90vh] overflow-y-auto">
           {selectedProduct && (() => {
             const { rating, reviews } = getRating(selectedProduct);
             const brl = convert(selectedProduct.price_usd);

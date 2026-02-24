@@ -195,7 +195,7 @@ const Products = () => {
               Em breve novos produtos!
             </p>
           ) : (
-            <div className="max-w-6xl mx-auto px-8 md:px-14">
+            <div className="max-w-6xl mx-auto px-4 sm:px-8 md:px-14">
               <Carousel
                 opts={{ align: "start", loop: true }}
                 plugins={[Autoplay({ delay: 3500, stopOnInteraction: true })]}
