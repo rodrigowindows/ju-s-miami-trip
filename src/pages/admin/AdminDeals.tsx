@@ -305,8 +305,9 @@ export default function AdminDeals() {
           <div className="space-y-4">
             {/* Product select */}
             <div>
-              <Label>Produto</Label>
+              <Label htmlFor="deal-product-select">Produto</Label>
               <select
+                id="deal-product-select"
                 value={form.product_id}
                 onChange={(e) => setForm({ ...form, product_id: e.target.value })}
                 className="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-400"
