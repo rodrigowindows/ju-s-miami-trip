@@ -6,9 +6,9 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 
 const anchorLinks = [
   { label: "Como Funciona", href: "#como-funciona" },
-  { label: "Simulador", href: "#simulador" },
-  { label: "FAQ", href: "#faq" },
-  { label: "Contato", href: "#contato" },
+  { label: "Simulador de Preços", href: "#simulador" },
+  { label: "Dúvidas Frequentes", href: "#faq" },
+  { label: "Fale Conosco", href: "#contato" },
 ];
 
 const Header = () => {
@@ -38,13 +38,13 @@ const Header = () => {
             to="/catalog"
             className="font-body text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
           >
-            Produtos
+            Ver Produtos
           </Link>
           <Link
             to="/login"
             className="ml-1 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
           >
-            Entrar
+            Entrar / Cadastrar
           </Link>
         </nav>
 
@@ -54,13 +54,13 @@ const Header = () => {
             to="/catalog"
             className="font-body text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
           >
-            Produtos
+            Ver Produtos
           </Link>
           <Link
             to="/login"
             className="bg-primary text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
           >
-            Entrar
+            Entrar / Cadastrar
           </Link>
           <button
             onClick={() => setOpen(!open)}
