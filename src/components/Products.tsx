@@ -238,6 +238,9 @@ const Products = () => {
                               {formatBRL(calcBRL(product.price_usd))}
                             </p>
                             <p className="text-xs text-muted-foreground">
+                              ou 3x de {formatBRL(calcBRL(product.price_usd) / 3)} sem juros
+                            </p>
+                            <p className="text-xs text-muted-foreground">
                               US$ {product.price_usd.toFixed(2).replace(".", ",")}
                             </p>
                           </div>

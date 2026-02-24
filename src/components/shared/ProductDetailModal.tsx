@@ -75,14 +75,26 @@ export default function ProductDetailModal({ product, onClose, convert }: Props)
 
           {/* Pricing */}
           <div className="bg-rose-50 rounded-xl p-4 space-y-1">
-            <p className="text-xs text-gray-400 line-through">{formatBRL(originalPrice)}</p>
+            <p className="text-base text-[#999] line-through">{formatBRL(originalPrice)}</p>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-gray-900">{formatBRL(brl)}</span>
-              <span className="bg-rose-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                -{discount}%
+              <span className="text-[28px] font-bold text-gray-900">{formatBRL(brl)}</span>
+              <span className="bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                -{discount}% OFF
               </span>
             </div>
-            <p className="text-sm text-gray-500">US$ {product.price_usd.toFixed(2)}</p>
+            <p className="text-sm text-[#28a745] font-medium">
+              Economize {formatBRL(originalPrice - brl)}
+            </p>
+
+            <div className="bg-white/60 rounded-lg p-3 mt-2 space-y-1.5">
+              <p className="text-sm text-gray-700">1x de <span className="font-semibold">{formatBRL(brl)}</span> sem juros</p>
+              <p className="text-sm text-gray-700">2x de <span className="font-semibold">{formatBRL(brl / 2)}</span> sem juros</p>
+              <p className="text-sm text-gray-700">3x de <span className="font-semibold">{formatBRL(brl / 3)}</span> sem juros</p>
+            </div>
+
+            <p className="text-sm text-gray-400 mt-2">
+              Preco nos EUA: US$ {product.price_usd.toFixed(2)}
+            </p>
 
             <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-rose-100">
               <Truck size={14} className="text-green-600" />
