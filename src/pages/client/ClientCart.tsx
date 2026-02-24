@@ -4,21 +4,15 @@ import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, Truck, Loader2 } from "luc
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/contexts/CartContext";
-import { useCreateOrder, useCreateOrderItem } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
-import { useAuth } from "@/contexts/AuthContext";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
-import { toast } from "sonner";
 import EmptyState from "@/components/shared/EmptyState";
 
 export default function ClientCart() {
   const { items, removeItem, updateQuantity, clearCart } = useCart();
   const { data: settings } = useSettings();
-  const { user, profile } = useAuth();
-  const createOrder = useCreateOrder();
-  const createOrderItem = useCreateOrderItem();
-  const [ordering, setOrdering] = useState(false);
+  const [ordering] = useState(false);
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
@@ -28,42 +22,7 @@ export default function ClientCart() {
   const totalBRL = items.reduce((sum, i) => sum + calcBRL(i.product.price_usd) * i.quantity, 0);
   const deposit = totalBRL * 0.5;
 
-  async function handleCheckout() {
-    if (!user || !profile || items.length === 0) return;
-    setOrdering(true);
-    try {
-      const itemNames = items.map((i) => `${i.product.name}${i.quantity > 1 ? ` (x${i.quantity})` : ""}`).join(", ");
 
-      const order = await createOrder.mutateAsync({
-        client_id: user.id,
-        customer_name: profile.full_name ?? "",
-        customer_phone: profile.phone ?? undefined,
-        items: itemNames,
-        total_usd: totalUSD,
-        total_brl: totalBRL,
-        total_amount: totalBRL,
-        deposit_amount: deposit,
-      });
-
-      for (const item of items) {
-        await createOrderItem.mutateAsync({
-          order_id: order.id,
-          product_name: item.product.name,
-          product_image_url: item.product.image_url,
-          quantity: item.quantity,
-          price_usd: item.product.price_usd * item.quantity,
-          price_brl: calcBRL(item.product.price_usd) * item.quantity,
-        });
-      }
-
-      clearCart();
-      toast.success("Pedido criado! Acompanhe em Meus Pedidos.");
-    } catch {
-      toast.error("Erro ao criar pedido.");
-    } finally {
-      setOrdering(false);
-    }
-  }
 
   if (items.length === 0) {
     return (
@@ -184,7 +143,7 @@ export default function ClientCart() {
           </div>
 
           <Button
-            onClick={handleCheckout}
+            onClick={() => window.location.assign("/client/checkout")}
             disabled={ordering}
             className="w-full bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full border border-[#FCD200] font-medium h-11"
           >
@@ -193,7 +152,7 @@ export default function ClientCart() {
             ) : (
               <ShoppingBag className="h-4 w-4 mr-2" />
             )}
-            {ordering ? "Finalizando..." : `Fazer pedido - ${formatBRL(deposit)}`}
+            Ir para checkout
           </Button>
 
           <p className="text-[11px] text-gray-500 text-center">

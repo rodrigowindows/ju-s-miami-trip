@@ -1,4 +1,4 @@
-// Centralized TypeScript types for MalaBridge
+// Centralized TypeScript types for AjuVaiParaMiami
 
 // Re-export Supabase-generated types
 export type { Database, Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
@@ -86,7 +86,11 @@ export const KANBAN_COLUMNS: KanbanColumn[] = [
 ];
 
 // ── Catalog Product ────────────────────────
-export type CatalogProduct = import('@/integrations/supabase/types').Tables<'catalog_products'>;
+export type CatalogProduct = import('@/integrations/supabase/types').Tables<'catalog_products'> & {
+  availability_type?: string;
+  estimated_days?: number | null;
+  stock_quantity?: number;
+};
 
 // ── Product Review ─────────────────────────
 export type ProductReview = import('@/integrations/supabase/types').Tables<'product_reviews'>;

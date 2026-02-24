@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import PublicCatalog from "./pages/PublicCatalog";
+import PublicProductPage from "./pages/PublicProductPage";
+import BrandPage from "./pages/BrandPage";
+import ForgotPassword from "./pages/ForgotPassword";
 import Rastreio from "./pages/Rastreio";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -21,6 +24,7 @@ import ClientPromotions from "./pages/client/ClientPromotions";
 import ClientProfile from "./pages/client/ClientProfile";
 import ClientWishlist from "./pages/client/ClientWishlist";
 import ClientCart from "./pages/client/ClientCart";
+import ClientCheckout from "./pages/client/ClientCheckout";
 import ClientNotifications from "./pages/client/ClientNotifications";
 
 // Admin pages
@@ -36,12 +40,16 @@ import Payments from "./pages/admin/Payments";
 import AdminPromos from "./pages/admin/AdminPromos";
 import Clients from "./pages/admin/Clients";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminProductAlerts from "./pages/admin/AdminProductAlerts";
 import AdminQuestions from "./pages/admin/AdminQuestions";
 import AdminDeals from "./pages/admin/AdminDeals";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
 
 import { Loader2 } from "lucide-react";
+import CookieBanner from "./components/CookieBanner";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 const queryClient = new QueryClient();
 
@@ -92,11 +100,16 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <CookieBanner />
+        <WhatsAppButton />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<PublicCatalog />} />
             <Route path="/catalog" element={<PublicCatalog />} />
             <Route path="/rastreio" element={<Rastreio />} />
+            <Route path="/produto/:slug" element={<PublicProductPage />} />
+            <Route path="/marca/:slug" element={<BrandPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/login"
               element={
@@ -133,6 +146,7 @@ const App = () => (
               <Route path="wishlist" element={<ClientWishlist />} />
               <Route path="promos" element={<ClientPromotions />} />
               <Route path="cart" element={<ClientCart />} />
+              <Route path="checkout" element={<ClientCheckout />} />
               <Route path="profile" element={<ClientProfile />} />
               <Route path="notifications" element={<ClientNotifications />} />
             </Route>
@@ -169,7 +183,9 @@ const App = () => (
               <Route path="promos" element={<AdminPromos />} />
               <Route path="ofertas" element={<AdminDeals />} />
               <Route path="clients" element={<Clients />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="settings" element={<AdminSettings />} />
+              <Route path="alertas-produtos" element={<AdminProductAlerts />} />
               <Route path="orders/:id" element={<AdminOrderDetail />} />
             </Route>
 

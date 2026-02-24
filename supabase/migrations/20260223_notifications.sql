@@ -75,7 +75,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO notifications (client_id, title, message, type)
 SELECT
   p.id,
-  'Bem-vindo ao MalaBridge!',
+  'Bem-vindo ao AjuVaiParaMiami!',
   'Explore nosso catálogo e aproveite as melhores ofertas de produtos dos EUA.',
   'system'
 FROM profiles p

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import type { CatalogProduct } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +44,9 @@ export default function AdminCatalog() {
     price_usd: "",
     image_url: "",
     description: "",
+    availability_type: "sob_encomenda" as "pronta_entrega" | "sob_encomenda" | "esgotado",
+    estimated_days: "",
+    stock_quantity: "0",
     active: true,
   });
 
@@ -62,7 +65,7 @@ export default function AdminCatalog() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ name: "", brand: "", category: "Tech", price_usd: "", image_url: "", description: "", active: true });
+    setForm({ name: "", brand: "", category: "Tech", price_usd: "", image_url: "", description: "", availability_type: "sob_encomenda", estimated_days: "", stock_quantity: "0", active: true });
     setOpen(true);
   }
 
@@ -75,6 +78,9 @@ export default function AdminCatalog() {
       price_usd: String(product.price_usd),
       image_url: product.image_url,
       description: product.description ?? "",
+      availability_type: (product.availability_type as "pronta_entrega" | "sob_encomenda" | "esgotado") ?? "sob_encomenda",
+      estimated_days: product.estimated_days ? String(product.estimated_days) : "",
+      stock_quantity: String(product.stock_quantity ?? 0),
       active: product.active,
     });
     setOpen(true);
@@ -88,6 +94,9 @@ export default function AdminCatalog() {
       price_usd: Number(form.price_usd),
       image_url: form.image_url,
       description: form.description || null,
+      availability_type: form.availability_type,
+      estimated_days: form.availability_type === "sob_encomenda" && form.estimated_days ? Number(form.estimated_days) : null,
+      stock_quantity: form.availability_type === "pronta_entrega" ? Number(form.stock_quantity || 0) : 0,
       active: form.active,
     };
 
@@ -164,8 +173,11 @@ export default function AdminCatalog() {
                   <div>
                     <p className="text-xs text-muted-foreground uppercase">{product.brand}</p>
                     <p className="font-semibold text-sm">{product.name}</p>
-                    <div className="flex gap-2 mt-1">
+                    <div className="flex flex-wrap gap-2 mt-1">
                       <Badge variant="secondary" className="text-[10px]">{product.category}</Badge>
+                      <Badge className={`text-[10px] border-0 ${product.availability_type === "pronta_entrega" ? "bg-emerald-100 text-emerald-700" : product.availability_type === "sob_encomenda" ? "bg-amber-100 text-amber-700" : "bg-gray-200 text-gray-700"}`}>
+                        {product.availability_type === "pronta_entrega" ? `Pronta Entrega (${product.stock_quantity})` : product.availability_type === "sob_encomenda" ? `Sob Encomenda ${product.estimated_days ? `(${product.estimated_days} dias)` : ""}` : "Esgotado"}
+                      </Badge>
                       <span className="text-sm font-bold text-violet-600">US$ {product.price_usd.toFixed(2)}</span>
                     </div>
                   </div>
@@ -222,6 +234,30 @@ export default function AdminCatalog() {
             <div>
               <Label>URL da imagem</Label>
               <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label>Disponibilidade</Label>
+                <Select value={form.availability_type} onValueChange={(v: "pronta_entrega" | "sob_encomenda" | "esgotado") => setForm({ ...form, availability_type: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pronta_entrega">Pronta Entrega</SelectItem>
+                    <SelectItem value="sob_encomenda">Sob Encomenda</SelectItem>
+                    <SelectItem value="esgotado">Esgotado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {form.availability_type === "pronta_entrega" ? (
+                <div>
+                  <Label>Quantidade em estoque</Label>
+                  <Input type="number" min="0" value={form.stock_quantity} onChange={(e) => setForm({ ...form, stock_quantity: e.target.value })} />
+                </div>
+              ) : form.availability_type === "sob_encomenda" ? (
+                <div>
+                  <Label>Prazo estimado (dias)</Label>
+                  <Input type="number" min="1" value={form.estimated_days} onChange={(e) => setForm({ ...form, estimated_days: e.target.value })} />
+                </div>
+              ) : <div />}
             </div>
             <div>
               <Label>Descrição</Label>

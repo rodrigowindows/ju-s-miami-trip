@@ -24,22 +24,23 @@ export function fakePreviousPrice(brl: number, name: string) {
 
 export interface CategoryDef {
   label: string;
+  displayLabel: string;
   icon: LucideIcon;
 }
 
 export const CATEGORY_LIST: CategoryDef[] = [
-  { label: "Todos", icon: LayoutGrid },
-  { label: "Tech", icon: Smartphone },
-  { label: "Beauty", icon: Sparkles },
-  { label: "Fashion", icon: Shirt },
-  { label: "Lifestyle", icon: Heart },
+  { label: "Todos", displayLabel: "Todos", icon: LayoutGrid },
+  { label: "Tech", displayLabel: "Tecnologia", icon: Smartphone },
+  { label: "Beauty", displayLabel: "Beleza & Cosméticos", icon: Sparkles },
+  { label: "Fashion", displayLabel: "Moda & Acessórios", icon: Shirt },
+  { label: "Lifestyle", displayLabel: "Casa & Lifestyle", icon: Heart },
 ];
 
 export const CATEGORIES = CATEGORY_LIST.map((c) => c.label) as readonly string[];
 
 export const SORT_OPTIONS = [
-  { value: "relevance", label: "Relevância" },
-  { value: "price_asc", label: "Menor preço" },
-  { value: "price_desc", label: "Maior preço" },
-  { value: "name", label: "A-Z" },
+  { value: "relevance", label: "Mais Relevantes" },
+  { value: "price_asc", label: "Menor Preço" },
+  { value: "price_desc", label: "Maior Preço" },
+  { value: "name", label: "Nome A-Z" },
 ] as const;

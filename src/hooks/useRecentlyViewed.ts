@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 
-const STORAGE_KEY = "malabridge_recently_viewed";
+const STORAGE_KEY = "ajuvaiparamiami_recently_viewed";
 const MAX_ITEMS = 10;
 
 function getStored(): string[] {

@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from "react";
 import type { CatalogProduct } from "@/types";
 
-const CART_STORAGE_KEY = "malabridge_cart";
+const CART_STORAGE_KEY = "ajuvaiparamiami_cart";
 
 export interface CartItem {
   product: CatalogProduct;

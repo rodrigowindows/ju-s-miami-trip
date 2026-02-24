@@ -16,6 +16,7 @@ import {
   HelpCircle,
   Flame,
   Star,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -32,6 +33,7 @@ const navItems = [
   { to: "/admin/promos", label: "Promoções", icon: Tag },
   { to: "/admin/ofertas", label: "Ofertas do Dia", icon: Flame },
   { to: "/admin/clients", label: "Clientes", icon: Users },
+  { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/admin/settings", label: "Config", icon: Settings },
 ];
 
@@ -46,7 +48,7 @@ const AdminLayout = () => {
         <div className="p-6 border-b">
           <h1 className="font-display text-lg font-bold flex items-center gap-2">
             <LayoutDashboard size={20} />
-            MalaBridge
+            AjuVaiParaMiami
           </h1>
           <p className="text-xs text-muted-foreground mt-1">Painel Admin</p>
         </div>

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import type { Setting, AppSettings } from "@/types";
 import { DEFAULT_SETTINGS } from "@/lib/constants";
 import { toast } from "sonner";

@@ -158,9 +158,14 @@ export default function PremiumHeader() {
           </div>
         </form>
 
-        {/* Category Navigation - desktop */}
+        {/* Category Navigation - desktop mega-menu */}
         <div className="hidden lg:block">
           <CategoryNav />
+        </div>
+
+        {/* Category Navigation - mobile compact bar */}
+        <div className="lg:hidden border-t border-[#eee]">
+          <CategoryNav compact />
         </div>
       </header>
 
@@ -171,7 +176,7 @@ export default function PremiumHeader() {
             className="fixed inset-0 bg-black/40 z-50 lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <aside className="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-xl overflow-y-auto lg:hidden">
+          <aside className="fixed top-0 left-0 bottom-0 w-[85vw] max-w-72 bg-white z-50 shadow-xl overflow-y-auto lg:hidden">
             <div className="flex items-center justify-between p-4 border-b border-[#eee]">
               <span
                 className="text-black font-bold text-xl"

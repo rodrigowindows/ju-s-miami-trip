@@ -1,13 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Notification } from "@/types";
+
+const db = supabase as any;
 
 export function useNotifications(clientId: string) {
   return useQuery({
     queryKey: ["notifications", clientId],
     queryFn: async (): Promise<Notification[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("notifications")
         .select("*")
         .eq("client_id", clientId)
@@ -27,7 +29,7 @@ export function useUnreadCount() {
   return useQuery({
     queryKey: ["notifications", "unread_count", clientId],
     queryFn: async (): Promise<number> => {
-      const { count, error } = await supabase
+      const { count, error } = await db
         .from("notifications")
         .select("*", { count: "exact", head: true })
         .eq("client_id", clientId!)
@@ -46,7 +48,7 @@ export function useMarkAsRead() {
 
   return useMutation({
     mutationFn: async (notificationId: string) => {
-      const { error } = await supabase
+      const { error } = await db
         .from("notifications")
         .update({ read: true })
         .eq("id", notificationId);
@@ -66,7 +68,7 @@ export function useMarkAllAsRead() {
   return useMutation({
     mutationFn: async () => {
       if (!user) return;
-      const { error } = await supabase
+      const { error } = await db
         .from("notifications")
         .update({ read: true })
         .eq("client_id", user.id)

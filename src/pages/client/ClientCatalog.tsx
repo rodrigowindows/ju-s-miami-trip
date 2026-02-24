@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
-import { Heart, ShoppingCart, Search, Truck, Loader2, Plus, Check, Share2, Star, MessageSquare } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Heart, ShoppingCart, Truck, Loader2, Plus, Check, Share2, Star, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import EmptyState from "@/components/shared/EmptyState";
@@ -20,9 +20,9 @@ import { formatBRL } from "@/lib/format";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
-import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
 import { shareProductWhatsApp } from "@/lib/share";
+import { useSearchTracker } from "@/hooks/useSearchTracker";
 
 function getRating(product: CatalogProduct) {
   if (product.review_count > 0) {
@@ -52,7 +52,8 @@ function ClickableStars({ value, onChange }: { value: number; onChange: (v: numb
 }
 
 export default function ClientCatalog() {
-  const [category, setCategory] = useState("Todos");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const category = searchParams.get("category") || "Todos";
   const { data: products, isLoading } = useCatalogProducts(category);
   const { data: settings } = useSettings();
   const { user, profile } = useAuth();
@@ -62,7 +63,7 @@ export default function ClientCatalog() {
   const { recentIds, addViewed } = useRecentlyViewed();
 
   const [selected, setSelected] = useState<CatalogProduct | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchQuery = searchParams.get("q") || "";
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [justAdded, setJustAdded] = useState<string | null>(null);
 
@@ -72,11 +73,12 @@ export default function ClientCatalog() {
 
   const { data: productReviews, isLoading: reviewsLoading } = useProductReviews(selected?.id ?? null);
   const createReview = useCreateProductReview();
+  const trackSearch = useSearchTracker("client", user?.id);
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
 
-  const calcBRL = (usd: number) => calculatePriceBRL(usd, exchangeRate, spread);
+  const calcBRL = useMemo(() => (usd: number) => calculatePriceBRL(usd, exchangeRate, spread), [exchangeRate, spread]);
 
   const isInCart = (productId: string) => items.some((i) => i.product.id === productId);
 
@@ -104,6 +106,13 @@ export default function ClientCatalog() {
         return list;
     }
   }, [products, searchQuery, sortBy]);
+
+  // Track search queries
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      trackSearch(searchQuery, filtered.length);
+    }
+  }, [searchQuery, filtered.length, trackSearch]);
 
   const handleToggleWishlist = (productId: string) => {
     if (!user) return;
@@ -146,22 +155,6 @@ export default function ClientCatalog() {
 
   return (
     <div className="space-y-0 -mx-4 -mt-4">
-      {/* Search Bar */}
-      <div className="bg-[#232F3E] px-4 py-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-          <Input
-            placeholder="Buscar produtos..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 h-9 rounded-lg bg-white text-gray-900 border-none text-sm focus-visible:ring-2 focus-visible:ring-amber-400"
-          />
-        </div>
-      </div>
-
-      {/* Category Nav with Icons */}
-      <CategoryNav active={category} onSelect={setCategory} variant="dark" />
-
       {/* Recently Viewed */}
       {recentIds.length > 0 && (
         <RecentlyViewed
@@ -198,12 +191,12 @@ export default function ClientCatalog() {
             <EmptyState
               icon="orders"
               title="Nenhum produto encontrado"
-              description={searchQuery ? "Tente outra busca." : "Novos produtos serao adicionados em breve!"}
+              description={searchQuery ? "Tente outra busca." : "Novos produtos serão adicionados em breve!"}
             />
             {searchQuery && (
               <div className="text-center mt-2">
                 <button
-                  onClick={() => setSearchQuery("")}
+                  onClick={() => { const p = new URLSearchParams(searchParams); p.delete("q"); setSearchParams(p); }}
                   className="text-sm text-sky-700 hover:underline"
                 >
                   Limpar busca
@@ -212,13 +205,14 @@ export default function ClientCatalog() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((p) => (
               <ProductCard
                 key={p.id}
                 product={p}
                 brl={calcBRL(p.price_usd)}
                 onClick={() => handleSelectProduct(p)}
+                onAddToCart={() => handleAddToCart(p)}
                 wishlisted={(wishlistIds ?? []).includes(p.id)}
                 onToggleWishlist={() => handleToggleWishlist(p.id)}
               />
@@ -291,17 +285,31 @@ export default function ClientCatalog() {
                   )}
 
                   <div className="border-t border-gray-200 pt-3">
-                    <p className="text-xs text-gray-500 line-through">
+                    <p className="text-base text-[#999] line-through">
                       R$ {prevPrice.toFixed(2).replace(".", ",")}
                     </p>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-2xl font-bold text-gray-900">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[28px] font-bold text-gray-900">
                         {formatBRL(brl)}
                       </span>
+                      <span className="bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                        -{Math.round(((prevPrice - brl) / prevPrice) * 100)}% OFF
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      US$ {selected.price_usd.toFixed(2).replace(".", ",")}
+                    <p className="text-sm text-[#28a745] font-medium mt-0.5">
+                      Economize {formatBRL(prevPrice - brl)}
                     </p>
+
+                    <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1.5">
+                      <p className="text-sm text-gray-700">1x de <span className="font-semibold">{formatBRL(brl)}</span> sem juros</p>
+                      <p className="text-sm text-gray-700">2x de <span className="font-semibold">{formatBRL(brl / 2)}</span> sem juros</p>
+                      <p className="text-sm text-gray-700">3x de <span className="font-semibold">{formatBRL(brl / 3)}</span> sem juros</p>
+                    </div>
+
+                    <p className="text-sm text-gray-400 mt-2">
+                      Preco nos EUA: US$ {selected.price_usd.toFixed(2)}
+                    </p>
+
                     <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Cambio</span>

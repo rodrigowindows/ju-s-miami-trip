@@ -121,8 +121,8 @@ export default function ClientDashboard() {
   return (
     <div className="space-y-6">
       <div className="pt-2">
-        <h1 className="font-display text-2xl font-bold">Ola, {profile?.full_name?.split(" ")[0] ?? "Cliente"}!</h1>
-        <p className="text-sm text-muted-foreground mt-1">Bem-vindo(a) a MalaBridge. O que deseja fazer?</p>
+        <h1 className="font-display text-2xl font-bold">Olá, {profile?.full_name?.split(" ")[0] ?? "Cliente"}!</h1>
+        <p className="text-sm text-muted-foreground mt-1">Bem-vindo(a) à AjuVaiParaMiami. O que deseja fazer?</p>
       </div>
 
       {/* Banner Carousel */}

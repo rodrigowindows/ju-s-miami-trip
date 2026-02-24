@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     q: "Como é calculado o preço final?",
-    a: "O preço final inclui o valor do produto em dólar convertido para real, mais a taxa de serviço da MalaBridge. Sem surpresas.",
+    a: "O preço final inclui o valor do produto em dólar convertido para real, mais a taxa de serviço da AjuVaiParaMiami. Sem surpresas.",
   },
   {
     q: "Posso comprar qualquer produto dos EUA?",
