@@ -43,6 +43,8 @@ import AdminReviews from "./pages/admin/AdminReviews";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
 
 import { Loader2 } from "lucide-react";
+import CookieBanner from "./components/CookieBanner";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 const queryClient = new QueryClient();
 
@@ -93,6 +95,8 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <CookieBanner />
+        <WhatsAppButton />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<PublicCatalog />} />
