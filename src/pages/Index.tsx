@@ -26,13 +26,18 @@ import { useActivePromotions } from "@/hooks/usePromotions";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { useToast } from "@/hooks/use-toast";
 
-const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion"] as const;
+const CATEGORIES = [
+  { value: "Todos", label: "Todos" },
+  { value: "Tech", label: "Tecnologia" },
+  { value: "Beauty", label: "Beleza & Cosméticos" },
+  { value: "Fashion", label: "Moda & Acessórios" },
+] as const;
 
 const SORT_OPTIONS = [
-  { value: "relevance", label: "Relevancia" },
-  { value: "price_asc", label: "Menor preco" },
-  { value: "price_desc", label: "Maior preco" },
-  { value: "name", label: "A-Z" },
+  { value: "relevance", label: "Mais Relevantes" },
+  { value: "price_asc", label: "Menor Preço" },
+  { value: "price_desc", label: "Maior Preço" },
+  { value: "name", label: "Nome A-Z" },
 ] as const;
 
 const Index = () => {
@@ -121,7 +126,7 @@ const Index = () => {
             className="shrink-0 flex items-center gap-1 bg-rose-500 hover:bg-rose-600 text-white text-xs font-medium px-3 py-2 rounded-full transition-colors"
           >
             <LogIn size={14} />
-            <span className="hidden sm:inline">Entrar</span>
+            <span>Entrar</span>
           </Link>
         </div>
 
@@ -129,15 +134,15 @@ const Index = () => {
         <div className="px-4 pb-2 flex gap-2 overflow-x-auto scrollbar-hide">
           {CATEGORIES.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
+              key={cat.value}
+              onClick={() => setActiveCategory(cat.value)}
               className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
-                activeCategory === cat
+                activeCategory === cat.value
                   ? "bg-gray-900 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              {cat}
+              {cat.label}
             </button>
           ))}
         </div>
