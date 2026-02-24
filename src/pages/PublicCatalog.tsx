@@ -25,7 +25,7 @@ import { StarRating } from "@/components/catalog/StarRating";
 import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
 import { MegaMenu } from "@/components/catalog/MegaMenu";
-import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
+import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORY_LIST } from "@/components/catalog/catalog-utils";
 import { PreSaleBanner, FreeShippingBanner } from "@/components/SectionBanners";
 import SearchAutocomplete from "@/components/catalog/SearchAutocomplete";
 import SearchFilters from "@/components/catalog/SearchFilters";
@@ -419,7 +419,7 @@ export default function PublicCatalog() {
               <span className="font-bold text-[#C45500]">{filtered.length}</span>{" "}
               resultado{filtered.length !== 1 ? "s" : ""}
               {activeCategory !== "Todos" && (
-                <> em <span className="font-semibold">{activeCategory}</span></>
+                <> em <span className="font-semibold">{CATEGORY_LIST.find(c => c.label === activeCategory)?.displayLabel ?? activeCategory}</span></>
               )}
             </>
           )}

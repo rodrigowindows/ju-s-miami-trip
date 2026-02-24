@@ -15,7 +15,7 @@ export function CategoryNav({ active, onSelect, variant = "dark" }: CategoryNavP
         isDark ? "bg-[#131921]" : "bg-white border-b border-gray-200"
       }`}
     >
-      {CATEGORY_LIST.map(({ label, icon: Icon }) => {
+      {CATEGORY_LIST.map(({ label, displayLabel, icon: Icon }) => {
         const isActive = active === label;
         return (
           <button
@@ -32,7 +32,7 @@ export function CategoryNav({ active, onSelect, variant = "dark" }: CategoryNavP
             }`}
           >
             <Icon size={14} />
-            {label}
+            {displayLabel}
           </button>
         );
       })}
