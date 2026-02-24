@@ -26,8 +26,6 @@ import { useActivePromotions } from "@/hooks/usePromotions";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { useToast } from "@/hooks/use-toast";
 
-const CATEGORIES = ["Todos", "Tech", "Beauty", "Fashion"] as const;
-
 const SORT_OPTIONS = [
   { value: "relevance", label: "Relevancia" },
   { value: "price_asc", label: "Menor preco" },
@@ -41,9 +39,14 @@ const Index = () => {
   const { data: promos = [] } = useActivePromotions();
   const { toast } = useToast();
 
-  const rate = parseFloat(settings?.exchange_rate ?? "5.70");
-  const spread = parseFloat(settings?.spread_percent ?? "3");
+  const rate = parseFloat(settings?.exchange_rate ?? "6.05");
+  const spread = parseFloat(settings?.spread_percent ?? "8");
   const whatsapp = settings?.whatsapp_number ?? "5561999999999";
+  const promoTicker = settings?.promo_ticker_text ?? "Compre dos EUA e receba no Brasil - Frete via viagem Miami";
+  const categories = useMemo(() => {
+    const raw = settings?.categories ?? "Tech,Beauty,Fashion,Lifestyle";
+    return ["Todos", ...raw.split(",").map((c) => c.trim()).filter(Boolean)];
+  }, [settings?.categories]);
 
   const convert = useCallback(
     (usd: number) => calculatePriceBRL(usd, rate, spread),
@@ -98,7 +101,7 @@ const Index = () => {
         {/* Promo ticker */}
         <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-violet-500 text-white text-center py-1.5 px-4">
           <p className="text-[11px] font-medium tracking-wide">
-            Compre dos EUA e receba no Brasil - Frete via viagem Miami
+            {promoTicker}
           </p>
         </div>
 
@@ -127,7 +130,7 @@ const Index = () => {
 
         {/* Category pills */}
         <div className="px-4 pb-2 flex gap-2 overflow-x-auto scrollbar-hide">
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}

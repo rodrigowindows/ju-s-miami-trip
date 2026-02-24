@@ -1,4 +1,15 @@
-import { CATEGORY_LIST } from "./catalog-utils";
+import { LayoutGrid, Smartphone, Sparkles, Shirt, Heart, Tag } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { useSettings } from "@/hooks/useSettings";
+import { useMemo } from "react";
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  Todos: LayoutGrid,
+  Tech: Smartphone,
+  Beauty: Sparkles,
+  Fashion: Shirt,
+  Lifestyle: Heart,
+};
 
 interface CategoryNavProps {
   active: string;
@@ -8,6 +19,16 @@ interface CategoryNavProps {
 
 export function CategoryNav({ active, onSelect, variant = "dark" }: CategoryNavProps) {
   const isDark = variant === "dark";
+  const { data: settings } = useSettings();
+
+  const categoryList = useMemo(() => {
+    const raw = settings?.categories ?? "Tech,Beauty,Fashion,Lifestyle";
+    const cats = raw.split(",").map((c) => c.trim()).filter(Boolean);
+    return [
+      { label: "Todos", icon: ICON_MAP["Todos"] ?? LayoutGrid },
+      ...cats.map((c) => ({ label: c, icon: ICON_MAP[c] ?? Tag })),
+    ];
+  }, [settings?.categories]);
 
   return (
     <div
@@ -15,7 +36,7 @@ export function CategoryNav({ active, onSelect, variant = "dark" }: CategoryNavP
         isDark ? "bg-[#131921]" : "bg-white border-b border-gray-200"
       }`}
     >
-      {CATEGORY_LIST.map(({ label, icon: Icon }) => {
+      {categoryList.map(({ label, icon: Icon }) => {
         const isActive = active === label;
         return (
           <button

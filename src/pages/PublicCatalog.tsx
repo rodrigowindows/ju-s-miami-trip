@@ -16,6 +16,7 @@ import {
 import Logo from "@/components/shared/Logo";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
+import { useSettings } from "@/hooks/useSettings";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
@@ -240,6 +241,9 @@ export default function PublicCatalog() {
   const { products, loading } = useCatalog();
   const { convert } = useExchangeRate();
   const { deals, loading: dealsLoading } = useDeals();
+  const { data: siteSettings } = useSettings();
+  const whatsapp = siteSettings?.whatsapp_number ?? "5561999999999";
+  const storeName = siteSettings?.store_name ?? "MalaBridge";
 
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
@@ -482,7 +486,7 @@ export default function PublicCatalog() {
             Personal shopper em Miami. Produtos originais dos EUA com entrega segura no Brasil.
           </p>
           <a
-            href="https://wa.me/5511999999999?text=Olá! Vim do site MalaBridge"
+            href={`https://wa.me/${whatsapp}?text=Olá! Vim do site ${storeName}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors"
@@ -714,7 +718,7 @@ export default function PublicCatalog() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-xs font-semibold text-green-700">Ju Imports</span>
+                                    <span className="text-xs font-semibold text-green-700">{storeName}</span>
                                     {q.answered_at && (
                                       <span className="text-[10px] text-gray-400">
                                         {new Date(q.answered_at).toLocaleDateString("pt-BR")}

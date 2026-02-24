@@ -61,6 +61,13 @@ export interface AppSettings {
   spread_percent: string;
   whatsapp_number: string;
   referral_credit: string;
+  store_name: string;
+  store_tagline: string;
+  instagram_url: string;
+  categories: string;
+  prohibited_items: string;
+  default_weight_kg: string;
+  promo_ticker_text: string;
 }
 
 // ── Kanban Board Config ──────────────────────

@@ -2,8 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle } from "lucide-react";
+import { useSettings } from "@/hooks/useSettings";
 
 const Contact = () => {
+  const { data: settings } = useSettings();
+  const whatsapp = settings?.whatsapp_number ?? "5561999999999";
+  const storeName = settings?.store_name ?? "MalaBridge";
+
   return (
     <section id="contato" className="py-24">
       <div className="container mx-auto px-4 max-w-2xl">
@@ -27,7 +32,7 @@ const Contact = () => {
             asChild
           >
             <a
-              href="https://wa.me/5511999999999?text=Olá! Vim do site A Ju vai para Miami"
+              href={`https://wa.me/${whatsapp}?text=Olá! Vim do site ${storeName}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -57,7 +62,7 @@ const Contact = () => {
             const email = formData.get("email");
             const message = formData.get("message");
             window.open(
-              `https://wa.me/5511999999999?text=Nome: ${name}%0AEmail: ${email}%0AMensagem: ${message}`,
+              `https://wa.me/${whatsapp}?text=Nome: ${name}%0AEmail: ${email}%0AMensagem: ${message}`,
               "_blank"
             );
           }}

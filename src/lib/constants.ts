@@ -48,8 +48,15 @@ export const ORDER_STATUS_COLORS: Record<string, string> = Object.fromEntries(
 
 // ── Default settings ─────────────────────────
 export const DEFAULT_SETTINGS = {
-  exchange_rate: '5.70',
-  spread_percent: '3',
-  whatsapp_number: '',
+  exchange_rate: '6.05',
+  spread_percent: '8',
+  whatsapp_number: '5561999999999',
   referral_credit: '30',
+  store_name: 'MalaBridge',
+  store_tagline: 'Sua ponte de compras para Miami',
+  instagram_url: '',
+  categories: 'Tech,Beauty,Fashion,Lifestyle',
+  prohibited_items: 'Armas\nDrogas\nMedicamentos controlados\nAlimentos perecíveis\nAnimais vivos',
+  default_weight_kg: '23',
+  promo_ticker_text: 'Compre dos EUA e receba no Brasil - Frete via viagem Miami',
 } as const;

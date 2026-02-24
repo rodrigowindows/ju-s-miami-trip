@@ -23,10 +23,16 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useSettings } from "@/hooks/useSettings";
 import { Plus, Loader2, Store, Pencil, Trash2 } from "lucide-react";
 
 export default function AdminCatalog() {
   const { toast } = useToast();
+  const { data: siteSettings } = useSettings();
+  const categoryList = (siteSettings?.categories ?? "Tech,Beauty,Fashion,Lifestyle")
+    .split(",")
+    .map((c) => c.trim())
+    .filter(Boolean);
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -202,9 +208,9 @@ export default function AdminCatalog() {
                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Tech">Tech</SelectItem>
-                    <SelectItem value="Beauty">Beauty</SelectItem>
-                    <SelectItem value="Fashion">Fashion</SelectItem>
+                    {categoryList.map((cat) => (
+                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

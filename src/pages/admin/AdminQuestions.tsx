@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { ProductQuestion, CatalogProduct } from "@/types";
+import { useSettings } from "@/hooks/useSettings";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +27,8 @@ export default function AdminQuestions() {
   const [answerText, setAnswerText] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState<string | null>(null);
   const { toast } = useToast();
+  const { data: siteSettings } = useSettings();
+  const storeName = siteSettings?.store_name ?? "MalaBridge";
 
   async function loadQuestions() {
     setLoading(true);
@@ -221,7 +224,7 @@ export default function AdminQuestions() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-semibold text-green-700">Ju Imports</span>
+                      <span className="text-xs font-semibold text-green-700">{storeName}</span>
                       {q.answered_at && (
                         <span className="text-[10px] text-muted-foreground">
                           {new Date(q.answered_at).toLocaleDateString("pt-BR")}
