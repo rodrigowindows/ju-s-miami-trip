@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import type { CatalogProduct, ProductQuestion, ProductReview } from "@/types";
 import type { Tables } from "@/integrations/supabase/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
