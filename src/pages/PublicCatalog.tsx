@@ -24,7 +24,6 @@ import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
 import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
-import { MegaMenu } from "@/components/catalog/MegaMenu";
 import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORY_LIST } from "@/components/catalog/catalog-utils";
 import SearchAutocomplete from "@/components/catalog/SearchAutocomplete";
 import SearchFilters from "@/components/catalog/SearchFilters";
@@ -294,7 +293,6 @@ export default function PublicCatalog() {
           <Link to="/login" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><ShoppingBag size={18} /></Link>
         </div>
         <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="light" />
-        <MegaMenu onSelectCategory={setActiveCategory} />
       </header>
 
       {/* Hero Banner Carousel */}
