@@ -19,6 +19,7 @@ import Logo from "@/components/shared/Logo";
 import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchTracker } from "@/hooks/useSearchTracker";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
@@ -271,6 +272,7 @@ export default function PublicCatalog() {
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { reviews: productReviews, loading: reviewsLoading } = useProductReviewsLocal(selectedProduct?.id ?? null);
   const { toast } = useToast();
+  const trackSearch = useSearchTracker("public");
 
   // Q&A form state
   const [askName, setAskName] = useState("");
@@ -342,6 +344,13 @@ export default function PublicCatalog() {
         return list;
     }
   }, [products, activeCategory, searchQuery, availabilityFilter, minPrice, maxPrice, sortBy, convert]);
+
+  // Track search queries
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      trackSearch(searchQuery, filtered.length);
+    }
+  }, [searchQuery, filtered.length, trackSearch]);
 
   return (
     <div className="min-h-screen bg-white">
