@@ -2,6 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -141,6 +142,36 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Announcement bar marquee animation */
+.announcement-track {
+  display: inline-flex;
+  animation: marquee 30s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Mega Menu Animations */
+@keyframes megaMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mega-menu-dropdown {
+  animation: megaMenuFadeIn 0.2s ease forwards;
+}
 /* Hide scrollbar for cleaner mobile look */
 @media (max-width: 768px) {
   .no-scrollbar::-webkit-scrollbar {
@@ -150,4 +181,25 @@ html {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+}
+
+/* Cookie banner fade-in */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out;
+}
+
+/* WhatsApp pulse animation */
+@keyframes whatsapp-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.animate-whatsapp-pulse {
+  animation: whatsapp-pulse 3s ease-in-out infinite;
+}
+.animate-whatsapp-pulse:hover {
+  animation: none;
 }

@@ -16,9 +16,9 @@ const Hero = () => {
           🌴 Sua ponte de compras para Miami
         </span>
         <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-black leading-tight mb-6 text-foreground">
-          Mala
+          Aju
           <span className="bg-gradient-to-r from-miami-pink via-miami-orange to-miami-blue bg-clip-text text-transparent">
-            Bridge
+            VaiParaMiami
           </span>
         </h1>
         <p className="font-body text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">

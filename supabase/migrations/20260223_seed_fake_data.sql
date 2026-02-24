@@ -1,5 +1,5 @@
 -- ============================================================
--- MalaBridge - Seed Fake Data for All Admin Sections
+-- AjuVaiParaMiami - Seed Fake Data for All Admin Sections
 -- Run in Supabase SQL Editor to populate the admin with demo data
 -- ============================================================
 

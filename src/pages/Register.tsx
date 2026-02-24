@@ -71,7 +71,7 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="font-display text-2xl">MalaBridge</CardTitle>
+          <CardTitle className="font-display text-2xl">AjuVaiParaMiami</CardTitle>
           <p className="text-sm text-muted-foreground mt-1">Crie sua conta</p>
         </CardHeader>
         <CardContent>

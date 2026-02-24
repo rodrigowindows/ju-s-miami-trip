@@ -46,7 +46,7 @@ const AdminLayout = () => {
         <div className="p-6 border-b">
           <h1 className="font-display text-lg font-bold flex items-center gap-2">
             <LayoutDashboard size={20} />
-            MalaBridge
+            AjuVaiParaMiami
           </h1>
           <p className="text-xs text-muted-foreground mt-1">Painel Admin</p>
         </div>

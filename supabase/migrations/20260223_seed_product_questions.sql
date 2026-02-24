@@ -1,5 +1,5 @@
 -- ============================================================
--- MalaBridge - Seed Product Questions (Q&A)
+-- AjuVaiParaMiami - Seed Product Questions (Q&A)
 -- Perguntas e respostas estilo Mercado Livre / Amazon
 -- Run in Supabase SQL Editor
 -- ============================================================

@@ -1,5 +1,5 @@
 -- ============================================================
--- MalaBridge - Fix RLS + Seed Catalog Products + Promotions
+-- AjuVaiParaMiami - Fix RLS + Seed Catalog Products + Promotions
 -- Run in Supabase SQL Editor (Dashboard > SQL Editor > New Query)
 -- ============================================================
 
@@ -426,7 +426,7 @@ ON CONFLICT (coupon_code) DO NOTHING;
 -- 6. Confirm admin email (fix login issue)
 -- ============================================================
 UPDATE auth.users SET email_confirmed_at = now()
-WHERE email = 'admin@malabridge.com' AND email_confirmed_at IS NULL;
+WHERE email = 'admin@ajuvaiparamiami.com' AND email_confirmed_at IS NULL;
 
 UPDATE auth.users SET email_confirmed_at = now()
-WHERE email = 'seedadmin@malabridge.com' AND email_confirmed_at IS NULL;
+WHERE email = 'seedadmin@ajuvaiparamiami.com' AND email_confirmed_at IS NULL;

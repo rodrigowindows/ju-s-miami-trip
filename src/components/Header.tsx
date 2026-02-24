@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import Logo from "@/components/shared/Logo";
+import AnnouncementBar from "@/components/AnnouncementBar";
 
 const anchorLinks = [
   { label: "Como Funciona", href: "#como-funciona" },
@@ -14,7 +15,9 @@ const Header = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <header className="fixed top-0 left-0 right-0 z-50">
+      <AnnouncementBar />
+      <div className="bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto flex items-center justify-between h-14 px-4">
         <a href="#home">
           <Logo size="sm" />
@@ -84,6 +87,7 @@ const Header = () => {
           ))}
         </nav>
       )}
+      </div>
     </header>
   );
 };

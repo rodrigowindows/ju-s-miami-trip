@@ -388,6 +388,7 @@ export type Database = {
       }
       product_reviews: {
         Row: {
+          client_id: string | null
           comment: string | null
           created_at: string
           id: string
@@ -397,6 +398,7 @@ export type Database = {
           verified_purchase: boolean
         }
         Insert: {
+          client_id?: string | null
           comment?: string | null
           created_at?: string
           id?: string
@@ -406,6 +408,7 @@ export type Database = {
           verified_purchase?: boolean
         }
         Update: {
+          client_id?: string | null
           comment?: string | null
           created_at?: string
           id?: string
@@ -415,6 +418,13 @@ export type Database = {
           verified_purchase?: boolean
         }
         Relationships: [
+          {
+            foreignKeyName: "product_reviews_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "product_reviews_product_id_fkey"
             columns: ["product_id"]

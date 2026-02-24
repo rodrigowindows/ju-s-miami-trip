@@ -3,7 +3,7 @@ import { Heart, ShoppingCart, Search, Truck, Loader2, Plus, Check, Share2, Star,
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import EmptyState from "@/components/shared/EmptyState";
 import { useCatalogProducts } from "@/hooks/useCatalog";
 import { useProductReviews, useCreateProductReview } from "@/hooks/useProductReviews";
@@ -76,7 +76,7 @@ export default function ClientCatalog() {
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
 
-  const calcBRL = (usd: number) => calculatePriceBRL(usd, exchangeRate, spread);
+  const calcBRL = useMemo(() => (usd: number) => calculatePriceBRL(usd, exchangeRate, spread), [exchangeRate, spread]);
 
   const isInCart = (productId: string) => items.some((i) => i.product.id === productId);
 
@@ -198,7 +198,7 @@ export default function ClientCatalog() {
             <EmptyState
               icon="orders"
               title="Nenhum produto encontrado"
-              description={searchQuery ? "Tente outra busca." : "Novos produtos serao adicionados em breve!"}
+              description={searchQuery ? "Tente outra busca." : "Novos produtos serão adicionados em breve!"}
             />
             {searchQuery && (
               <div className="text-center mt-2">
@@ -276,6 +276,7 @@ export default function ClientCatalog() {
                       <DialogTitle className="text-base font-normal text-gray-900 leading-snug">
                         {selected.name}
                       </DialogTitle>
+                      <DialogDescription className="sr-only">Detalhes do produto {selected.name}</DialogDescription>
                     </DialogHeader>
                     <p className="text-sm text-sky-700 mt-1">
                       Loja: {selected.brand}
@@ -291,17 +292,31 @@ export default function ClientCatalog() {
                   )}
 
                   <div className="border-t border-gray-200 pt-3">
-                    <p className="text-xs text-gray-500 line-through">
+                    <p className="text-base text-[#999] line-through">
                       R$ {prevPrice.toFixed(2).replace(".", ",")}
                     </p>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-2xl font-bold text-gray-900">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[28px] font-bold text-gray-900">
                         {formatBRL(brl)}
                       </span>
+                      <span className="bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                        -{Math.round(((prevPrice - brl) / prevPrice) * 100)}% OFF
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      US$ {selected.price_usd.toFixed(2).replace(".", ",")}
+                    <p className="text-sm text-[#28a745] font-medium mt-0.5">
+                      Economize {formatBRL(prevPrice - brl)}
                     </p>
+
+                    <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1.5">
+                      <p className="text-sm text-gray-700">1x de <span className="font-semibold">{formatBRL(brl)}</span> sem juros</p>
+                      <p className="text-sm text-gray-700">2x de <span className="font-semibold">{formatBRL(brl / 2)}</span> sem juros</p>
+                      <p className="text-sm text-gray-700">3x de <span className="font-semibold">{formatBRL(brl / 3)}</span> sem juros</p>
+                    </div>
+
+                    <p className="text-sm text-gray-400 mt-2">
+                      Preco nos EUA: US$ {selected.price_usd.toFixed(2)}
+                    </p>
+
                     <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Cambio</span>

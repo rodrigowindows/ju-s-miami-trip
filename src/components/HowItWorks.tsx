@@ -1,52 +1,200 @@
-import { ShoppingCart, Plane, Package } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Plane, Package, Home } from "lucide-react";
 
 const steps = [
   {
+    number: "01",
+    icon: ShoppingBag,
+    title: "Escolha seu produto",
+    description:
+      "Navegue pelo catálogo e selecione o que deseja dos EUA.",
+  },
+  {
+    number: "02",
     icon: ShoppingCart,
-    title: "Escolha seus produtos",
+    title: "Nós compramos nos EUA",
     description:
-      "Envie o link ou foto do que deseja comprar nos EUA. Nós fazemos o orçamento para você.",
+      "Realizamos a compra em Miami com total segurança.",
   },
   {
+    number: "03",
     icon: Plane,
-    title: "Compramos e trazemos",
+    title: "Enviamos para o Brasil",
     description:
-      "Realizamos a compra em Miami e trazemos na próxima viagem com total segurança.",
+      "Trazemos na próxima viagem com acompanhamento.",
   },
   {
-    icon: Package,
-    title: "Receba no Brasil",
+    number: "04",
+    icon: Home,
+    title: "Receba em casa",
     description:
-      "Entregamos diretamente para você, com acompanhamento em tempo real do pedido.",
+      "Entregamos diretamente na sua porta.",
   },
 ];
 
 const HowItWorks = () => {
   return (
-    <section id="como-funciona" className="py-24">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <span className="font-body text-sm font-semibold tracking-widest uppercase text-miami-pink mb-2 block">
-            Simples e rápido
-          </span>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground">
-            Como funciona
-          </h2>
+    <section id="como-funciona" className="bg-white" style={{ padding: "80px 20px" }}>
+      <div className="mx-auto" style={{ maxWidth: 1000 }}>
+        <h2
+          className="text-center mb-12"
+          style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: 28,
+            fontWeight: 700,
+            color: "#111",
+          }}
+        >
+          Como Funciona
+        </h2>
+
+        {/* Desktop: horizontal layout */}
+        <div className="hidden md:block">
+          <div className="relative flex items-start justify-between">
+            {/* Dashed connecting line */}
+            <div
+              className="absolute"
+              style={{
+                top: 50,
+                left: "12.5%",
+                right: "12.5%",
+                borderTop: "2px dashed #ddd",
+              }}
+            />
+
+            {steps.map((step) => (
+              <div
+                key={step.number}
+                className="relative flex flex-col items-center text-center"
+                style={{ width: "25%" }}
+              >
+                {/* Watermark number */}
+                <span
+                  className="absolute select-none pointer-events-none"
+                  style={{
+                    top: -10,
+                    fontSize: 40,
+                    fontWeight: 700,
+                    color: "#e0e0e0",
+                    lineHeight: 1,
+                    zIndex: 0,
+                  }}
+                >
+                  {step.number}
+                </span>
+
+                {/* Circle with icon */}
+                <div
+                  className="relative z-10 flex items-center justify-center rounded-full"
+                  style={{
+                    width: 80,
+                    height: 80,
+                    backgroundColor: "#FFF3E0",
+                    marginTop: 20,
+                  }}
+                >
+                  <step.icon size={36} style={{ color: "#E65100" }} />
+                </div>
+
+                {/* Title */}
+                <h3
+                  className="mt-4"
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: "#111",
+                  }}
+                >
+                  {step.title}
+                </h3>
+
+                {/* Description */}
+                <p
+                  className="mt-1"
+                  style={{
+                    fontSize: 13,
+                    color: "#666",
+                    maxWidth: 180,
+                    lineHeight: 1.4,
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }}
+                >
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        {/* Mobile: vertical layout */}
+        <div className="md:hidden flex flex-col items-center">
           {steps.map((step, i) => (
-            <div key={step.title} className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                <step.icon className="h-7 w-7 text-primary" />
-              </div>
-              <span className="font-body text-xs font-bold text-miami-orange uppercase tracking-widest">
-                Passo {i + 1}
+            <div key={step.number} className="relative flex flex-col items-center text-center">
+              {/* Vertical dashed line (between cards) */}
+              {i < steps.length - 1 && (
+                <div
+                  className="absolute"
+                  style={{
+                    top: 100,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    height: 40,
+                    borderLeft: "2px dashed #ddd",
+                  }}
+                />
+              )}
+
+              {/* Watermark number */}
+              <span
+                className="select-none pointer-events-none"
+                style={{
+                  fontSize: 40,
+                  fontWeight: 700,
+                  color: "#e0e0e0",
+                  lineHeight: 1,
+                }}
+              >
+                {step.number}
               </span>
-              <h3 className="font-display text-lg font-bold mt-2 mb-2">
+
+              {/* Circle with icon */}
+              <div
+                className="flex items-center justify-center rounded-full"
+                style={{
+                  width: 80,
+                  height: 80,
+                  backgroundColor: "#FFF3E0",
+                  marginTop: -8,
+                }}
+              >
+                <step.icon size={36} style={{ color: "#E65100" }} />
+              </div>
+
+              {/* Title */}
+              <h3
+                className="mt-3"
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: "#111",
+                }}
+              >
                 {step.title}
               </h3>
-              <p className="font-body text-sm text-muted-foreground">
+
+              {/* Description */}
+              <p
+                className="mt-1"
+                style={{
+                  fontSize: 13,
+                  color: "#666",
+                  maxWidth: 220,
+                  lineHeight: 1.4,
+                  marginBottom: i < steps.length - 1 ? 40 : 0,
+                }}
+              >
                 {step.description}
               </p>
             </div>

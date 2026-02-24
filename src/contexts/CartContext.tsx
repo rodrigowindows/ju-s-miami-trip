@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from "react";
 import type { CatalogProduct } from "@/types";
 
-const CART_STORAGE_KEY = "malabridge_cart";
+const CART_STORAGE_KEY = "ajuvaiparamiami_cart";
 
 export interface CartItem {
   product: CatalogProduct;
@@ -66,23 +66,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const clearCart = useCallback(() => setItems([]), []);
+  const openCart = useCallback(() => setIsOpen(true), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
 
+  const value = useMemo(
+    () => ({ items, addItem, removeItem, updateQuantity, clearCart, totalItems, isOpen, openCart, closeCart }),
+    [items, addItem, removeItem, updateQuantity, clearCart, totalItems, isOpen, openCart, closeCart],
+  );
+
   return (
-    <CartContext.Provider
-      value={{
-        items,
-        addItem,
-        removeItem,
-        updateQuantity,
-        clearCart,
-        totalItems,
-        isOpen,
-        openCart: () => setIsOpen(true),
-        closeCart: () => setIsOpen(false),
-      }}
-    >
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
