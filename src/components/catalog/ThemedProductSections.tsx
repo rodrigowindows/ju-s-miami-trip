@@ -56,11 +56,11 @@ function useSectionCountdown(deals: DealInfo[]) {
 /* ── Section Title: MAIS VENDIDOS style (centered with decorative lines) ── */
 function DividerTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-4 mb-6">
+    <div className="flex items-center gap-3 sm:gap-4 mb-6">
       <div className="flex-1 h-px bg-[#ddd]" />
       <h2
-        className="text-2xl font-bold text-black text-center shrink-0 tracking-wide"
-        style={{ fontFamily: "'Playfair Display', 'Gabarito', serif", fontSize: 28 }}
+        className="text-xl sm:text-2xl font-bold text-black text-center shrink-0 tracking-wide"
+        style={{ fontFamily: "'Playfair Display', 'Gabarito', serif" }}
       >
         {children}
       </h2>
@@ -99,7 +99,7 @@ function ProductGrid({
   const visible = products.slice(0, maxItems);
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
       {visible.map((product) => {
         const activeDeal = deals.find((d) => d.product_id === product.id);
         return (
@@ -167,7 +167,7 @@ export function ThemedProductSections({
       : products.slice(0, 8);
 
   return (
-    <div className="space-y-[60px]">
+    <div className="space-y-10 sm:space-y-[60px]">
       {/* ─── Section 1: MAIS VENDIDOS ─────────────────── */}
       {bestSellers.length > 0 && (
         <section>
@@ -188,8 +188,8 @@ export function ThemedProductSections({
       {/* ─── Section 2: OFERTAS DO DIA ────────────────── */}
       {dealProducts.length > 0 && (
         <section
-          className="rounded-xl px-5 py-10 sm:px-10"
-          style={{ backgroundColor: "#FFF8E1", padding: 40, borderRadius: 12 }}
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{ backgroundColor: "#FFF8E1", borderRadius: 12 }}
         >
           {/* Timer */}
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -203,8 +203,8 @@ export function ThemedProductSections({
           <div className="flex items-center gap-3 mb-6">
             <Zap size={24} className="text-amber-600" />
             <h2
-              className="text-2xl font-bold text-black"
-              style={{ fontFamily: "'Playfair Display', 'Gabarito', serif", fontSize: 28 }}
+              className="text-xl sm:text-2xl font-bold text-black"
+              style={{ fontFamily: "'Playfair Display', 'Gabarito', serif" }}
             >
               OFERTAS DO DIA
             </h2>
@@ -227,14 +227,14 @@ export function ThemedProductSections({
       {/* ─── Section 3: SKINCARE FAVORITOS ────────────── */}
       {skincareFinal.length > 0 && (
         <section
-          className="rounded-xl px-5 py-10 sm:px-10"
-          style={{ backgroundColor: "#FFF0F5", padding: 40, borderRadius: 12 }}
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{ backgroundColor: "#FFF0F5", borderRadius: 12 }}
         >
           <div className="flex items-center gap-3 mb-6">
             <Droplets size={24} className="text-pink-500" />
             <h2
-              className="text-2xl font-bold text-black"
-              style={{ fontFamily: "'Playfair Display', 'Gabarito', serif", fontSize: 28 }}
+              className="text-xl sm:text-2xl font-bold text-black"
+              style={{ fontFamily: "'Playfair Display', 'Gabarito', serif" }}
             >
               SKINCARE FAVORITOS
             </h2>
@@ -257,19 +257,17 @@ export function ThemedProductSections({
       {/* ─── Section 4: PERFUMES IMPORTADOS ───────────── */}
       {perfumeFinal.length > 0 && (
         <section
-          className="rounded-xl px-5 py-10 sm:px-10"
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
           style={{
             background: "linear-gradient(180deg, #FFFFFF 0%, #F5F0E8 100%)",
-            padding: 40,
             borderRadius: 12,
           }}
         >
           <div className="flex items-center gap-3 mb-6">
             <h2
-              className="text-2xl font-bold text-black tracking-wider"
+              className="text-xl sm:text-2xl font-bold text-black tracking-wider"
               style={{
                 fontFamily: "'Playfair Display', 'Gabarito', serif",
-                fontSize: 28,
                 letterSpacing: "0.05em",
               }}
             >

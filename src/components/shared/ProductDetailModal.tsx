@@ -23,7 +23,7 @@ export default function ProductDetailModal({ product, onClose, convert }: Props)
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md mx-auto p-0 gap-0 rounded-xl overflow-hidden max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md mx-auto p-0 gap-0 rounded-xl overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Image */}
         <div className="bg-white relative">
           <div className="aspect-square bg-gray-50 flex items-center justify-center p-4">
