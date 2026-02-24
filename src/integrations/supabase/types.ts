@@ -14,42 +14,13 @@ export type Database = {
   }
   public: {
     Tables: {
-      brands: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          logo_url: string | null
-          name: string
-          slug: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          logo_url?: string | null
-          name: string
-          slug: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          logo_url?: string | null
-          name?: string
-          slug?: string
-        }
-        Relationships: []
-      }
       catalog_products: {
         Row: {
           active: boolean
-          availability_type: string
           brand: string
           category: string
           created_at: string
           description: string | null
-          estimated_days: number | null
           id: string
           image_url: string
           name: string
@@ -57,17 +28,14 @@ export type Database = {
           rating: number
           review_count: number
           sales_count: number
-          stock_quantity: number
           trending: boolean
         }
         Insert: {
           active?: boolean
-          availability_type?: string
           brand?: string
           category?: string
           created_at?: string
           description?: string | null
-          estimated_days?: number | null
           id?: string
           image_url?: string
           name: string
@@ -75,17 +43,14 @@ export type Database = {
           rating?: number
           review_count?: number
           sales_count?: number
-          stock_quantity?: number
           trending?: boolean
         }
         Update: {
           active?: boolean
-          availability_type?: string
           brand?: string
           category?: string
           created_at?: string
           description?: string | null
-          estimated_days?: number | null
           id?: string
           image_url?: string
           name?: string
@@ -93,45 +58,9 @@ export type Database = {
           rating?: number
           review_count?: number
           sales_count?: number
-          stock_quantity?: number
           trending?: boolean
         }
         Relationships: []
-      }
-      product_alerts: {
-        Row: {
-          created_at: string
-          id: string
-          notified_at: string | null
-          product_id: string
-          user_email: string
-          whatsapp: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          notified_at?: string | null
-          product_id: string
-          user_email: string
-          whatsapp?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          notified_at?: string | null
-          product_id?: string
-          user_email?: string
-          whatsapp?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_alerts_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "catalog_products"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       order_events: {
         Row: {

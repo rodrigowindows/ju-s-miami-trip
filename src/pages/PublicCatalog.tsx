@@ -15,7 +15,7 @@ import {
   ShoppingCart, Plane, Package,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
-import TrustBadges from "@/components/TrustBadges";
+
 import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
@@ -385,7 +385,7 @@ export default function PublicCatalog() {
               Personal shopper em Miami com entrega segura
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-4 shrink-0">
+          <div className="hidden sm:flex items-center gap-5 shrink-0">
             <div className="flex items-center gap-1.5 text-[11px] text-gray-300">
               <ShoppingCart size={14} className="text-amber-400" />
               <span>Escolha</span>
@@ -401,9 +401,6 @@ export default function PublicCatalog() {
           </div>
         </div>
       </div>
-
-      {/* Trust Badges */}
-      <TrustBadges />
 
       <section className="max-w-6xl mx-auto px-4 py-4">
         <h3 className="text-center text-sm tracking-[0.2em] text-gray-600 mb-3">MARCAS QUE AMAMOS</h3>
