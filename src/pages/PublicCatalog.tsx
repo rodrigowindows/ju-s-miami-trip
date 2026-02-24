@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import type { CatalogProduct, ProductQuestion, ProductReview } from "@/types";
 import type { Tables } from "@/integrations/supabase/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -11,9 +11,12 @@ import {
   Loader2, X, LogIn, Search, Star, Truck,
   HelpCircle, Send, User, CheckCircle2,
   Zap, Timer, Flame, Share2,
-  ShoppingCart, Plane, Package, MessageCircle, MessageSquare,
+  MessageCircle, MessageSquare,
+  ShoppingCart, Plane, Package,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
+import TrustBadges from "@/components/TrustBadges";
+import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
 import { ProductCard } from "@/components/catalog/ProductCard";
@@ -21,7 +24,9 @@ import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
 import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
+import { MegaMenu } from "@/components/catalog/MegaMenu";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
+import { PreSaleBanner, FreeShippingBanner } from "@/components/SectionBanners";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
@@ -344,6 +349,9 @@ export default function PublicCatalog() {
 
         {/* Category Nav with Icons */}
         <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="dark" />
+
+        {/* Mega Menu Dropdown */}
+        <MegaMenu onSelectCategory={setActiveCategory} />
       </header>
 
       {/* Hero Banner */}
@@ -373,6 +381,9 @@ export default function PublicCatalog() {
           </div>
         </div>
       </div>
+
+      {/* Trust Badges */}
+      <TrustBadges />
 
       {/* Results Bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
@@ -414,6 +425,11 @@ export default function PublicCatalog() {
           </div>
         </div>
       )}
+
+      {/* Pre-Sale Banner */}
+      <div className="max-w-6xl mx-auto">
+        <PreSaleBanner />
+      </div>
 
       {/* Product Grid / Themed Sections */}
       <main className="px-3 py-3 max-w-6xl mx-auto">
@@ -464,27 +480,13 @@ export default function PublicCatalog() {
         )}
       </main>
 
-      {/* How It Works */}
-      <div className="bg-white border-t border-gray-200 py-6">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-base font-bold text-gray-900 text-center mb-4">Como Funciona</h2>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { icon: ShoppingCart, title: "Escolha", desc: "Navegue e selecione os produtos dos EUA" },
-              { icon: Plane, title: "Compramos", desc: "Compramos em Miami e trazemos na viagem" },
-              { icon: Package, title: "Receba", desc: "Entregamos no Brasil com seguranca" },
-            ].map((step) => (
-              <div key={step.title} className="text-center">
-                <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-[#232F3E] flex items-center justify-center">
-                  <step.icon size={18} className="text-amber-400" />
-                </div>
-                <p className="text-xs font-semibold text-gray-900">{step.title}</p>
-                <p className="text-[10px] text-gray-500 mt-0.5 leading-snug">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* Free Shipping Banner */}
+      <div className="max-w-6xl mx-auto">
+        <FreeShippingBanner />
       </div>
+
+      {/* How It Works */}
+      <HowItWorks />
 
       {/* Footer */}
       <footer className="bg-[#232F3E] text-gray-300 py-6">
@@ -496,7 +498,7 @@ export default function PublicCatalog() {
             Personal shopper em Miami. Produtos originais dos EUA com entrega segura no Brasil.
           </p>
           <a
-            href="https://wa.me/5511999999999?text=Olá! Vim do site MalaBridge"
+            href="https://wa.me/5511999999999?text=Olá! Vim do site AjuVaiParaMiami"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20BD5A] text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors"
@@ -505,7 +507,7 @@ export default function PublicCatalog() {
             Falar pelo WhatsApp
           </a>
           <p className="text-[10px] text-gray-500 pt-2">
-            MalaBridge &copy; {new Date().getFullYear()}. Todos os direitos reservados.
+            AjuVaiParaMiami &copy; {new Date().getFullYear()}. Todos os direitos reservados.
           </p>
         </div>
       </footer>
@@ -569,16 +571,29 @@ export default function PublicCatalog() {
                   )}
 
                   <div className="border-t border-gray-200 pt-3">
-                    <p className="text-xs text-gray-500 line-through">
+                    <p className="text-base text-[#999] line-through">
                       R$ {prevPrice.toFixed(2).replace(".", ",")}
                     </p>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-2xl font-bold text-gray-900">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[28px] font-bold text-gray-900">
                         R$ {brl.toFixed(2).replace(".", ",")}
                       </span>
+                      <span className="bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                        -{Math.round(((prevPrice - brl) / prevPrice) * 100)}% OFF
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      US$ {selectedProduct.price_usd.toFixed(2)}
+                    <p className="text-sm text-[#28a745] font-medium mt-0.5">
+                      Economize R$ {(prevPrice - brl).toFixed(2).replace(".", ",")}
+                    </p>
+
+                    <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1.5">
+                      <p className="text-sm text-gray-700">1x de <span className="font-semibold">R$ {brl.toFixed(2).replace(".", ",")}</span> sem juros</p>
+                      <p className="text-sm text-gray-700">2x de <span className="font-semibold">R$ {(brl / 2).toFixed(2).replace(".", ",")}</span> sem juros</p>
+                      <p className="text-sm text-gray-700">3x de <span className="font-semibold">R$ {(brl / 3).toFixed(2).replace(".", ",")}</span> sem juros</p>
+                    </div>
+
+                    <p className="text-sm text-gray-400 mt-2">
+                      Preco nos EUA: US$ {selectedProduct.price_usd.toFixed(2)}
                     </p>
 
                     <div className="flex items-center gap-1.5 mt-2">

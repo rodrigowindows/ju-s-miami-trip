@@ -2,6 +2,7 @@ import { Heart, Truck, Zap, Share2, ShoppingBag } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "./catalog-utils";
 import { shareProductWhatsApp } from "@/lib/share";
+import { formatBRL } from "@/lib/format";
 import type { CatalogProduct } from "@/types";
 
 export interface ActiveDeal {
@@ -106,7 +107,7 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
             R$ {finalPrice.toFixed(2).replace(".", ",")}
           </p>
           <p className="text-xs text-[#666]">
-            3x de R$ {installment.toFixed(2).replace(".", ",")} sem juros
+            ou 3x de R$ {installment.toFixed(2).replace(".", ",")} sem juros
           </p>
         </div>
 

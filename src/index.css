@@ -142,6 +142,36 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Announcement bar marquee animation */
+.announcement-track {
+  display: inline-flex;
+  animation: marquee 30s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Mega Menu Animations */
+@keyframes megaMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mega-menu-dropdown {
+  animation: megaMenuFadeIn 0.2s ease forwards;
+}
 /* Hide scrollbar for cleaner mobile look */
 @media (max-width: 768px) {
   .no-scrollbar::-webkit-scrollbar {

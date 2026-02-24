@@ -1,5 +1,5 @@
 -- ============================================================
--- MalaBridge - Seed Data
+-- AjuVaiParaMiami - Seed Data
 -- Run AFTER the unified migration
 -- ============================================================
 

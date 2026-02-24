@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import type { PromotionWithProduct, CatalogProduct } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -236,6 +236,9 @@ const Products = () => {
                           <div className="mt-2 space-y-0.5">
                             <p className="text-lg font-bold text-primary">
                               {formatBRL(calcBRL(product.price_usd))}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              ou 3x de {formatBRL(calcBRL(product.price_usd) / 3)} sem juros
                             </p>
                             <p className="text-xs text-muted-foreground">
                               US$ {product.price_usd.toFixed(2).replace(".", ",")}

@@ -16,7 +16,7 @@ export default function Logo({ size = 'md', showText = true }: LogoProps) {
       </div>
       {showText && (
         <span className={`font-display font-bold ${textMap[size]} bg-gradient-to-r from-primary to-miami-orange bg-clip-text text-transparent`}>
-          MalaBridge
+          AjuVaiParaMiami
         </span>
       )}
     </div>

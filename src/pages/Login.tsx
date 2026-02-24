@@ -50,7 +50,7 @@ export default function Login() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle className="font-display text-2xl">
-            MalaBridge
+            AjuVaiParaMiami
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
             Entre na sua conta de cliente

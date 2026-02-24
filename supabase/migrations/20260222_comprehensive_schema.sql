@@ -1,5 +1,5 @@
 -- ============================================
--- MalaBridge Comprehensive Schema
+-- AjuVaiParaMiami Comprehensive Schema
 -- This migration creates all tables, RLS policies,
 -- triggers, and seed data for the full app.
 -- ============================================
@@ -544,11 +544,11 @@ END $$;
 --
 -- INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, raw_user_meta_data)
 -- VALUES
---   ('00000000-0000-0000-0000-000000000001', 'admin@malabridge.com',
---    crypt('admin123', gen_salt('bf')), now(), '{"full_name":"Admin MalaBridge"}'),
---   ('00000000-0000-0000-0000-000000000002', 'cliente@malabridge.com',
+--   ('00000000-0000-0000-0000-000000000001', 'admin@ajuvaiparamiami.com',
+--    crypt('admin123', gen_salt('bf')), now(), '{"full_name":"Admin AjuVaiParaMiami"}'),
+--   ('00000000-0000-0000-0000-000000000002', 'cliente@ajuvaiparamiami.com',
 --    crypt('cliente123', gen_salt('bf')), now(), '{"full_name":"Ana Carolina Silva"}');
 --
 -- INSERT INTO profiles (id, email, full_name, phone, address, role) VALUES
---   ('00000000-0000-0000-0000-000000000001', 'admin@malabridge.com', 'Admin MalaBridge', '+5561999999999', null, 'admin'),
---   ('00000000-0000-0000-0000-000000000002', 'cliente@malabridge.com', 'Ana Carolina Silva', '+5561999887766', 'Asa Sul, Brasília-DF', 'cliente');
+--   ('00000000-0000-0000-0000-000000000001', 'admin@ajuvaiparamiami.com', 'Admin AjuVaiParaMiami', '+5561999999999', null, 'admin'),
+--   ('00000000-0000-0000-0000-000000000002', 'cliente@ajuvaiparamiami.com', 'Ana Carolina Silva', '+5561999887766', 'Asa Sul, Brasília-DF', 'cliente');

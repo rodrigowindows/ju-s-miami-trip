@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════
--- MalaBridge — Complete Database Migration
+-- AjuVaiParaMiami — Complete Database Migration
 -- ═══════════════════════════════════════
 
 -- 1. PROFILES (extends Supabase auth.users)
@@ -231,7 +231,7 @@ INSERT INTO whatsapp_templates (slug, title, icon, template_text) VALUES
   ('approved', 'Pedido Aprovado', 'CheckCircle', E'Olá {nome_cliente}! ✅ Pedido #{numero_pedido} aprovado! Vamos comprar: {itens}'),
   ('bought', 'Itens Comprados', 'ShoppingBag', E'Olá {nome_cliente}! 🛍️ Itens do pedido #{numero_pedido} comprados! Viagem: {codigo_viagem}'),
   ('arrived', 'Chegou no Brasil', 'Plane', E'Olá {nome_cliente}! ✈️ Pedido #{numero_pedido} chegou ao Brasil! Vamos agendar a entrega.'),
-  ('delivered', 'Entregue', 'Gift', E'Olá {nome_cliente}! 🎁 Pedido #{numero_pedido} entregue! Obrigado por usar a MalaBridge!')
+  ('delivered', 'Entregue', 'Gift', E'Olá {nome_cliente}! 🎁 Pedido #{numero_pedido} entregue! Obrigado por usar a AjuVaiParaMiami!')
 ON CONFLICT (slug) DO NOTHING;
 
 -- Catalog Products (15 produtos com imagens Unsplash reais)
