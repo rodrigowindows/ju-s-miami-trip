@@ -90,14 +90,14 @@ export default function HeroBannerCarousel() {
     >
       {/* Slide */}
       <div
-        className="relative flex items-center justify-center px-4 py-8 sm:py-12 md:py-16 transition-all duration-700"
-        style={{ background: slide.gradient, minHeight: 200 }}
+        className="relative flex items-center justify-center px-4 py-3 sm:py-10 md:py-16 transition-all duration-700"
+        style={{ background: slide.gradient }}
       >
         {/* Decorative circles */}
-        <div className="absolute top-4 right-[10%] w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
-        <div className="absolute bottom-2 left-[5%] w-20 h-20 rounded-full bg-white/5 pointer-events-none" />
+        <div className="absolute top-4 right-[10%] w-32 h-32 rounded-full bg-white/5 pointer-events-none hidden sm:block" />
+        <div className="absolute bottom-2 left-[5%] w-20 h-20 rounded-full bg-white/5 pointer-events-none hidden sm:block" />
 
-        <div className="max-w-5xl mx-auto w-full flex flex-col sm:flex-row items-center gap-6 sm:gap-10 relative z-10">
+        <div className="max-w-5xl mx-auto w-full flex flex-col sm:flex-row items-center gap-2 sm:gap-10 relative z-10">
           {/* Icon */}
           <div className="shrink-0 hidden sm:flex w-24 h-24 rounded-2xl bg-white/10 backdrop-blur-sm items-center justify-center">
             {slide.icon}
@@ -106,15 +106,15 @@ export default function HeroBannerCarousel() {
           {/* Text */}
           <div className="flex-1 text-center sm:text-left min-w-0">
             <h2
-              className="text-xl sm:text-2xl md:text-3xl font-bold text-white leading-tight"
+              className="text-base sm:text-2xl md:text-3xl font-bold text-white leading-tight"
               style={{ fontFamily: "'Playfair Display', 'Gabarito', serif" }}
             >
               {slide.title}
             </h2>
-            <p className="text-sm sm:text-base text-white/80 mt-2 max-w-lg">
+            <p className="text-xs sm:text-base text-white/80 mt-0.5 sm:mt-2 max-w-lg">
               {slide.subtitle}
             </p>
-            <div className="mt-4">
+            <div className="mt-2 sm:mt-4 hidden sm:block">
               <Link
                 to={slide.ctaLink}
                 className="inline-block font-bold text-sm rounded-full px-8 py-3 transition-colors"

@@ -26,7 +26,7 @@ import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
 import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORY_LIST } from "@/components/catalog/catalog-utils";
 import SearchAutocomplete from "@/components/catalog/SearchAutocomplete";
-import SearchFilters from "@/components/catalog/SearchFilters";
+
 import NotifyMeButton from "@/components/catalog/NotifyMeButton";
 import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
@@ -298,30 +298,30 @@ export default function PublicCatalog() {
       {/* Hero Banner Carousel */}
       <HeroBannerCarousel />
 
-      <section className="max-w-6xl mx-auto px-4 py-4">
-        <h3 className="text-center text-sm tracking-[0.2em] text-gray-600 mb-3">MARCAS QUE AMAMOS</h3>
+      {/* Brands bar - desktop only */}
+      <section className="hidden sm:block max-w-6xl mx-auto px-4 py-3">
         <div className="flex gap-2 overflow-x-auto pb-1">
           {topBrands.map((b) => (
-            <button key={b} onClick={() => navigate(`/marca/${slugify(b)}`)} className="shrink-0 bg-white border rounded-full px-4 py-2 text-sm hover:shadow-sm">{b}</button>
+            <button key={b} onClick={() => navigate(`/marca/${slugify(b)}`)} className="shrink-0 bg-white border rounded-full px-4 py-1.5 text-sm hover:shadow-sm">{b}</button>
           ))}
         </div>
       </section>
 
-      <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
-        <p className="text-sm text-gray-700">
-          {loading ? "Carregando..." : (<><span className="font-bold text-[#C45500]">{filtered.length}</span>{" "}resultado{filtered.length !== 1 ? "s" : ""}{activeCategory !== "Todos" && (<> em <span className="font-semibold">{CATEGORY_LIST.find(c => c.label === activeCategory)?.displayLabel ?? activeCategory}</span></>)}</>)}
+      {/* Compact results + filters bar */}
+      <div className="bg-white border-b border-gray-200 px-4 py-1.5 flex items-center justify-between max-w-6xl mx-auto">
+        <p className="text-xs sm:text-sm text-gray-700">
+          {loading ? "Carregando..." : (<><span className="font-bold text-[#C45500]">{filtered.length}</span> resultado{filtered.length !== 1 ? "s" : ""}</>)}
         </p>
-        <div className="flex items-center gap-2"><select value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "pronta_entrega" | "sob_encomenda" | "esgotado")} className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs"><option value="all">Disponibilidade</option><option value="pronta_entrega">Pronta Entrega</option><option value="sob_encomenda">Sob Encomenda</option><option value="esgotado">Esgotado</option></select><SortDropdown sortBy={sortBy} onSortChange={setSortBy} /></div>
+        <div className="flex items-center gap-1.5">
+          <select value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "pronta_entrega" | "sob_encomenda" | "esgotado")} className="h-7 rounded-md border border-gray-300 bg-white px-1.5 text-[11px]"><option value="all">Todos</option><option value="pronta_entrega">Pronta Entrega</option><option value="sob_encomenda">Sob Encomenda</option></select>
+          <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
+        </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 pt-3">
-        <SearchFilters minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} />
-      </div>
-
-      {/* Deals Section - always render container to prevent CLS */}
-      <div className="bg-white border-b border-gray-200" style={{ minHeight: deals.length > 0 || dealsLoading ? 200 : 0 }}>
-        {!dealsLoading && deals.length > 0 && (
-          <div className="py-4">
+      {/* Deals Section */}
+      {!dealsLoading && deals.length > 0 && (
+        <div className="bg-white border-b border-gray-200">
+          <div className="py-3 sm:py-4">
             <div className="px-4 max-w-6xl mx-auto">
               <div className="flex items-center gap-2 mb-3">
                 <Flame size={18} className="text-[#CC0C39]" />
@@ -342,8 +342,8 @@ export default function PublicCatalog() {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Product Grid / Themed Sections */}
       <main id="catalogo" className="px-3 py-3 max-w-6xl mx-auto">
