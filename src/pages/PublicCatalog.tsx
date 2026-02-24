@@ -24,6 +24,7 @@ import { StarRating } from "@/components/catalog/StarRating";
 import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
 import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
+import { PreSaleBanner, FreeShippingBanner } from "@/components/SectionBanners";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
@@ -420,6 +421,11 @@ export default function PublicCatalog() {
         </div>
       )}
 
+      {/* Pre-Sale Banner */}
+      <div className="max-w-6xl mx-auto">
+        <PreSaleBanner />
+      </div>
+
       {/* Product Grid / Themed Sections */}
       <main className="px-3 py-3 max-w-6xl mx-auto">
         {loading ? (
@@ -468,6 +474,11 @@ export default function PublicCatalog() {
           </div>
         )}
       </main>
+
+      {/* Free Shipping Banner */}
+      <div className="max-w-6xl mx-auto">
+        <FreeShippingBanner />
+      </div>
 
       {/* How It Works */}
       <HowItWorks />
