@@ -1,5 +1,5 @@
 import { useRef, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 const DEBOUNCE_MS = 1500;
 const MIN_QUERY_LENGTH = 2;
@@ -19,8 +19,7 @@ export function useSearchTracker(source: "public" | "client", userId?: string) {
         if (trimmed === lastSavedRef.current) return;
         lastSavedRef.current = trimmed;
 
-        supabase
-          .from("search_queries")
+        (supabase as any).from("search_queries")
           .insert({
             query: trimmed,
             source,

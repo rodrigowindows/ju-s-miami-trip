@@ -327,7 +327,7 @@ export default function PublicCatalog() {
     }
 
     if (availabilityFilter !== "all") {
-      list = list.filter((p) => p.availability_type === availabilityFilter);
+      list = list.filter((p) => (p as any).availability_type === availabilityFilter);
     }
 
     if (minPrice > 0) list = list.filter((p) => convert(p.price_usd) >= minPrice);
