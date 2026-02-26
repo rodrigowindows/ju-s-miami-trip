@@ -31,6 +31,11 @@ import NotifyMeButton from "@/components/catalog/NotifyMeButton";
 import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import HeroBannerCarousel from "@/components/HeroBannerCarousel";
+import QuickLinks from "@/components/catalog/QuickLinks";
+import TripCountdown from "@/components/catalog/TripCountdown";
+import TrendingSection from "@/components/catalog/TrendingSection";
+import { ProductGridSkeleton } from "@/components/catalog/ProductCardSkeleton";
+import ReviewDistribution from "@/components/catalog/ReviewDistribution";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
@@ -295,8 +300,18 @@ export default function PublicCatalog() {
         <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="light" />
       </header>
 
+      {/* Trip Countdown Banner */}
+      <TripCountdown />
+
       {/* Hero Banner Carousel */}
       <HeroBannerCarousel />
+
+      {/* Quick Links (estilo Mercado Livre) */}
+      <QuickLinks
+        onScrollToCatalog={() => document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" })}
+        onFilterDeals={() => { setShowAllFlat(false); setActiveCategory("Todos"); }}
+        onFilterBestSellers={() => { setShowAllFlat(false); setActiveCategory("Todos"); }}
+      />
 
       {/* Brands bar - desktop only */}
       <section className="hidden sm:block max-w-6xl mx-auto px-4 py-3">
@@ -348,14 +363,19 @@ export default function PublicCatalog() {
       {/* Product Grid / Themed Sections */}
       <main id="catalogo" className="px-3 py-3 max-w-6xl mx-auto">
         {loading ? (
-          <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-gray-400" /></div>
+          <ProductGridSkeleton count={8} />
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-lg">
             <p className="text-gray-500 text-sm">Nenhum produto encontrado.</p>
             {searchQuery && (<button onClick={() => setSearchQuery("")} className="text-sm text-sky-700 hover:underline mt-2">Limpar busca</button>)}
           </div>
         ) : activeCategory === "Todos" && !searchQuery.trim() && !showAllFlat ? (
-          <ThemedProductSections products={products} deals={deals.map((d) => ({ product_id: d.product_id, discount_percent: d.discount_percent, deal_type: d.deal_type, ends_at: d.ends_at }))} convert={convert} onSelectProduct={setSelectedProduct} onViewAll={() => setShowAllFlat(true)} />
+          <>
+            <ThemedProductSections products={products} deals={deals.map((d) => ({ product_id: d.product_id, discount_percent: d.discount_percent, deal_type: d.deal_type, ends_at: d.ends_at }))} convert={convert} onSelectProduct={setSelectedProduct} onViewAll={() => setShowAllFlat(true)} />
+            <div className="mt-10">
+              <TrendingSection products={products} convert={convert} onSelectProduct={(p) => navigate(`/produto/${slugify(p.name)}`)} />
+            </div>
+          </>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((product) => {
@@ -415,7 +435,16 @@ export default function PublicCatalog() {
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex items-center gap-2 mb-3"><MessageSquare size={16} className="text-[#007185]" /><h3 className="font-semibold text-sm text-gray-900">Avaliações de clientes</h3>{productReviews.length > 0 && (<Badge variant="secondary" className="text-[10px]">{productReviews.length}</Badge>)}</div>
                     {reviewsLoading ? (<div className="flex items-center justify-center py-4"><Loader2 className="h-4 w-4 animate-spin text-gray-400" /></div>) : productReviews.length === 0 ? (<p className="text-xs text-gray-500 text-center py-3">Nenhuma avaliação ainda. Faça login para avaliar!</p>) : (
-                      <div className="space-y-3 max-h-60 overflow-y-auto">{productReviews.map((r) => (<div key={r.id} className="bg-gray-50 rounded-lg p-3"><div className="flex items-center gap-2 mb-1"><div className="flex items-center">{Array.from({ length: 5 }).map((_, i) => (<Star key={i} size={11} className={i < r.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"} />))}</div><span className="text-xs font-semibold text-gray-900">{r.reviewer_name}</span>{r.verified_purchase && (<Badge variant="secondary" className="text-[9px] bg-green-50 text-green-700 border-green-200">Compra verificada</Badge>)}</div>{r.comment && <p className="text-xs text-gray-700 mt-1">{r.comment}</p>}<p className="text-[10px] text-gray-400 mt-1">{new Date(r.created_at).toLocaleDateString("pt-BR")}</p></div>))}</div>
+                      <>
+                        <div className="mb-4">
+                          <ReviewDistribution
+                            averageRating={productReviews.reduce((sum, r) => sum + r.rating, 0) / productReviews.length}
+                            totalReviews={productReviews.length}
+                            distribution={[5, 4, 3, 2, 1].map((s) => productReviews.filter((r) => r.rating === s).length)}
+                          />
+                        </div>
+                        <div className="space-y-3 max-h-60 overflow-y-auto">{productReviews.map((r) => (<div key={r.id} className="bg-gray-50 rounded-lg p-3"><div className="flex items-center gap-2 mb-1"><div className="flex items-center">{Array.from({ length: 5 }).map((_, i) => (<Star key={i} size={11} className={i < r.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"} />))}</div><span className="text-xs font-semibold text-gray-900">{r.reviewer_name}</span>{r.verified_purchase && (<Badge variant="secondary" className="text-[9px] bg-green-50 text-green-700 border-green-200">Compra verificada</Badge>)}</div>{r.comment && <p className="text-xs text-gray-700 mt-1">{r.comment}</p>}<p className="text-[10px] text-gray-400 mt-1">{new Date(r.created_at).toLocaleDateString("pt-BR")}</p></div>))}</div>
+                      </>
                     )}
                   </div>
                   <div className="border-t border-gray-200 pt-4">
