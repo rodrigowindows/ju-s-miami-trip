@@ -10,6 +10,7 @@ import { ProductCard } from "@/components/catalog/ProductCard";
 import { useToast } from "@/hooks/use-toast";
 import NotifyMeButton from "@/components/catalog/NotifyMeButton";
 import { ChevronRight, Shield, Truck, RotateCcw, MessageCircle, Share2, Heart, ShoppingBag, Minus, Plus, ZoomIn } from "lucide-react";
+import StickyBuyBar from "@/components/catalog/StickyBuyBar";
 
 function slugify(text: string) {
   return text
@@ -352,7 +353,7 @@ export default function PublicProductPage() {
 
       {/* You may also like */}
       {more.length > 0 && (
-        <div className="bg-gray-50 border-t">
+        <div className="bg-gray-50 border-t pb-20 md:pb-0">
           <div className="max-w-6xl mx-auto px-4 py-8">
             <h3 className="text-lg font-bold text-gray-900 mb-4">Você também pode gostar</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -368,6 +369,9 @@ export default function PublicProductPage() {
           </div>
         </div>
       )}
+
+      {/* Mobile Sticky Buy Bar */}
+      <StickyBuyBar productName={product.name} priceBrl={brl} isSoldOut={isSoldOut} />
     </div>
   );
 }
