@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import {
   Loader2, X, LogIn, Search, Star, Truck, Heart, ShoppingBag,
   HelpCircle, Send, User, CheckCircle2,
-  Zap, Timer, Flame, Share2,
+  Zap, Timer, Flame, Share2, Sparkles, Smartphone, Shirt, Gift, Tag,
+  ShieldCheck, CreditCard, Lock, ArrowRight,
   MessageSquare,
 } from "lucide-react";
 import Logo from "@/components/shared/Logo";
@@ -31,6 +32,8 @@ import NotifyMeButton from "@/components/catalog/NotifyMeButton";
 import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import HeroBannerCarousel from "@/components/HeroBannerCarousel";
+import Testimonials from "@/components/Testimonials";
+import Newsletter from "@/components/Newsletter";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
@@ -218,6 +221,7 @@ export default function PublicCatalog() {
   const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "pronta_entrega" | "sob_encomenda" | "esgotado">("all");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
+  const hasActiveFilters = availabilityFilter !== "all" || minPrice > 0 || maxPrice > 0 || !!searchQuery.trim() || activeCategory !== "Todos";
 
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { reviews: productReviews, loading: reviewsLoading } = useProductReviewsLocal(selectedProduct?.id ?? null);
@@ -245,6 +249,36 @@ export default function PublicCatalog() {
     products.forEach((p) => { if (p.brand) counts.set(p.brand, (counts.get(p.brand) ?? 0) + 1); });
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([name]) => name);
   }, [products]);
+
+  const quickCategories = useMemo(() => CATEGORY_LIST.filter((category) => category !== "Todos").slice(0, 8), []);
+
+  const featuredCategories = [
+    { label: "Mais Vendidos", icon: Flame, action: () => setSortBy("relevance") },
+    { label: "Ofertas", icon: Tag, action: () => document.getElementById("ofertas")?.scrollIntoView({ behavior: "smooth" }) },
+    { label: "Skincare", icon: Sparkles, action: () => setActiveCategory("Skincare") },
+    { label: "Maquiagem", icon: ShoppingBag, action: () => setActiveCategory("Maquiagem") },
+    { label: "Perfumes", icon: Gift, action: () => setActiveCategory("Perfumes") },
+    { label: "Eletrônicos", icon: Smartphone, action: () => setActiveCategory("Eletrônicos") },
+    { label: "Roupas", icon: Shirt, action: () => setActiveCategory("Roupas") },
+    { label: "Bolsas", icon: ShoppingBag, action: () => setActiveCategory("Bolsas") },
+    { label: "Gift Sets", icon: Gift, action: () => setSearchQuery("kit") },
+  ] as const;
+
+  const bestSellerSkincare = useMemo(
+    () => products.filter((p) => (p.category || "").toLowerCase().includes("skincare")).sort((a, b) => (b.sales_count ?? 0) - (a.sales_count ?? 0)).slice(0, 10),
+    [products],
+  );
+
+  const bestSellerPerfumes = useMemo(
+    () => products.filter((p) => (p.category || "").toLowerCase().includes("perfume")).sort((a, b) => (b.sales_count ?? 0) - (a.sales_count ?? 0)).slice(0, 10),
+    [products],
+  );
+
+  const trendingProducts = useMemo(() => products.filter((p) => p.trending).slice(0, 10), [products]);
+  const giftSetProducts = useMemo(
+    () => products.filter((p) => `${p.name} ${p.category}`.toLowerCase().includes("kit") || `${p.name} ${p.category}`.toLowerCase().includes("set")).slice(0, 10),
+    [products],
+  );
 
   const filtered = useMemo(() => {
     let list = activeCategory === "Todos"
@@ -298,8 +332,66 @@ export default function PublicCatalog() {
       {/* Hero Banner Carousel */}
       <HeroBannerCarousel />
 
+      {/* Barra de categorias com ícones */}
+      <section className="max-w-6xl mx-auto px-4 py-4">
+        <div className="flex gap-3 overflow-x-auto pb-2">
+          {featuredCategories.map(({ label, icon: Icon, action }) => (
+            <button key={label} onClick={action} className="shrink-0 w-20 rounded-xl border border-gray-200 bg-white p-2 text-center hover:shadow-sm transition-shadow">
+              <span className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-[#FDF2F8] text-[#CC0C39]">
+                <Icon size={16} />
+              </span>
+              <span className="text-[11px] leading-tight text-gray-700">{label}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Quick links */}
+      <section className="max-w-6xl mx-auto px-4 pb-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          <button onClick={() => setMinPrice(500)} className="text-left rounded-lg border border-gray-200 bg-white p-3 hover:shadow-sm"><p className="text-xs text-gray-500">Benefício</p><p className="text-sm font-semibold">Frete grátis +R$500</p></button>
+          <button onClick={() => setAvailabilityFilter("pronta_entrega")} className="text-left rounded-lg border border-gray-200 bg-white p-3 hover:shadow-sm"><p className="text-xs text-gray-500">Entrega</p><p className="text-sm font-semibold">Pronta Entrega</p></button>
+          <button onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })} className="text-left rounded-lg border border-gray-200 bg-white p-3 hover:shadow-sm"><p className="text-xs text-gray-500">Ajuda</p><p className="text-sm font-semibold">Como funciona</p></button>
+          <button onClick={() => document.getElementById("ofertas")?.scrollIntoView({ behavior: "smooth" })} className="text-left rounded-lg border border-gray-200 bg-white p-3 hover:shadow-sm"><p className="text-xs text-gray-500">Promoções</p><p className="text-sm font-semibold">Ofertas do Dia</p></button>
+          <button onClick={() => setSortBy("price_desc")} className="text-left rounded-lg border border-gray-200 bg-white p-3 hover:shadow-sm"><p className="text-xs text-gray-500">Curadoria</p><p className="text-sm font-semibold">Mais vendidos</p></button>
+        </div>
+      </section>
+
+      {/* Trust + quick categories */}
+      <section className="max-w-6xl mx-auto px-4 pb-4 space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 flex items-center gap-2"><ShieldCheck size={14} className="text-[#C45500]" />100% original e curadoria da Ju</div>
+          <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 flex items-center gap-2"><Lock size={14} className="text-[#C45500]" />Checkout seguro e rastreio completo</div>
+          <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 flex items-center gap-2"><CreditCard size={14} className="text-[#C45500]" />PIX, cartão e parcelamento sem juros</div>
+        </div>
+
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          <button onClick={() => setActiveCategory("Todos")} className={`shrink-0 rounded-full px-4 py-1.5 text-sm border transition-colors ${activeCategory === "Todos" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-700 border-gray-300"}`}>
+            Todas
+          </button>
+          {quickCategories.map((category) => (
+            <button key={category} onClick={() => setActiveCategory(category)} className={`shrink-0 rounded-full px-4 py-1.5 text-sm border transition-colors ${activeCategory === category ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-700 border-gray-300 hover:shadow-sm"}`}>
+              {category}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-4 pb-4">
+        <div className="rounded-xl bg-gradient-to-r from-[#CC0C39] to-[#F43F5E] text-white p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-white/80">Aju Rewards</p>
+            <h3 className="text-lg font-semibold">Acumule pontos e troque por descontos</h3>
+            <p className="text-sm text-white/90">Cadastre-se grátis e desbloqueie vantagens em cada pedido.</p>
+          </div>
+          <button className="inline-flex items-center gap-2 rounded-full bg-white text-[#CC0C39] px-4 py-2 text-sm font-semibold w-fit">
+            CADASTRE-SE GRÁTIS <ArrowRight size={14} />
+          </button>
+        </div>
+      </section>
+
       {/* Brands bar - desktop only */}
-      <section className="hidden sm:block max-w-6xl mx-auto px-4 py-3">
+      <section className="hidden sm:block max-w-6xl mx-auto px-4 pb-3">
         <div className="flex gap-2 overflow-x-auto pb-1">
           {topBrands.map((b) => (
             <button key={b} onClick={() => navigate(`/marca/${slugify(b)}`)} className="shrink-0 bg-white border rounded-full px-4 py-1.5 text-sm hover:shadow-sm">{b}</button>
@@ -308,17 +400,25 @@ export default function PublicCatalog() {
       </section>
 
       {/* Compact results + filters bar */}
-      <div className="bg-white border-b border-gray-200 px-4 py-1.5 flex items-center justify-between max-w-6xl mx-auto">
+      <div className="bg-white border-y border-gray-200 px-4 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 max-w-6xl mx-auto">
         <p className="text-xs sm:text-sm text-gray-700">
           {loading ? "Carregando..." : (<><span className="font-bold text-[#C45500]">{filtered.length}</span> resultado{filtered.length !== 1 ? "s" : ""}</>)}
         </p>
-        <div className="flex items-center gap-1.5">
-          <select aria-label="Filtrar por disponibilidade" value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "pronta_entrega" | "sob_encomenda" | "esgotado")} className="h-7 rounded-md border border-gray-300 bg-white px-1.5 text-[11px]"><option value="all">Todos</option><option value="pronta_entrega">Pronta Entrega</option><option value="sob_encomenda">Sob Encomenda</option></select>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <select aria-label="Filtrar por disponibilidade" value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "pronta_entrega" | "sob_encomenda" | "esgotado")} className="h-8 rounded-md border border-gray-300 bg-white px-2 text-xs"><option value="all">Todos</option><option value="pronta_entrega">Pronta Entrega</option><option value="sob_encomenda">Sob Encomenda</option><option value="esgotado">Esgotado</option></select>
+          <Input type="number" min={0} placeholder="Preço mín." value={minPrice || ""} onChange={(e) => setMinPrice(Number(e.target.value) || 0)} className="h-8 w-24 text-xs" />
+          <Input type="number" min={0} placeholder="Preço máx." value={maxPrice || ""} onChange={(e) => setMaxPrice(Number(e.target.value) || 0)} className="h-8 w-24 text-xs" />
           <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
+          {hasActiveFilters && (
+            <button onClick={() => { setSearchQuery(""); setActiveCategory("Todos"); setAvailabilityFilter("all"); setMinPrice(0); setMaxPrice(0); setShowAllFlat(false); }} className="text-xs text-sky-700 hover:underline px-1">
+              Limpar filtros
+            </button>
+          )}
         </div>
       </div>
 
       {/* Deals Section */}
+      <div id="ofertas" />
       {!dealsLoading && deals.length > 0 && (
         <div className="bg-white border-b border-gray-200">
           <div className="py-3 sm:py-4">
@@ -345,6 +445,75 @@ export default function PublicCatalog() {
         </div>
       )}
 
+      <section className="max-w-6xl mx-auto px-4 pb-2">
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">Cuidados que você merece</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { title: "Skincare", subtitle: "Rotina completa" },
+            { title: "Maquiagem", subtitle: "Looks para toda ocasião" },
+            { title: "Perfumes", subtitle: "Fragrâncias importadas" },
+            { title: "Corpo", subtitle: "Autocuidado diário" },
+          ].map((item) => (
+            <button key={item.title} onClick={() => setActiveCategory(item.title)} className="h-24 rounded-xl bg-gradient-to-br from-[#FFF1F2] to-[#FCE7F3] border border-rose-100 text-left p-3 hover:shadow-sm">
+              <p className="text-sm font-semibold text-gray-900">{item.title}</p>
+              <p className="text-xs text-gray-600">{item.subtitle}</p>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {!loading && bestSellerSkincare.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 py-4">
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">Mais vendidos em skincare</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {bestSellerSkincare.map((product) => (
+              <div key={product.id} className="min-w-[180px] max-w-[220px] shrink-0">
+                <ProductCard product={product} brl={convert(product.price_usd)} onClick={() => navigate(`/produto/${slugify(product.name)}`)} activeDeal={null} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!loading && bestSellerPerfumes.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 py-2">
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">Mais vendidos em perfumes</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {bestSellerPerfumes.map((product) => (
+              <div key={product.id} className="min-w-[180px] max-w-[220px] shrink-0">
+                <ProductCard product={product} brl={convert(product.price_usd)} onClick={() => navigate(`/produto/${slugify(product.name)}`)} activeDeal={null} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!loading && trendingProducts.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 py-2">
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">Tendências</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {trendingProducts.map((product) => (
+              <div key={product.id} className="min-w-[180px] max-w-[220px] shrink-0">
+                <ProductCard product={product} brl={convert(product.price_usd)} onClick={() => navigate(`/produto/${slugify(product.name)}`)} activeDeal={null} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!loading && giftSetProducts.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 py-2">
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">Gift Sets & Kits</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {giftSetProducts.map((product) => (
+              <div key={product.id} className="min-w-[180px] max-w-[220px] shrink-0">
+                <ProductCard product={product} brl={convert(product.price_usd)} onClick={() => navigate(`/produto/${slugify(product.name)}`)} activeDeal={null} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Product Grid / Themed Sections */}
       <main id="catalogo" className="px-3 py-3 max-w-6xl mx-auto">
         {loading ? (
@@ -367,7 +536,12 @@ export default function PublicCatalog() {
       </main>
 
       {/* How It Works */}
+      <div id="como-funciona" />
       <HowItWorks />
+
+      <Testimonials />
+
+      <Newsletter />
 
       <Footer />
 
