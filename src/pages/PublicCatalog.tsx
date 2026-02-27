@@ -361,7 +361,7 @@ export default function PublicCatalog() {
       )}
 
       {/* Product Grid / Themed Sections */}
-      <main id="catalogo" className="px-3 py-3 max-w-6xl mx-auto">
+      <main id="catalogo" className="px-3 py-3 max-w-6xl mx-auto" style={{ minHeight: 600 }}>
         {loading ? (
           <ProductGridSkeleton count={8} />
         ) : filtered.length === 0 ? (
