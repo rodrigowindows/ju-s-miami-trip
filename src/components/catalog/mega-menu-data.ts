@@ -78,6 +78,17 @@ export const MEGA_MENU_CATEGORIES: MegaMenuCategory[] = [
     ],
   },
   {
+    label: "Bath & Body Works",
+    filterCategory: "Beauty",
+    subcategories: [
+      "Fine Fragrance Mists",
+      "Body Lotions",
+      "Velas 3 Pavios",
+      "Wallflowers & Aromatizadores",
+      "Hand Creams & Sabonetes",
+    ],
+  },
+  {
     label: "Perfumes",
     filterCategory: "Beauty",
     subcategories: [

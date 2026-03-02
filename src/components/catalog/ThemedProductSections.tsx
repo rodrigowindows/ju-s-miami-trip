@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Zap, Droplets, Timer, Heart } from "lucide-react";
+import { Zap, Droplets, Timer, Heart, Flame } from "lucide-react";
 import { ProductCard, type ActiveDeal } from "./ProductCard";
 import { isBestSeller } from "./catalog-utils";
 import type { CatalogProduct } from "@/types";
@@ -155,6 +155,9 @@ export function ThemedProductSections({
   const vsProducts = products.filter(
     (p) => (p.brand ?? "").toLowerCase() === "victoria's secret"
   );
+  const bbwProducts = products.filter(
+    (p) => (p.brand ?? "").toLowerCase() === "bath & body works"
+  );
   const dealProducts = deals
     .map((d) => products.find((p) => p.id === d.product_id))
     .filter(Boolean) as CatalogProduct[];
@@ -222,6 +225,46 @@ export function ThemedProductSections({
 
           <ProductGrid
             products={vsProducts}
+            convert={convert}
+            onSelect={onSelectProduct}
+            deals={deals}
+            maxItems={8}
+          />
+        </section>
+      )}
+
+      {/* ─── Section: BATH & BODY WORKS ─────────────────── */}
+      {bbwProducts.length > 0 && (
+        <section
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{
+            background: "linear-gradient(135deg, #E8F5E9 0%, #FFF8E1 50%, #FFFFFF 100%)",
+            borderRadius: 12,
+          }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Flame size={24} className="text-orange-500" />
+            <h2
+              className="text-xl sm:text-2xl font-bold tracking-wider"
+              style={{
+                fontFamily: "'Playfair Display', 'Gabarito', serif",
+                letterSpacing: "0.05em",
+                color: "#1B5E20",
+              }}
+            >
+              BATH & BODY WORKS
+            </h2>
+          </div>
+          <p className="text-sm text-green-800 mb-4" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+            Mists, velas e aromatizadores mais amados dos EUA
+          </p>
+
+          <div className="flex justify-end mb-4">
+            <ViewAllButton onClick={onViewAll} />
+          </div>
+
+          <ProductGrid
+            products={bbwProducts}
             convert={convert}
             onSelect={onSelectProduct}
             deals={deals}
