@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Zap, Droplets, Timer } from "lucide-react";
+import { Zap, Droplets, Timer, Heart } from "lucide-react";
 import { ProductCard, type ActiveDeal } from "./ProductCard";
 import { isBestSeller } from "./catalog-utils";
 import type { CatalogProduct } from "@/types";
@@ -152,6 +152,9 @@ export function ThemedProductSections({
 
   // Build section product lists
   const bestSellers = products.filter((p) => isBestSeller(p.name));
+  const vsProducts = products.filter(
+    (p) => (p.brand ?? "").toLowerCase() === "victoria's secret"
+  );
   const dealProducts = deals
     .map((d) => products.find((p) => p.id === d.product_id))
     .filter(Boolean) as CatalogProduct[];
@@ -179,6 +182,46 @@ export function ThemedProductSections({
           </div>
           <ProductGrid
             products={bestSellers}
+            convert={convert}
+            onSelect={onSelectProduct}
+            deals={deals}
+            maxItems={8}
+          />
+        </section>
+      )}
+
+      {/* ─── Section: VICTORIA'S SECRET ─────────────────── */}
+      {vsProducts.length > 0 && (
+        <section
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{
+            background: "linear-gradient(135deg, #FFD6E0 0%, #FFF0F5 50%, #FFFFFF 100%)",
+            borderRadius: 12,
+          }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Heart size={24} className="text-pink-500" fill="#ec4899" />
+            <h2
+              className="text-xl sm:text-2xl font-bold tracking-wider"
+              style={{
+                fontFamily: "'Playfair Display', 'Gabarito', serif",
+                letterSpacing: "0.05em",
+                color: "#BE185D",
+              }}
+            >
+              VICTORIA'S SECRET
+            </h2>
+          </div>
+          <p className="text-sm text-pink-700 mb-4" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+            Body mists, perfumes e kits direto de Miami
+          </p>
+
+          <div className="flex justify-end mb-4">
+            <ViewAllButton onClick={onViewAll} />
+          </div>
+
+          <ProductGrid
+            products={vsProducts}
             convert={convert}
             onSelect={onSelectProduct}
             deals={deals}

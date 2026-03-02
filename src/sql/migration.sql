@@ -254,7 +254,26 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
   -- Lifestyle
   ('Stanley Quencher H2.0', 'Stanley', 'Lifestyle', 45.00, 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=400&fit=crop', 'Copo termico 40oz. Gelado por 11h, quente por 7h. Viral no TikTok!'),
   ('Kindle Paperwhite 11th Gen', 'Amazon', 'Lifestyle', 149.99, 'https://images.unsplash.com/photo-1594980596870-8aa52a78571e?w=400&h=400&fit=crop', 'E-reader 6.8", 16GB, a prova d''agua, luz quente ajustavel.'),
-  ('Vitaminas Kirkland Combo', 'Kirkland', 'Lifestyle', 35.00, 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', 'Kit Vitamina D3 5000 IU + Omega-3 Fish Oil 1000mg.')
+  ('Vitaminas Kirkland Combo', 'Kirkland', 'Lifestyle', 35.00, 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', 'Kit Vitamina D3 5000 IU + Omega-3 Fish Oil 1000mg.'),
+  -- Victoria's Secret — Body Mists
+  ('Bombshell Body Mist 250ml', 'Victoria''s Secret', 'Beauty', 22.00, 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400&h=400&fit=crop', 'Body mist icônico Bombshell 250ml. Fragrância floral frutal com maracujá, peônia e baunilha. O mais vendido da VS!'),
+  ('Pure Seduction Body Mist 250ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1594035910387-fea081ac23fc?w=400&h=400&fit=crop', 'Body mist Pure Seduction 250ml. Mix irresistível de ameixa vermelha e fresia. Clássico absoluto.'),
+  ('Velvet Petals Body Mist 250ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400&h=400&fit=crop', 'Body mist Velvet Petals 250ml. Lavanda exuberante com praline cremoso. Suave e sofisticado.'),
+  ('Love Spell Body Mist 250ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1595425964272-fc617fa14e59?w=400&h=400&fit=crop', 'Body mist Love Spell 250ml. Cereja e pêssego com flor de lótus branca. Favorito há décadas.'),
+  ('Coconut Passion Body Mist 250ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop', 'Body mist Coconut Passion 250ml. Coco tropical com baunilha quente. Perfeito para o verão.'),
+  -- Victoria's Secret — Body Lotions
+  ('Bombshell Body Lotion 236ml', 'Victoria''s Secret', 'Beauty', 20.00, 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400&h=400&fit=crop', 'Hidratante corporal Bombshell 236ml. Fragrância duradoura com peônia e maracujá. Pele macia e perfumada o dia todo.'),
+  ('Pure Seduction Body Lotion 236ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop', 'Hidratante corporal Pure Seduction 236ml. Ameixa vermelha e fresia. Hidratação + perfume que dura.'),
+  ('Velvet Petals Body Lotion 236ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=400&h=400&fit=crop', 'Hidratante corporal Velvet Petals 236ml. Lavanda e praline cremoso. Textura leve e absorção rápida.'),
+  -- Victoria's Secret — Perfumes (EDP)
+  ('Bombshell Eau de Parfum 100ml', 'Victoria''s Secret', 'Beauty', 75.00, 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop', 'Eau de Parfum Bombshell 100ml. O perfume feminino #1 dos EUA. Notas de maracujá roxo, peônia Shangri-la e baunilha.'),
+  ('Tease Eau de Parfum 100ml', 'Victoria''s Secret', 'Beauty', 75.00, 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop', 'Eau de Parfum Tease 100ml. Gardênia preta, pera e praline torrado. Sensual e sofisticado.'),
+  ('Very Sexy Eau de Parfum 100ml', 'Victoria''s Secret', 'Beauty', 75.00, 'https://images.unsplash.com/photo-1587017539504-67cfbddac569?w=400&h=400&fit=crop', 'Eau de Parfum Very Sexy 100ml. Orquídea, ameixa cravejada e cremoso sândalo. Ousado e marcante.'),
+  -- Victoria's Secret — Kits
+  ('Kit Bombshell Mist + Lotion', 'Victoria''s Secret', 'Beauty', 35.00, 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&h=400&fit=crop', 'Kit presente Bombshell com Body Mist 250ml + Body Lotion 236ml. O combo mais pedido! Fragrância duradoura.'),
+  ('Kit Pure Seduction Mist + Lotion', 'Victoria''s Secret', 'Beauty', 30.00, 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop', 'Kit presente Pure Seduction com Body Mist 250ml + Body Lotion 236ml. Presente perfeito.'),
+  -- Victoria's Secret — Lingerie
+  ('Kit 5 Calcinhas Sortidas', 'Victoria''s Secret', 'Fashion', 30.00, 'https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?w=400&h=400&fit=crop', 'Kit com 5 calcinhas Victoria''s Secret sortidas. Modelos variados (bikini, thong, cheeky). Escolha seu tamanho!')
 ON CONFLICT DO NOTHING;
 
 -- Promotions (4 cupons ativos)
