@@ -254,7 +254,68 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
   -- Lifestyle
   ('Stanley Quencher H2.0', 'Stanley', 'Lifestyle', 45.00, 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=400&fit=crop', 'Copo termico 40oz. Gelado por 11h, quente por 7h. Viral no TikTok!'),
   ('Kindle Paperwhite 11th Gen', 'Amazon', 'Lifestyle', 149.99, 'https://images.unsplash.com/photo-1594980596870-8aa52a78571e?w=400&h=400&fit=crop', 'E-reader 6.8", 16GB, a prova d''agua, luz quente ajustavel.'),
-  ('Vitaminas Kirkland Combo', 'Kirkland', 'Lifestyle', 35.00, 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', 'Kit Vitamina D3 5000 IU + Omega-3 Fish Oil 1000mg.')
+  ('Vitaminas Kirkland Combo', 'Kirkland', 'Lifestyle', 35.00, 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop', 'Kit Vitamina D3 5000 IU + Omega-3 Fish Oil 1000mg.'),
+  -- Victoria's Secret — Body Mists
+  ('Bombshell Body Mist 250ml', 'Victoria''s Secret', 'Beauty', 22.00, 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400&h=400&fit=crop', 'Body mist icônico Bombshell 250ml. Fragrância floral frutal com maracujá, peônia e baunilha. O mais vendido da VS!'),
+  ('Pure Seduction Body Mist 250ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1594035910387-fea081ac23fc?w=400&h=400&fit=crop', 'Body mist Pure Seduction 250ml. Mix irresistível de ameixa vermelha e fresia. Clássico absoluto.'),
+  ('Velvet Petals Body Mist 250ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400&h=400&fit=crop', 'Body mist Velvet Petals 250ml. Lavanda exuberante com praline cremoso. Suave e sofisticado.'),
+  ('Love Spell Body Mist 250ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1595425964272-fc617fa14e59?w=400&h=400&fit=crop', 'Body mist Love Spell 250ml. Cereja e pêssego com flor de lótus branca. Favorito há décadas.'),
+  ('Coconut Passion Body Mist 250ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop', 'Body mist Coconut Passion 250ml. Coco tropical com baunilha quente. Perfeito para o verão.'),
+  -- Victoria's Secret — Body Lotions
+  ('Bombshell Body Lotion 236ml', 'Victoria''s Secret', 'Beauty', 20.00, 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400&h=400&fit=crop', 'Hidratante corporal Bombshell 236ml. Fragrância duradoura com peônia e maracujá. Pele macia e perfumada o dia todo.'),
+  ('Pure Seduction Body Lotion 236ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop', 'Hidratante corporal Pure Seduction 236ml. Ameixa vermelha e fresia. Hidratação + perfume que dura.'),
+  ('Velvet Petals Body Lotion 236ml', 'Victoria''s Secret', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=400&h=400&fit=crop', 'Hidratante corporal Velvet Petals 236ml. Lavanda e praline cremoso. Textura leve e absorção rápida.'),
+  -- Victoria's Secret — Perfumes (EDP)
+  ('Bombshell Eau de Parfum 100ml', 'Victoria''s Secret', 'Beauty', 75.00, 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop', 'Eau de Parfum Bombshell 100ml. O perfume feminino #1 dos EUA. Notas de maracujá roxo, peônia Shangri-la e baunilha.'),
+  ('Tease Eau de Parfum 100ml', 'Victoria''s Secret', 'Beauty', 75.00, 'https://images.unsplash.com/photo-1563170351-be82bc888aa4?w=400&h=400&fit=crop', 'Eau de Parfum Tease 100ml. Gardênia preta, pera e praline torrado. Sensual e sofisticado.'),
+  ('Very Sexy Eau de Parfum 100ml', 'Victoria''s Secret', 'Beauty', 75.00, 'https://images.unsplash.com/photo-1587017539504-67cfbddac569?w=400&h=400&fit=crop', 'Eau de Parfum Very Sexy 100ml. Orquídea, ameixa cravejada e cremoso sândalo. Ousado e marcante.'),
+  -- Victoria's Secret — Kits
+  ('Kit Bombshell Mist + Lotion', 'Victoria''s Secret', 'Beauty', 35.00, 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&h=400&fit=crop', 'Kit presente Bombshell com Body Mist 250ml + Body Lotion 236ml. O combo mais pedido! Fragrância duradoura.'),
+  ('Kit Pure Seduction Mist + Lotion', 'Victoria''s Secret', 'Beauty', 30.00, 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop', 'Kit presente Pure Seduction com Body Mist 250ml + Body Lotion 236ml. Presente perfeito.'),
+  -- Victoria's Secret — Lingerie
+  ('Kit 5 Calcinhas Sortidas', 'Victoria''s Secret', 'Fashion', 30.00, 'https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?w=400&h=400&fit=crop', 'Kit com 5 calcinhas Victoria''s Secret sortidas. Modelos variados (bikini, thong, cheeky). Escolha seu tamanho!'),
+  -- Bath & Body Works — Body Mists
+  ('A Thousand Wishes Fine Fragrance Mist 236ml', 'Bath & Body Works', 'Beauty', 16.95, 'https://images.unsplash.com/photo-1595425964272-fc617fa14e59?w=400&h=400&fit=crop', 'Fine fragrance mist A Thousand Wishes 236ml. Champagne rosé, framboesa cintilante e pétalas de peônia. O best-seller #1 da BBW!'),
+  ('Japanese Cherry Blossom Fine Fragrance Mist 236ml', 'Bath & Body Works', 'Beauty', 16.95, 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400&h=400&fit=crop', 'Fine fragrance mist Japanese Cherry Blossom 236ml. Flor de cerejeira, pera asiática e sândalo cremoso. Clássico absoluto!'),
+  ('Into the Night Fine Fragrance Mist 236ml', 'Bath & Body Works', 'Beauty', 16.95, 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400&h=400&fit=crop', 'Fine fragrance mist Into the Night 236ml. Framboesa escura, jasmim noturno e âmbar dourado. Elegante e sofisticada.'),
+  ('Champagne Toast Fine Fragrance Mist 236ml', 'Bath & Body Works', 'Beauty', 16.95, 'https://images.unsplash.com/photo-1594035910387-fea081ac23fc?w=400&h=400&fit=crop', 'Fine fragrance mist Champagne Toast 236ml. Champagne borbulhante, nectarina e pétalas de rosa. Para celebrar!'),
+  ('You''re the One Fine Fragrance Mist 236ml', 'Bath & Body Works', 'Beauty', 16.95, 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop', 'Fine fragrance mist You''re the One 236ml. Íris, bagas de cassis e amêndoas torradas. Sofisticada e moderna.'),
+  -- Bath & Body Works — Body Lotions
+  ('A Thousand Wishes Body Lotion 236ml', 'Bath & Body Works', 'Beauty', 14.95, 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=400&h=400&fit=crop', 'Body lotion A Thousand Wishes 236ml. Hidratação rica com manteiga de karité e vitamina E. Fragrância duradoura.'),
+  ('Japanese Cherry Blossom Body Lotion 236ml', 'Bath & Body Works', 'Beauty', 14.95, 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop', 'Body lotion Japanese Cherry Blossom 236ml. Pele macia e perfumada o dia todo.'),
+  -- Bath & Body Works — Velas & Casa
+  ('Champagne Toast 3-Wick Candle', 'Bath & Body Works', 'Lifestyle', 26.50, 'https://images.unsplash.com/photo-1602607313838-f7c354b17ffa?w=400&h=400&fit=crop', 'Vela 3 pavios Champagne Toast 411g. Champagne borbulhante com tangerina e nectarina. Até 45h de queima.'),
+  ('Eucalyptus Spearmint 3-Wick Candle', 'Bath & Body Works', 'Lifestyle', 26.50, 'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=400&h=400&fit=crop', 'Vela 3 pavios Eucalyptus Spearmint (Stress Relief) 411g. Eucalipto e hortelã para relaxar. Aromaterapia BBW.'),
+  ('Wallflowers Fragrance Refill 2-Pack', 'Bath & Body Works', 'Lifestyle', 13.50, 'https://images.unsplash.com/photo-1599458252573-56ae36120de1?w=400&h=400&fit=crop', 'Kit 2 refis Wallflowers para aromatizador de tomada. Diversas fragrâncias disponíveis. Dura até 30 dias cada.'),
+  -- Nike — Tênis
+  ('Nike Air Force 1 ''07', 'Nike', 'Fashion', 115.00, 'https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=400&h=400&fit=crop', 'O clássico Nike Air Force 1 branco. O tênis mais icônico do streetwear. Couro premium, sola Air.'),
+  ('Nike Air Max 90', 'Nike', 'Fashion', 130.00, 'https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=400&h=400&fit=crop', 'Nike Air Max 90 com a icônica bolha de ar visível. Design de 1990 que nunca sai de moda.'),
+  ('Nike Cortez', 'Nike', 'Fashion', 90.00, 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&h=400&fit=crop', 'Nike Cortez clássico. O primeiro tênis de corrida da Nike (1972). Design vintage, conforto moderno.'),
+  ('Nike Air Jordan 1 Mid', 'Nike', 'Fashion', 125.00, 'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=400&fit=crop', 'Air Jordan 1 Mid. O tênis que mudou a cultura sneaker. Cano médio, couro premium, estilo lendário.'),
+  -- Stanley
+  ('Stanley IceFlow Flip Straw 30oz', 'Stanley', 'Lifestyle', 35.00, 'https://images.unsplash.com/photo-1570831739435-6601aa3fa4fb?w=400&h=400&fit=crop', 'Copo térmico Stanley IceFlow 30oz (887ml). Canudo flip, gelado por 12h. Design slim que cabe no porta-copos.'),
+  ('Stanley Classic Trigger-Action 20oz', 'Stanley', 'Lifestyle', 25.00, 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=400&fit=crop', 'Caneca térmica Stanley Classic 20oz (591ml). Um botão para abrir e beber. Quente por 7h, gelado por 10h.'),
+  -- CeraVe / La Roche-Posay / Skincare
+  ('CeraVe Moisturizing Cream 539g', 'CeraVe', 'Beauty', 18.00, 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop', 'Creme hidratante CeraVe 539g (tamanho família!). Com 3 ceramidas essenciais e ácido hialurônico. Indicado por dermatologistas.'),
+  ('CeraVe Foaming Facial Cleanser 473ml', 'CeraVe', 'Beauty', 16.00, 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop', 'Gel de limpeza facial CeraVe 473ml. Para pele normal a oleosa. Com niacinamida e ceramidas. Sem fragrância.'),
+  ('CeraVe Hydrating Facial Cleanser 473ml', 'CeraVe', 'Beauty', 16.00, 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=400&h=400&fit=crop', 'Gel de limpeza hidratante CeraVe 473ml. Para pele normal a seca. Com ácido hialurônico e ceramidas.'),
+  ('La Roche-Posay Anthelios Melt-In Milk SPF 60', 'La Roche-Posay', 'Beauty', 36.00, 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop', 'Protetor solar corporal La Roche-Posay SPF 60. Textura leve que derrete na pele. Resistente à água por 80min.'),
+  ('La Roche-Posay Effaclar Duo+ SPF 30', 'La Roche-Posay', 'Beauty', 32.00, 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400&h=400&fit=crop', 'Tratamento anti-acne La Roche-Posay com SPF 30. Niacinamida + ácido salicílico. Controle de oleosidade.'),
+  ('The Ordinary Niacinamide 10% + Zinc 1% 30ml', 'The Ordinary', 'Beauty', 6.50, 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&h=400&fit=crop', 'Sérum The Ordinary com 10% Niacinamida e 1% Zinco. Reduz poros e oleosidade. O skincare mais viral do momento!'),
+  ('Neutrogena Hydro Boost Gel-Cream SPF 25', 'Neutrogena', 'Beauty', 22.00, 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop', 'Hidratante facial Neutrogena Hydro Boost com SPF 25. Ácido hialurônico para hidratação intensa. Não oleoso.'),
+  -- Tech extras
+  ('JBL Flip 6 Bluetooth Speaker', 'JBL', 'Tech', 130.00, 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop', 'Caixa de som portátil JBL Flip 6. À prova d''água IP67. 12h de bateria. Som potente com PartyBoost.'),
+  ('Apple AirTag (4-Pack)', 'Apple', 'Tech', 99.00, 'https://images.unsplash.com/photo-1621330396173-e41b1cafd17f?w=400&h=400&fit=crop', 'Kit 4 rastreadores Apple AirTag. Encontre chaves, carteira, mala. Precisão com chip U1 e rede Find My.'),
+  ('Apple Watch SE 2nd Gen 44mm', 'Apple', 'Tech', 279.00, 'https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=400&h=400&fit=crop', 'Apple Watch SE 44mm com chip S8. Monitoramento cardíaco, GPS, detecção de queda. O melhor custo-benefício.'),
+  ('Nintendo Switch OLED', 'Nintendo', 'Tech', 349.00, 'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=400&fit=crop', 'Nintendo Switch OLED com tela de 7" vibrante. Dock com porta Ethernet. 64GB de armazenamento interno.'),
+  -- Fashion extras
+  ('Tommy Hilfiger Classic Polo', 'Tommy Hilfiger', 'Fashion', 50.00, 'https://images.unsplash.com/photo-1625910513413-5fc42c18b0f3?w=400&h=400&fit=crop', 'Polo clássica Tommy Hilfiger. Algodão premium com logo bordado. O básico americano que nunca sai de moda.'),
+  ('Calvin Klein Kit 3 Cuecas Boxer', 'Calvin Klein', 'Fashion', 42.00, 'https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?w=400&h=400&fit=crop', 'Kit 3 cuecas boxer Calvin Klein em algodão stretch. Elástico com logo icônico. Conforto premium.'),
+  ('Under Armour Tech 2.0 T-Shirt', 'Under Armour', 'Fashion', 25.00, 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=400&h=400&fit=crop', 'Camiseta esportiva Under Armour Tech 2.0. Tecido anti-odor, secagem ultra-rápida. Ideal para treino.'),
+  ('Adidas Ultraboost Light', 'Adidas', 'Fashion', 190.00, 'https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=400&h=400&fit=crop', 'Adidas Ultraboost Light. O tênis de corrida mais leve da linha Ultra. Boost renovado + Continental™ outsole.'),
+  -- Lifestyle extras
+  ('Hydro Flask 32oz Wide Mouth', 'Hydro Flask', 'Lifestyle', 45.00, 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=400&fit=crop', 'Garrafa térmica Hydro Flask 32oz (946ml). TempShield™ mantém gelado 24h e quente 12h. Boca larga.'),
+  ('Yeti Rambler 26oz Bottle', 'Yeti', 'Lifestyle', 40.00, 'https://images.unsplash.com/photo-1570831739435-6601aa3fa4fb?w=400&h=400&fit=crop', 'Garrafa térmica Yeti Rambler 26oz (769ml). Aço inoxidável 18/8. Praticamente indestrutível. Tampa TripleHaul™.')
 ON CONFLICT DO NOTHING;
 
 -- Promotions (4 cupons ativos)

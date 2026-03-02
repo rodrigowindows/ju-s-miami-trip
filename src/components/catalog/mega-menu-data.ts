@@ -67,9 +67,32 @@ export const MEGA_MENU_CATEGORIES: MegaMenuCategory[] = [
     ],
   },
   {
+    label: "Victoria's Secret",
+    filterCategory: "Beauty",
+    subcategories: [
+      "Body Mists",
+      "Body Lotions",
+      "Perfumes (EDP)",
+      "Kits & Presentes",
+      "Calcinhas & Lingerie",
+    ],
+  },
+  {
+    label: "Bath & Body Works",
+    filterCategory: "Beauty",
+    subcategories: [
+      "Fine Fragrance Mists",
+      "Body Lotions",
+      "Velas 3 Pavios",
+      "Wallflowers & Aromatizadores",
+      "Hand Creams & Sabonetes",
+    ],
+  },
+  {
     label: "Perfumes",
     filterCategory: "Beauty",
     subcategories: [
+      "Victoria's Secret",
       "Chanel",
       "Dior",
       "Tom Ford",
