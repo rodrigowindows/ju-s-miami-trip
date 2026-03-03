@@ -125,8 +125,8 @@ export default function HeroBannerCarousel() {
             onClick={() => setCurrent(i)}
             className={`rounded-full transition-all duration-300 ${
               i === current
-                ? "w-6 h-2 bg-white"
-                : "w-2 h-2 bg-white/40 hover:bg-white/60"
+                ? "w-6 h-2 bg-white shadow-md"
+                : "w-2 h-2 bg-white/50 hover:bg-white/80"
             }`}
             aria-label={`Ir para slide ${i + 1}`}
           />
