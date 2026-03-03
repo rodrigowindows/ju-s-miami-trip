@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Zap, Droplets, Timer, Heart, Flame } from "lucide-react";
+import { Zap, Droplets, Timer, Heart, Flame, Smartphone, Baby, Shirt, Headphones, Pill } from "lucide-react";
 import { ProductCard, type ActiveDeal } from "./ProductCard";
 import { isBestSeller } from "./catalog-utils";
 import type { CatalogProduct } from "@/types";
@@ -159,6 +159,42 @@ const PERFUME_KEYWORDS = [
   "body mist", "splash", "toilette", "edp", "edt",
 ];
 
+const APPLE_ACCESSORY_KEYWORDS = [
+  "airtag", "apple pencil", "magsafe", "magic keyboard", "airpods max",
+  "apple watch", "case", "capa", "carregador", "charger", "cable", "cabo",
+];
+
+const KIDS_KEYWORDS = [
+  "lego", "barbie", "hot wheels", "disney", "squishmallow", "play-doh",
+  "nerf", "fisher-price", "brinquedo", "toy", "boneca", "carrinho",
+  "baby alive", "playdoh",
+];
+
+const BABY_KEYWORDS = [
+  "graco", "carter", "dr. brown", "munchkin", "chicco", "skip hop",
+  "gerber", "bebe", "baby", "carrinho bebe", "cadeirinha", "mamadeira",
+  "roupinha",
+];
+
+const SUPPLEMENT_KEYWORDS = [
+  "vitamina", "vitamin", "suplemento", "supplement", "creatina", "creatine",
+  "whey", "protein", "colágeno", "collagen", "melatonina", "melatonin",
+  "biotina", "biotin", "glucosamina", "ashwagandha", "omega", "kirkland",
+  "optimum nutrition", "centrum", "multivitamin",
+];
+
+const AUDIO_KEYWORDS = [
+  "jbl", "bose", "beats", "headphone", "fone", "speaker", "caixa de som",
+  "echo dot", "alexa", "sonos", "marshall", "airpods max", "quietcomfort",
+  "gopro",
+];
+
+const FASHION_BRAND_KEYWORDS = [
+  "ralph lauren", "tommy hilfiger", "calvin klein", "under armour",
+  "gap", "champion", "lacoste", "polo", "cueca", "moletom", "hoodie",
+  "abercrombie",
+];
+
 function matchesKeywords(product: CatalogProduct, keywords: string[]): boolean {
   const text = `${product.name} ${product.description ?? ""} ${product.brand ?? ""}`.toLowerCase();
   return keywords.some((kw) => text.includes(kw));
@@ -188,6 +224,26 @@ export function ThemedProductSections({
     .filter(Boolean) as CatalogProduct[];
   const skincareProducts = products.filter((p) => matchesKeywords(p, SKINCARE_KEYWORDS));
   const perfumeProducts = products.filter((p) => matchesKeywords(p, PERFUME_KEYWORDS));
+  const appleAccessories = products.filter(
+    (p) =>
+      (p.brand ?? "").toLowerCase() === "apple" &&
+      matchesKeywords(p, APPLE_ACCESSORY_KEYWORDS)
+  );
+  const kidsProducts = products.filter(
+    (p) => p.category === "Kids" || matchesKeywords(p, KIDS_KEYWORDS)
+  );
+  const babyProducts = products.filter(
+    (p) => matchesKeywords(p, BABY_KEYWORDS)
+  );
+  const supplementProducts = products.filter(
+    (p) => p.category === "Health" || matchesKeywords(p, SUPPLEMENT_KEYWORDS)
+  );
+  const audioProducts = products.filter(
+    (p) => matchesKeywords(p, AUDIO_KEYWORDS)
+  );
+  const fashionBrandProducts = products.filter(
+    (p) => matchesKeywords(p, FASHION_BRAND_KEYWORDS)
+  );
 
   // Fallbacks: if categories are too narrow, fill from Beauty/general
   const skincareFinal =
@@ -402,6 +458,258 @@ export function ThemedProductSections({
 
           <ProductGrid
             products={perfumeFinal}
+            convert={convert}
+            onSelect={onSelectProduct}
+            deals={deals}
+            maxItems={8}
+          />
+        </section>
+      )}
+
+      {/* ─── Section: APPLE ACESSÓRIOS ───────────── */}
+      {appleAccessories.length > 0 && (
+        <section
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{
+            background: "linear-gradient(135deg, #F5F5F7 0%, #FFFFFF 50%, #E8E8ED 100%)",
+            borderRadius: 12,
+          }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Smartphone size={24} className="text-gray-800" />
+            <h2
+              className="text-xl sm:text-2xl font-bold tracking-wider"
+              style={{
+                fontFamily: "'Playfair Display', 'Gabarito', serif",
+                letterSpacing: "0.05em",
+                color: "#1D1D1F",
+              }}
+            >
+              APPLE ACESSÓRIOS
+            </h2>
+          </div>
+          <p className="text-sm text-gray-600 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+            AirTags, capas MagSafe, Apple Pencil e mais — direto dos EUA
+          </p>
+
+          <ProductShowcase products={appleAccessories} maxItems={5} />
+
+          <div className="flex justify-end mb-4 mt-4">
+            <ViewAllButton onClick={onViewAll} />
+          </div>
+
+          <ProductGrid
+            products={appleAccessories}
+            convert={convert}
+            onSelect={onSelectProduct}
+            deals={deals}
+            maxItems={8}
+          />
+        </section>
+      )}
+
+      {/* ─── Section: KIDS & BRINQUEDOS ───────────── */}
+      {kidsProducts.length > 0 && (
+        <section
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{
+            background: "linear-gradient(135deg, #FFF3E0 0%, #E3F2FD 50%, #FFF8E1 100%)",
+            borderRadius: 12,
+          }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Baby size={24} className="text-orange-500" />
+            <h2
+              className="text-xl sm:text-2xl font-bold tracking-wider"
+              style={{
+                fontFamily: "'Playfair Display', 'Gabarito', serif",
+                letterSpacing: "0.05em",
+                color: "#E65100",
+              }}
+            >
+              KIDS & BRINQUEDOS
+            </h2>
+          </div>
+          <p className="text-sm text-orange-800 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+            LEGO, Barbie, Hot Wheels e mais — até 55% mais barato que no Brasil
+          </p>
+
+          <ProductShowcase products={kidsProducts} maxItems={5} />
+
+          <div className="flex justify-end mb-4 mt-4">
+            <ViewAllButton onClick={onViewAll} />
+          </div>
+
+          <ProductGrid
+            products={kidsProducts}
+            convert={convert}
+            onSelect={onSelectProduct}
+            deals={deals}
+            maxItems={8}
+          />
+        </section>
+      )}
+
+      {/* ─── Section: BABY & BEBÊ ───────────── */}
+      {babyProducts.length > 0 && (
+        <section
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{
+            background: "linear-gradient(135deg, #FCE4EC 0%, #F3E5F5 50%, #FFFFFF 100%)",
+            borderRadius: 12,
+          }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Heart size={24} className="text-pink-400" fill="#f472b6" />
+            <h2
+              className="text-xl sm:text-2xl font-bold tracking-wider"
+              style={{
+                fontFamily: "'Playfair Display', 'Gabarito', serif",
+                letterSpacing: "0.05em",
+                color: "#880E4F",
+              }}
+            >
+              BABY & BEBÊ
+            </h2>
+          </div>
+          <p className="text-sm text-pink-800 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+            Carter's, Graco, Dr. Brown's — o melhor para seu bebê por metade do preço
+          </p>
+
+          <ProductShowcase products={babyProducts} maxItems={5} />
+
+          <div className="flex justify-end mb-4 mt-4">
+            <ViewAllButton onClick={onViewAll} />
+          </div>
+
+          <ProductGrid
+            products={babyProducts}
+            convert={convert}
+            onSelect={onSelectProduct}
+            deals={deals}
+            maxItems={8}
+          />
+        </section>
+      )}
+
+      {/* ─── Section: ROUPAS DE MARCA ───────────── */}
+      {fashionBrandProducts.length > 0 && (
+        <section
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{
+            background: "linear-gradient(135deg, #EFEBE9 0%, #FFFFFF 50%, #F5F5F5 100%)",
+            borderRadius: 12,
+          }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Shirt size={24} className="text-gray-700" />
+            <h2
+              className="text-xl sm:text-2xl font-bold tracking-wider"
+              style={{
+                fontFamily: "'Playfair Display', 'Gabarito', serif",
+                letterSpacing: "0.05em",
+                color: "#3E2723",
+              }}
+            >
+              ROUPAS DE MARCA
+            </h2>
+          </div>
+          <p className="text-sm text-gray-700 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+            Ralph Lauren, Tommy, Calvin Klein — originais com preço de outlet americano
+          </p>
+
+          <ProductShowcase products={fashionBrandProducts} maxItems={5} />
+
+          <div className="flex justify-end mb-4 mt-4">
+            <ViewAllButton onClick={onViewAll} />
+          </div>
+
+          <ProductGrid
+            products={fashionBrandProducts}
+            convert={convert}
+            onSelect={onSelectProduct}
+            deals={deals}
+            maxItems={8}
+          />
+        </section>
+      )}
+
+      {/* ─── Section: SUPLEMENTOS & VITAMINAS ───────────── */}
+      {supplementProducts.length > 0 && (
+        <section
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{
+            background: "linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 50%, #FFFFFF 100%)",
+            borderRadius: 12,
+          }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Pill size={24} className="text-green-600" />
+            <h2
+              className="text-xl sm:text-2xl font-bold tracking-wider"
+              style={{
+                fontFamily: "'Playfair Display', 'Gabarito', serif",
+                letterSpacing: "0.05em",
+                color: "#1B5E20",
+              }}
+            >
+              SUPLEMENTOS & VITAMINAS
+            </h2>
+          </div>
+          <p className="text-sm text-green-800 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+            Kirkland, Optimum Nutrition, Vital Proteins — até 68% mais barato que no Brasil
+          </p>
+
+          <ProductShowcase products={supplementProducts} maxItems={5} />
+
+          <div className="flex justify-end mb-4 mt-4">
+            <ViewAllButton onClick={onViewAll} />
+          </div>
+
+          <ProductGrid
+            products={supplementProducts}
+            convert={convert}
+            onSelect={onSelectProduct}
+            deals={deals}
+            maxItems={8}
+          />
+        </section>
+      )}
+
+      {/* ─── Section: ÁUDIO & ELETRÔNICOS ───────────── */}
+      {audioProducts.length > 0 && (
+        <section
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{
+            background: "linear-gradient(135deg, #263238 0%, #37474F 50%, #455A64 100%)",
+            borderRadius: 12,
+          }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Headphones size={24} className="text-cyan-400" />
+            <h2
+              className="text-xl sm:text-2xl font-bold tracking-wider"
+              style={{
+                fontFamily: "'Playfair Display', 'Gabarito', serif",
+                letterSpacing: "0.05em",
+                color: "#FFFFFF",
+              }}
+            >
+              ÁUDIO & ELETRÔNICOS
+            </h2>
+          </div>
+          <p className="text-sm text-gray-300 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+            JBL, Bose, Beats, GoPro — som e tech premium por preço justo
+          </p>
+
+          <ProductShowcase products={audioProducts} maxItems={5} />
+
+          <div className="flex justify-end mb-4 mt-4">
+            <ViewAllButton onClick={onViewAll} />
+          </div>
+
+          <ProductGrid
+            products={audioProducts}
             convert={convert}
             onSelect={onSelectProduct}
             deals={deals}

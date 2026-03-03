@@ -1,4 +1,4 @@
-import { LayoutGrid, Smartphone, Sparkles, Shirt, Heart, Truck, Package } from "lucide-react";
+import { LayoutGrid, Smartphone, Sparkles, Shirt, Heart, Truck, Package, Baby, Pill, Headphones } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 /** Deterministic fake rating based on product name hash */
@@ -37,6 +37,8 @@ export const CATEGORY_LIST: CategoryDef[] = [
   { label: "Beauty", displayLabel: "Beleza & Cosméticos", icon: Sparkles },
   { label: "Fashion", displayLabel: "Moda & Acessórios", icon: Shirt },
   { label: "Lifestyle", displayLabel: "Casa & Lifestyle", icon: Heart },
+  { label: "Kids", displayLabel: "Kids & Brinquedos", icon: Baby },
+  { label: "Health", displayLabel: "Saúde & Suplementos", icon: Pill },
   { label: "_frete", displayLabel: "Frete Grátis", icon: Truck, isBadge: true, badgeColor: "emerald" },
   { label: "_pronta", displayLabel: "Pronta Entrega", icon: Package, isBadge: true, badgeColor: "blue" },
 ];
