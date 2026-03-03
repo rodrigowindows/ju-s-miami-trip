@@ -9,23 +9,23 @@ interface Slide {
 
 const SLIDES: Slide[] = [
   {
-    image: "/banners/banner1.png",
-    alt: "Banner 1 - Ju's Miami Trip",
+    image: "/banners/banner1.svg",
+    alt: "Compre dos EUA, receba no Brasil",
     link: "#catalogo",
   },
   {
-    image: "/banners/banner2.png",
-    alt: "Banner 2 - Ju's Miami Trip",
+    image: "/banners/banner2.svg",
+    alt: "Pré-Venda Exclusiva",
     link: "#catalogo",
   },
   {
-    image: "/banners/banner3.png",
-    alt: "Banner 3 - Ju's Miami Trip",
+    image: "/banners/banner3.svg",
+    alt: "Skincare & Beauty Originais",
     link: "#catalogo",
   },
   {
-    image: "/banners/banner4.png",
-    alt: "Banner 4 - Ju's Miami Trip",
+    image: "/banners/banner4.svg",
+    alt: "Perfumes Importados",
     link: "#catalogo",
   },
 ];

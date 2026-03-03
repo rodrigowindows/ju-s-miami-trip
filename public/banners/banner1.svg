@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400">
+  <defs>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#232F3E"/>
+      <stop offset="50%" style="stop-color:#37475A"/>
+      <stop offset="100%" style="stop-color:#131921"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#bg1)"/>
+  <circle cx="1050" cy="80" r="120" fill="rgba(255,255,255,0.05)"/>
+  <circle cx="150" cy="350" r="80" fill="rgba(255,255,255,0.05)"/>
+  <text x="600" y="160" text-anchor="middle" font-family="Georgia, serif" font-size="48" font-weight="bold" fill="white">Compre dos EUA, receba no Brasil</text>
+  <text x="600" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="rgba(255,255,255,0.8)">Personal shopper em Miami com entrega segura</text>
+  <text x="600" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="rgba(255,255,255,0.8)">e rastreamento em tempo real</text>
+  <rect x="500" y="280" width="200" height="50" rx="25" fill="#FFD814"/>
+  <text x="600" y="312" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#111">Ver Catálogo →</text>
+  <!-- Plane icon -->
+  <text x="600" y="100" text-anchor="middle" font-size="50" fill="#FFD814">✈</text>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400">
+  <defs>
+    <linearGradient id="bg4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="50%" style="stop-color:#16213e"/>
+      <stop offset="100%" style="stop-color:#0f3460"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#bg4)"/>
+  <circle cx="950" cy="90" r="110" fill="rgba(255,255,255,0.05)"/>
+  <circle cx="250" cy="330" r="70" fill="rgba(255,255,255,0.04)"/>
+  <text x="600" y="110" text-anchor="middle" font-size="50" fill="#D4AF37">🛍️</text>
+  <text x="600" y="180" text-anchor="middle" font-family="Georgia, serif" font-size="48" font-weight="bold" fill="white">Perfumes Importados</text>
+  <text x="600" y="230" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="rgba(255,255,255,0.85)">Fragrâncias exclusivas com preço</text>
+  <text x="600" y="260" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="rgba(255,255,255,0.85)">de outlet americano</text>
+  <rect x="500" y="285" width="200" height="50" rx="25" fill="#D4AF37"/>
+  <text x="600" y="317" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#111">Explorar →</text>
+</svg>

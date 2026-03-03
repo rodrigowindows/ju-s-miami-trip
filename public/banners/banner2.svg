@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF69B4"/>
+      <stop offset="100%" style="stop-color:#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#bg2)"/>
+  <circle cx="1000" cy="100" r="100" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="200" cy="320" r="60" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="900" cy="300" r="40" fill="rgba(255,255,255,0.08)"/>
+  <text x="600" y="110" text-anchor="middle" font-size="50" fill="white">🏷️</text>
+  <text x="600" y="180" text-anchor="middle" font-family="Georgia, serif" font-size="48" font-weight="bold" fill="white">Pré-Venda Exclusiva</text>
+  <text x="600" y="230" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="rgba(255,255,255,0.9)">Garanta seu produto dos EUA antes de todo mundo</text>
+  <text x="600" y="260" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="rgba(255,255,255,0.9)">Reserve agora e receba primeiro!</text>
+  <rect x="500" y="285" width="200" height="50" rx="25" fill="white"/>
+  <text x="600" y="317" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#111">Ver Produtos →</text>
+</svg>
