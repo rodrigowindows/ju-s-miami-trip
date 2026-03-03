@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,10 +9,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSettings } from "@/hooks/useSettings";
 import { useCreateOrder, useCreateOrderItem } from "@/hooks/useOrders";
 import { useActivePromotions } from "@/hooks/usePromotions";
+import { usePixCharge } from "@/hooks/usePixCharge";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
-import { ChevronLeft, CheckCircle2, Loader2, MapPin, CreditCard, ClipboardList, PartyPopper, Copy, QrCode, Shield } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Loader2, MapPin, CreditCard, ClipboardList, PartyPopper, Copy, QrCode, Shield, Clock } from "lucide-react";
 
 const steps = [
   { label: "Endereço", icon: MapPin },
@@ -32,6 +33,7 @@ export default function ClientCheckout() {
   const [addressError, setAddressError] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
   const [pixCopied, setPixCopied] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const nav = useNavigate();
 
   const { items, clearCart } = useCart();
@@ -40,6 +42,7 @@ export default function ClientCheckout() {
   const createOrder = useCreateOrder();
   const createOrderItem = useCreateOrderItem();
   const { data: promotions = [] } = useActivePromotions();
+  const { charge: pixCharge, loading: pixLoading, error: pixError, createCharge: createPixCharge } = usePixCharge();
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
@@ -124,12 +127,13 @@ export default function ClientCheckout() {
     }
   }
 
-  const pixKey = "ajuvaiparamiami@pix.com";
+  const pixKeyFallback = "ajuvaiparamiami@pix.com";
 
-  function copyPixKey() {
-    navigator.clipboard.writeText(pixKey).then(() => {
+  function copyPixCode() {
+    const codeToCopy = pixCharge?.br_code || pixKeyFallback;
+    navigator.clipboard.writeText(codeToCopy).then(() => {
       setPixCopied(true);
-      toast.success("Chave PIX copiada!");
+      toast.success(pixCharge?.br_code ? "Código PIX copiado!" : "Chave PIX copiada!");
       setTimeout(() => setPixCopied(false), 3000);
     });
   }
@@ -139,6 +143,7 @@ export default function ClientCheckout() {
     setSubmitting(true);
     try {
       const itemNames = items.map((i) => `${i.product.name}${i.quantity > 1 ? ` (x${i.quantity})` : ""}`).join(", ");
+      const depositAmount = finalTotal * 0.5;
       const order = await createOrder.mutateAsync({
         client_id: user.id,
         customer_name: profile.full_name ?? "",
@@ -147,7 +152,7 @@ export default function ClientCheckout() {
         total_usd: items.reduce((s, i) => s + i.product.price_usd * i.quantity, 0),
         total_brl: finalTotal,
         total_amount: finalTotal,
-        deposit_amount: finalTotal * 0.5,
+        deposit_amount: depositAmount,
         notes: `Pagamento: ${payment}. Endereço: ${address.street}, ${address.number}${address.neighborhood ? ` - ${address.neighborhood}` : ""} - ${address.city}/${address.state} - CEP: ${address.cep}${matchedPromo ? `. Cupom: ${matchedPromo.coupon_code}` : ""}`,
       });
       for (const item of items) {
@@ -160,6 +165,14 @@ export default function ClientCheckout() {
           price_brl: calculatePriceBRL(item.product.price_usd, exchangeRate, spread) * item.quantity,
         });
       }
+
+      setCreatedOrderId(order.id);
+
+      // Generate PIX charge automatically for PIX payments
+      if (payment === "pix") {
+        await createPixCharge(order.id, depositAmount);
+      }
+
       clearCart();
       setDoneOrder(order.order_number);
       setStep(3);
@@ -309,13 +322,13 @@ export default function ClientCheckout() {
                   <QrCode size={18} className="text-emerald-600" />
                   <p className="text-sm font-medium text-emerald-800">Pagamento via PIX</p>
                 </div>
-                <div className="bg-white rounded-lg p-3 flex items-center gap-2">
-                  <code className="flex-1 text-xs text-gray-700 break-all">{pixKey}</code>
-                  <Button variant="ghost" size="sm" onClick={copyPixKey} className="shrink-0 gap-1 text-xs">
-                    <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
-                  </Button>
+                <p className="text-xs text-emerald-700">
+                  O QR Code PIX será gerado automaticamente ao confirmar o pedido. Valor do depósito (50%) será cobrado.
+                </p>
+                <div className="flex items-center gap-2 text-xs text-emerald-600">
+                  <CheckCircle2 size={14} />
+                  <span>Confirmação automática em segundos</span>
                 </div>
-                <p className="text-xs text-emerald-700">Após o pagamento, envie o comprovante pelo WhatsApp para confirmação.</p>
               </div>
             )}
 
@@ -416,6 +429,98 @@ export default function ClientCheckout() {
               <p className="text-xs text-gray-500">Número do pedido</p>
               <p className="text-lg font-bold text-gray-900">{doneOrder}</p>
             </div>
+
+            {/* Dynamic PIX QR Code */}
+            {payment === "pix" && (
+              <div className="space-y-3">
+                {pixLoading && (
+                  <div className="flex items-center justify-center gap-2 text-gray-500">
+                    <Loader2 size={18} className="animate-spin" />
+                    <span className="text-sm">Gerando QR Code PIX...</span>
+                  </div>
+                )}
+
+                {pixCharge && pixCharge.status === "ACTIVE" && (
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <QrCode size={18} className="text-emerald-600" />
+                      <p className="text-sm font-semibold text-emerald-800">Pague via PIX</p>
+                    </div>
+
+                    <p className="text-xs text-gray-600">
+                      Depósito de <strong>{formatBRL(finalTotal * 0.5)}</strong>
+                    </p>
+
+                    {pixCharge.qr_code_image && (
+                      <div className="flex justify-center">
+                        <img
+                          src={pixCharge.qr_code_image}
+                          alt="QR Code PIX"
+                          className="w-48 h-48 rounded-lg border bg-white p-2"
+                        />
+                      </div>
+                    )}
+
+                    {pixCharge.br_code && (
+                      <div className="bg-white rounded-lg p-3 flex items-center gap-2">
+                        <code className="flex-1 text-[10px] text-gray-600 break-all line-clamp-2">
+                          {pixCharge.br_code}
+                        </code>
+                        <Button variant="ghost" size="sm" onClick={copyPixCode} className="shrink-0 gap-1 text-xs">
+                          <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
+                        </Button>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-center gap-1 text-xs text-amber-600">
+                      <Clock size={12} />
+                      <span>Expira em 1 hora</span>
+                    </div>
+
+                    <p className="text-xs text-emerald-700">
+                      O pagamento será confirmado automaticamente em segundos.
+                    </p>
+                  </div>
+                )}
+
+                {pixCharge && pixCharge.status === "COMPLETED" && (
+                  <div className="bg-emerald-100 border border-emerald-300 rounded-xl p-4">
+                    <div className="flex items-center justify-center gap-2">
+                      <CheckCircle2 size={18} className="text-emerald-600" />
+                      <p className="text-sm font-semibold text-emerald-800">PIX pago com sucesso!</p>
+                    </div>
+                  </div>
+                )}
+
+                {pixError && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
+                    <p className="text-sm text-amber-800">QR Code indisponível no momento.</p>
+                    <p className="text-xs text-amber-700">Use a chave PIX manual:</p>
+                    <div className="bg-white rounded-lg p-3 flex items-center gap-2">
+                      <code className="flex-1 text-xs text-gray-700 break-all">{pixKeyFallback}</code>
+                      <Button variant="ghost" size="sm" onClick={copyPixCode} className="shrink-0 gap-1 text-xs">
+                        <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-amber-700">Envie o comprovante pelo WhatsApp para confirmação.</p>
+                  </div>
+                )}
+
+                {!pixLoading && !pixCharge && !pixError && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2">
+                    <p className="text-xs text-gray-600">Chave PIX manual:</p>
+                    <div className="bg-white rounded-lg p-3 flex items-center gap-2">
+                      <code className="flex-1 text-xs text-gray-700 break-all">{pixKeyFallback}</code>
+                      <Button variant="ghost" size="sm" onClick={copyPixCode} className="shrink-0 gap-1 text-xs">
+                        <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-gray-500">Envie o comprovante pelo WhatsApp.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             <p className="text-sm text-gray-600">
               Você receberá atualizações sobre seu pedido via WhatsApp e notificações.
             </p>

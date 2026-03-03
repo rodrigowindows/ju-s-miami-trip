@@ -176,24 +176,7 @@ export function ThemedProductSections({
 
   return (
     <div className="space-y-10 sm:space-y-[60px]">
-      {/* ─── Section 1: MAIS VENDIDOS ─────────────────── */}
-      {bestSellers.length > 0 && (
-        <section>
-          <DividerTitle>MAIS VENDIDOS</DividerTitle>
-          <div className="flex justify-end mb-4">
-            <ViewAllButton onClick={onViewAll} />
-          </div>
-          <ProductGrid
-            products={bestSellers}
-            convert={convert}
-            onSelect={onSelectProduct}
-            deals={deals}
-            maxItems={8}
-          />
-        </section>
-      )}
-
-      {/* ─── Section: VICTORIA'S SECRET ─────────────────── */}
+      {/* ─── Section: VICTORIA'S SECRET (TOP) ─────────────────── */}
       {vsProducts.length > 0 && (
         <section
           className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
@@ -225,6 +208,23 @@ export function ThemedProductSections({
 
           <ProductGrid
             products={vsProducts}
+            convert={convert}
+            onSelect={onSelectProduct}
+            deals={deals}
+            maxItems={8}
+          />
+        </section>
+      )}
+
+      {/* ─── Section: MAIS VENDIDOS ─────────────────── */}
+      {bestSellers.length > 0 && (
+        <section>
+          <DividerTitle>MAIS VENDIDOS</DividerTitle>
+          <div className="flex justify-end mb-4">
+            <ViewAllButton onClick={onViewAll} />
+          </div>
+          <ProductGrid
+            products={bestSellers}
             convert={convert}
             onSelect={onSelectProduct}
             deals={deals}
