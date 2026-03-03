@@ -2,31 +2,36 @@ import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Slide {
+  title: string;
+  subtitle: string;
+  cta: string;
   image: string;
-  alt: string;
-  link: string;
 }
 
 const SLIDES: Slide[] = [
   {
-    image: "/banners/banner1.svg",
-    alt: "Compre dos EUA, receba no Brasil",
-    link: "#catalogo",
+    title: "Compre dos EUA, receba no Brasil",
+    subtitle: "Personal shopper em Miami com entrega segura e rastreamento em tempo real",
+    cta: "Ver Catálogo",
+    image: "/banners/banner1.jpg",
   },
   {
-    image: "/banners/banner2.svg",
-    alt: "Pré-Venda Exclusiva",
-    link: "#catalogo",
+    title: "Victoria's Secret & Body Mists",
+    subtitle: "As melhores fragrâncias americanas direto de Miami para você",
+    cta: "Ver Produtos",
+    image: "/banners/banner2.jpg",
   },
   {
-    image: "/banners/banner3.svg",
-    alt: "Skincare & Beauty Originais",
-    link: "#catalogo",
+    title: "Skincare & Beauty Originais",
+    subtitle: "As melhores marcas americanas de cuidado com a pele direto de Miami",
+    cta: "Ver Produtos",
+    image: "/banners/banner3.jpg",
   },
   {
-    image: "/banners/banner4.svg",
-    alt: "Perfumes Importados",
-    link: "#catalogo",
+    title: "Perfumes Importados",
+    subtitle: "Fragrâncias exclusivas com preço de outlet americano",
+    cta: "Explorar",
+    image: "/banners/banner4.jpg",
   },
 ];
 
@@ -59,37 +64,58 @@ export default function HeroBannerCarousel() {
       onMouseLeave={() => setPaused(false)}
     >
       {/* Slide */}
-      <a
-        href={slide.link}
-        onClick={(e) => {
-          e.preventDefault();
-          document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });
-        }}
-        className="block relative w-full"
+      <div
+        className="relative flex items-end px-4 py-6 sm:py-10 md:py-16 transition-all duration-700"
+        style={{ minHeight: 220 }}
       >
+        {/* Background image */}
         <img
           src={slide.image}
-          alt={slide.alt}
-          className="w-full h-auto object-cover transition-opacity duration-700"
-          style={{ minHeight: 120, maxHeight: 500 }}
+          alt={slide.title}
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+          loading={current === 0 ? "eager" : "lazy"}
         />
-      </a>
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-      {/* Nav arrows */}
-      <button
-        onClick={prev}
-        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors backdrop-blur-sm"
-        aria-label="Slide anterior"
-      >
-        <ChevronLeft size={20} />
-      </button>
-      <button
-        onClick={next}
-        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors backdrop-blur-sm"
-        aria-label="Próximo slide"
-      >
-        <ChevronRight size={20} />
-      </button>
+        <div className="max-w-5xl mx-auto w-full relative z-10">
+          <h2
+            className="text-lg sm:text-2xl md:text-3xl font-bold text-white leading-tight drop-shadow-lg"
+            style={{ fontFamily: "'Playfair Display', 'Gabarito', serif" }}
+          >
+            {slide.title}
+          </h2>
+          <p className="text-xs sm:text-base text-white/90 mt-1 sm:mt-2 max-w-lg drop-shadow">
+            {slide.subtitle}
+          </p>
+          <div className="mt-3 sm:mt-4 hidden sm:block">
+            <button
+              className="inline-block font-bold text-sm rounded-full px-8 py-3 bg-white text-gray-900 hover:bg-white/90 transition-colors shadow-lg"
+              onClick={() => {
+                document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              {slide.cta} &rarr;
+            </button>
+          </div>
+        </div>
+
+        {/* Nav arrows */}
+        <button
+          onClick={prev}
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors backdrop-blur-sm"
+          aria-label="Slide anterior"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <button
+          onClick={next}
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors backdrop-blur-sm"
+          aria-label="Próximo slide"
+        >
+          <ChevronRight size={20} />
+        </button>
+      </div>
 
       {/* Dots */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
