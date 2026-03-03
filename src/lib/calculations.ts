@@ -5,7 +5,7 @@ export function calculatePriceBRL(
   exchangeRate: number,
   spreadPercent: number
 ): number {
-  const rate = exchangeRate > 0 ? exchangeRate : 5.70;
+  const rate = exchangeRate > 0 ? exchangeRate : 5.80;
   return Math.round(priceUSD * rate * (1 + spreadPercent / 100) * 100) / 100;
 }
 
