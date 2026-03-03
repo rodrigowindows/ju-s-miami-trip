@@ -1,34 +1,26 @@
 
 
-# A Ju vai para Miami - Página de Vendas Simples
+## Resumo
 
-## Visão Geral
-Uma landing page de vendas clean e direta, com estrutura simples e eficiente.
+O código do frontend (tracking de eventos + dashboard analytics) já está implementado. Falta apenas criar a tabela `site_events` no banco de dados via migration.
 
-## Estrutura da Página
+## Plano
 
-### 1. Header
-- Logo/nome "A Ju vai para Miami"
-- Menu simples (Home, Produtos, Contato)
+### 1. Criar migration para a tabela `site_events`
 
-### 2. Hero Section
-- Título chamativo
-- Subtítulo com proposta de valor
-- Botão de ação (CTA)
+Executar a SQL de `src/sql/site_events.sql` como migration no banco:
 
-### 3. Produtos/Serviços
-- Cards simples com imagem, nome, preço e botão de compra/contato
-- Grid responsivo (2 colunas desktop, 1 mobile)
+- Criar tabela `site_events` com colunas: `id`, `event_type`, `visitor_id`, `user_id`, `product_id`, `product_name`, `product_brand`, `product_category`, `product_price_brl`, `page_path`, `referrer`, `user_agent`, `screen_width`, `metadata`, `created_at`
+- Criar índices para performance: `event_type`, `created_at DESC`, `visitor_id`, `product_id`, e composto `(event_type, created_at DESC)`
+- Habilitar RLS com 2 políticas:
+  - **INSERT**: Qualquer visitante pode inserir (anônimo)
+  - **SELECT**: Apenas admins podem visualizar (usando `is_admin(auth.uid())` em vez da query direta na tabela profiles, seguindo o padrão existente)
 
-### 4. Contato
-- Botão de WhatsApp ou formulário simples (nome, email, mensagem)
+### Ajuste na RLS
 
-### 5. Footer
-- Informações básicas e redes sociais
+A SQL original usa `EXISTS (SELECT 1 FROM profiles WHERE ...)` para o SELECT policy. Vou usar `is_admin(auth.uid())` que já existe no projeto e é mais seguro (SECURITY DEFINER, evita recursão).
 
-## Design
-- Cores vibrantes inspiradas em Miami (tons de rosa, azul, laranja)
-- Layout limpo e minimalista
-- 100% responsivo (mobile-first)
-- Sem backend necessário nesta fase inicial
+### Resultado
+
+Após a migration, os eventos começam a ser gravados automaticamente quando visitantes acessam o catálogo, e o dashboard em `/admin/analytics` passa a mostrar dados reais.
 
