@@ -5,10 +5,10 @@
 
 -- ── 1. SETTINGS ─────────────────────────────────────────────
 INSERT INTO settings (key, value) VALUES
-  ('exchange_rate', '5.70'),
-  ('spread_percent', '3'),
-  ('exchange_rate_usd_brl', '5.70'),
-  ('spread_percentage', '3'),
+  ('exchange_rate', '5.80'),
+  ('spread_percent', '15'),
+  ('exchange_rate_usd_brl', '5.80'),
+  ('spread_percentage', '15'),
   ('whatsapp_number', '5561999999999'),
   ('referral_credit', '30')
 ON CONFLICT (key) DO NOTHING;
@@ -39,7 +39,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'PlayStation 5 Slim edicao digital. SSD de 1TB, DualSense incluso. Os melhores jogos em 4K.', true),
 
   -- Beauty (4)
-  ('Perfume Chanel N5', 'Chanel', 'Beauty', 135.00,
+  ('Perfume Chanel N5', 'Chanel', 'Beauty', 150.00,
    'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop',
    'Eau de Parfum 100ml. O perfume mais iconico do mundo, com notas de ylang-ylang, rosa e sandalo.', true),
 

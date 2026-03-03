@@ -5,8 +5,8 @@
 
 -- Settings
 INSERT INTO settings (key, value) VALUES
-  ('exchange_rate', '5.70'),
-  ('spread_percent', '3'),
+  ('exchange_rate', '5.80'),
+  ('spread_percent', '15'),
   ('whatsapp_number', '5561999999999'),
   ('referral_credit', '30')
 ON CONFLICT (key) DO NOTHING;
@@ -29,7 +29,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
   ('MacBook Air M3 15"', 'Apple', 'Tech', 1299.00, 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=600&fit=crop', 'MacBook Air com chip M3, tela Liquid Retina de 15.3", 8GB RAM, 256GB SSD. Fino, leve e com bateria de ate 18 horas.'),
   ('iPad Pro 13" M4', 'Apple', 'Tech', 1099.00, 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&h=600&fit=crop', 'iPad Pro com chip M4, tela Ultra Retina XDR OLED de 13", Apple Pencil Pro compativel. O tablet mais poderoso do mundo.'),
   ('Apple Watch Ultra 2', 'Apple', 'Tech', 799.00, 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=600&h=600&fit=crop', 'Apple Watch Ultra 2 com caixa de titanio de 49mm, GPS + Cellular, tela mais brilhante ate 3000 nits.'),
-  ('PlayStation 5 Slim', 'Sony', 'Tech', 449.00, 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&h=600&fit=crop', 'PS5 Slim com leitor de disco, 1TB SSD, controle DualSense. 30% menor que o modelo original.'),
+  ('PlayStation 5 Slim', 'Sony', 'Tech', 549.99, 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&h=600&fit=crop', 'PS5 Slim com leitor de disco, 1TB SSD, controle DualSense. 30% menor que o modelo original.'),
   ('Nintendo Switch OLED', 'Nintendo', 'Tech', 349.00, 'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=600&h=600&fit=crop', 'Nintendo Switch modelo OLED com tela de 7", stand ajustavel, 64GB armazenamento e audio aprimorado.'),
   ('iPhone 16 Pro Case MagSafe', 'Apple', 'Tech', 49.00, 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=600&h=600&fit=crop', 'Case de silicone com MagSafe para iPhone 16 Pro. Protecao premium com toque aveludado em varias cores.')
 ON CONFLICT DO NOTHING;
@@ -51,14 +51,14 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
   ('Nike Air Force 1 07', 'Nike', 'Fashion', 115.00, 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&h=600&fit=crop', 'O classico dos classicos. Air Force 1 todo branco em couro premium. Solado Air visivel para conforto o dia todo.'),
   ('New Balance 550', 'New Balance', 'Fashion', 130.00, 'https://images.unsplash.com/photo-1539185441755-769473a23570?w=600&h=600&fit=crop', 'New Balance 550 retro basketball. Couro premium, sola ENCAP para amortecimento. O tenis favorito das fashionistas.'),
   ('Adidas Samba OG', 'Adidas', 'Fashion', 120.00, 'https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=600&h=600&fit=crop', 'Adidas Samba OG classico com upper em couro, sola em borracha gum e as 3 listras iconicas. Tendencia absoluta.'),
-  ('Levis 501 Original', 'Levis', 'Fashion', 69.00, 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&h=600&fit=crop', 'O jeans original desde 1873. Fit reto classico, 100% algodao, lavagem media. Um icone da moda americana.'),
+  ('Levis 501 Original', 'Levis', 'Fashion', 69.50, 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&h=600&fit=crop', 'O jeans original desde 1873. Fit reto classico, 100% algodao, lavagem media. Um icone da moda americana.'),
   ('Ray-Ban Aviator Classic', 'Ray-Ban', 'Fashion', 163.00, 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&h=600&fit=crop', 'Oculos Ray-Ban Aviator Classic com armacao dourada e lentes verdes G-15. Protecao UV400. O oculos mais iconico.')
 ON CONFLICT DO NOTHING;
 
 -- Lifestyle
 INSERT INTO catalog_products (name, brand, category, price_usd, image_url, description) VALUES
   ('Stanley Quencher H2.0 40oz', 'Stanley', 'Lifestyle', 45.00, 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&h=600&fit=crop', 'Copo termico Quencher H2.0 de 40oz (1.18L). Mantem gelado 11h e quente 7h. Fenomeno viral. Varias cores.'),
-  ('Kindle Paperwhite 11a Geracao', 'Amazon', 'Lifestyle', 149.00, 'https://images.unsplash.com/photo-1594377157609-5c996118ac7f?w=600&h=600&fit=crop', 'Kindle Paperwhite com tela de 6.8", luz quente ajustavel, 16GB, a prova dagua IPX8. Bateria de ate 10 semanas.'),
+  ('Kindle Paperwhite 11a Geracao', 'Amazon', 'Lifestyle', 149.99, 'https://images.unsplash.com/photo-1594377157609-5c996118ac7f?w=600&h=600&fit=crop', 'Kindle Paperwhite com tela de 6.8", luz quente ajustavel, 16GB, a prova dagua IPX8. Bateria de ate 10 semanas.'),
   ('Bath & Body Works Candle 3-Wick', 'Bath & Body Works', 'Lifestyle', 26.00, 'https://images.unsplash.com/photo-1602607616524-9d05c1eeb148?w=600&h=600&fit=crop', 'Vela aromatica de 3 pavios, 411g. Duracao de 25-45h. Fragancias exclusivas que voce nao encontra no Brasil.'),
   ('Vitaminas Kirkland Daily Multi', 'Kirkland', 'Lifestyle', 25.00, 'https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=600&h=600&fit=crop', 'Multivitaminico diario com 500 comprimidos. Vitaminas A, C, D, E, complexo B e minerais essenciais.'),
   ('Whey Protein Gold Standard', 'Optimum Nutrition', 'Lifestyle', 35.00, 'https://images.unsplash.com/photo-1593095948071-474c5cc2c989?w=600&h=600&fit=crop', 'Whey Protein Isolate Gold Standard 2lb. 24g proteina por dose. Sabor Double Rich Chocolate.'),
