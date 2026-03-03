@@ -45,8 +45,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm">
+    <div className="min-h-screen flex items-center justify-center px-4 relative">
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/images/login-bg.jpg')" }}
+      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <Card className="w-full max-w-sm relative z-10">
         <CardHeader className="text-center">
           <CardTitle className="font-display text-2xl">
             AjuVaiParaMiami
