@@ -20,9 +20,6 @@ interface ProductCardProps {
 }
 
 function AvailabilityBadge({ product }: { product: CatalogProduct }) {
-  if (product.availability_type === "pronta_entrega") {
-    return <span className="absolute top-2 left-2 bg-emerald-100 text-emerald-700 text-[10px] font-semibold px-2 py-1 rounded-full">Pronta Entrega</span>;
-  }
   if (product.availability_type === "sob_encomenda") {
     return (
       <span className="absolute top-2 left-2 bg-amber-100 text-amber-700 text-[10px] font-semibold px-2 py-1 rounded-full">
@@ -30,7 +27,10 @@ function AvailabilityBadge({ product }: { product: CatalogProduct }) {
       </span>
     );
   }
-  return <span className="absolute top-2 left-2 bg-gray-200 text-gray-700 text-[10px] font-semibold px-2 py-1 rounded-full">Esgotado</span>;
+  if (product.availability_type === "esgotado") {
+    return <span className="absolute top-2 left-2 bg-gray-200 text-gray-700 text-[10px] font-semibold px-2 py-1 rounded-full">Esgotado</span>;
+  }
+  return <span className="absolute top-2 left-2 bg-emerald-100 text-emerald-700 text-[10px] font-semibold px-2 py-1 rounded-full">Pronta Entrega</span>;
 }
 
 export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wishlisted, onToggleWishlist }: ProductCardProps) {
@@ -39,7 +39,7 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
   const prevPrice = fakePreviousPrice(brl, product.name);
   const finalPrice = activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl;
   const installment = finalPrice / 3;
-  const isSoldOut = product.availability_type === "esgotado" || (product.availability_type === "pronta_entrega" && product.stock_quantity <= 0);
+  const isSoldOut = product.availability_type === "esgotado" && product.stock_quantity != null && product.stock_quantity <= 0;
 
   return (
     <div onClick={onClick} className="bg-white rounded-xl overflow-hidden text-left group flex flex-col cursor-pointer border border-gray-100 hover:shadow-md transition-shadow">
