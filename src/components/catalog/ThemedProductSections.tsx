@@ -152,9 +152,10 @@ export function ThemedProductSections({
 
   // Build section product lists
   const bestSellers = products.filter((p) => isBestSeller(p.name));
-  const vsProducts = products.filter(
-    (p) => (p.brand ?? "").toLowerCase() === "victoria's secret"
-  );
+  const vsProducts = products.filter((p) => {
+    const b = (p.brand ?? "").toLowerCase();
+    return b === "victoria's secret" || b === "victorias secret" || b === "victoria secret" || b === "vs" || b.includes("victoria");
+  });
   const bbwProducts = products.filter(
     (p) => (p.brand ?? "").toLowerCase() === "bath & body works"
   );

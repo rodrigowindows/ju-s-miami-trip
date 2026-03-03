@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Heart, ShoppingBag, Truck } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating, fakePreviousPrice } from "./catalog-utils";
@@ -33,11 +34,14 @@ function AvailabilityBadge({ product }: { product: CatalogProduct }) {
 }
 
 export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wishlisted, onToggleWishlist }: ProductCardProps) {
+  const [imgBroken, setImgBroken] = useState(false);
   const { rating, reviews } = fakeRating(product.name);
   const prevPrice = fakePreviousPrice(brl, product.name);
   const finalPrice = activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl;
   const installment = finalPrice / 3;
   const isSoldOut = product.availability_type === "esgotado" || (product.availability_type === "pronta_entrega" && product.stock_quantity <= 0);
+
+  if (imgBroken) return null;
 
   return (
     <div onClick={onClick} className="bg-white rounded-xl overflow-hidden text-left group flex flex-col cursor-pointer border border-gray-100 hover:shadow-md transition-shadow">
@@ -47,6 +51,7 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
           alt={product.name}
           className="w-full h-full object-cover rounded-t-xl"
           loading="lazy"
+          onError={() => setImgBroken(true)}
         />
 
         <AvailabilityBadge product={product} />
