@@ -313,23 +313,21 @@ export default function PublicCatalog() {
       {/* Trip Countdown Banner */}
       <TripCountdown />
 
-      {/* Hero Banner Carousel with brands overlay */}
-      <div className="relative">
-        <HeroBannerCarousel />
-        
-        {/* Brands bar - overlaying bottom of banner */}
-        {topBrands.length > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-white via-white/95 to-white/0 pt-6 pb-2">
-            <div className="max-w-6xl mx-auto px-4">
-              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                {topBrands.map((b) => (
-                  <button key={b} onClick={() => navigate(`/marca/${slugify(b)}`)} className="shrink-0 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium text-gray-700 hover:shadow-md hover:border-gray-300 transition-all">{b}</button>
-                ))}
-              </div>
+      {/* Hero Banner Carousel */}
+      <HeroBannerCarousel />
+
+      {/* Brands bar - between banner and results */}
+      {topBrands.length > 0 && (
+        <div className="bg-white border-b border-gray-200 px-4 py-2">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {topBrands.map((b) => (
+                <button key={b} onClick={() => navigate(`/marca/${slugify(b)}`)} className="shrink-0 bg-gray-50 border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium text-gray-700 hover:shadow-md hover:border-gray-300 transition-all">{b}</button>
+              ))}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Compact results + filters bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-1.5 flex items-center justify-between max-w-6xl mx-auto">
