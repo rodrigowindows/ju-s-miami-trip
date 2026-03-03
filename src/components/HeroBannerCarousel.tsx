@@ -76,32 +76,8 @@ export default function HeroBannerCarousel() {
           loading={current === 0 ? "eager" : "lazy"}
         />
         {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/20" />
-
-        <div className="max-w-5xl mx-auto w-full relative z-10">
-          <h2
-            className="text-lg sm:text-2xl md:text-3xl font-bold text-white leading-tight"
-            style={{ 
-              fontFamily: "'Playfair Display', 'Gabarito', serif",
-              textShadow: "0 2px 8px rgba(0,0,0,0.7)"
-            }}
-          >
-            {slide.title}
-          </h2>
-          <p className="text-xs sm:text-base text-white mt-1 sm:mt-2 max-w-lg" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>
-            {slide.subtitle}
-          </p>
-          <div className="mt-3 sm:mt-4 hidden sm:block">
-            <button
-              className="inline-block font-bold text-sm rounded-full px-8 py-3 bg-white text-gray-900 hover:bg-white/90 transition-colors shadow-lg"
-              onClick={() => {
-                document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              {slide.cta} &rarr;
-            </button>
-          </div>
-        </div>
+        {/* Subtle gradient for dots visibility */}
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/30 to-transparent" />
 
         {/* Nav arrows */}
         <button
