@@ -60,9 +60,8 @@ function useCatalog() {
         .from("catalog_products")
         .select("*")
         .eq("active", true)
-        .neq("availability_type", "esgotado")
         .order("created_at", { ascending: false });
-      setProducts(((data as CatalogProduct[]) ?? []).filter((p) => p.image_url && p.image_url.trim() !== ""));
+      setProducts(((data as CatalogProduct[]) ?? []).filter((p) => p.image_url && p.image_url.trim() !== "" && p.availability_type !== "esgotado"));
       setLoading(false);
     }
     fetch();
