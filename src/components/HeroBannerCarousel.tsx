@@ -65,8 +65,7 @@ export default function HeroBannerCarousel() {
     >
       {/* Slide */}
       <div
-        className="relative flex items-end px-4 py-6 sm:py-10 md:py-16 transition-all duration-700"
-        style={{ minHeight: 220 }}
+        className="relative flex items-end px-4 py-6 sm:py-10 md:py-16 transition-all duration-700 aspect-[16/5] sm:aspect-[16/6] md:aspect-[16/5]"
       >
         {/* Background image */}
         <img
