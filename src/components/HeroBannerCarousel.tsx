@@ -1,15 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Plane, ShoppingBag, Sparkles, Gift, Tag, Truck } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Slide {
   title: string;
   subtitle: string;
   cta: string;
-  ctaLink: string;
-  gradient: string;
-  icon: React.ReactNode;
-  accent: string;
+  image: string;
 }
 
 const SLIDES: Slide[] = [
@@ -17,46 +13,25 @@ const SLIDES: Slide[] = [
     title: "Compre dos EUA, receba no Brasil",
     subtitle: "Personal shopper em Miami com entrega segura e rastreamento em tempo real",
     cta: "Ver Catálogo",
-    ctaLink: "#catalogo",
-    gradient: "linear-gradient(135deg, #232F3E 0%, #37475A 50%, #131921 100%)",
-    icon: <Plane size={48} className="text-amber-400" />,
-    accent: "#FFD814",
+    image: "/banners/banner1.jpg",
   },
   {
-    title: "Pré-Venda Exclusiva",
-    subtitle: "Garanta seu produto dos EUA antes de todo mundo. Reserve agora e receba primeiro!",
+    title: "Victoria's Secret & Body Mists",
+    subtitle: "As melhores fragrâncias americanas direto de Miami para você",
     cta: "Ver Produtos",
-    ctaLink: "#catalogo",
-    gradient: "linear-gradient(135deg, #FF69B4 0%, #8B5CF6 100%)",
-    icon: <Tag size={48} className="text-white" />,
-    accent: "#FFFFFF",
+    image: "/banners/banner2.jpg",
   },
   {
     title: "Skincare & Beauty Originais",
     subtitle: "As melhores marcas americanas de cuidado com a pele direto de Miami",
     cta: "Ver Produtos",
-    ctaLink: "#catalogo",
-    gradient: "linear-gradient(135deg, #e8d5b7 0%, #c9a96e 50%, #8B6914 100%)",
-    icon: <Sparkles size={48} className="text-white" />,
-    accent: "#FFFFFF",
+    image: "/banners/banner3.jpg",
   },
   {
     title: "Perfumes Importados",
     subtitle: "Fragrâncias exclusivas com preço de outlet americano",
     cta: "Explorar",
-    ctaLink: "#catalogo",
-    gradient: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-    icon: <ShoppingBag size={48} className="text-[#D4AF37]" />,
-    accent: "#D4AF37",
-  },
-  {
-    title: "Frete Grátis acima de R$500",
-    subtitle: "Parcele em até 3x sem juros no cartão. Entrega em até 15 dias úteis",
-    cta: "Aproveitar",
-    ctaLink: "#catalogo",
-    gradient: "linear-gradient(135deg, #0f9b0f 0%, #006400 100%)",
-    icon: <Truck size={48} className="text-white" />,
-    accent: "#FFFFFF",
+    image: "/banners/banner4.jpg",
   },
 ];
 
@@ -90,60 +65,52 @@ export default function HeroBannerCarousel() {
     >
       {/* Slide */}
       <div
-        className="relative flex items-center justify-center px-4 py-3 sm:py-10 md:py-16 transition-all duration-700"
-        style={{ background: slide.gradient }}
+        className="relative flex items-end px-4 py-6 sm:py-10 md:py-16 transition-all duration-700"
+        style={{ minHeight: 220 }}
       >
-        {/* Decorative circles */}
-        <div className="absolute top-4 right-[10%] w-32 h-32 rounded-full bg-white/5 pointer-events-none hidden sm:block" />
-        <div className="absolute bottom-2 left-[5%] w-20 h-20 rounded-full bg-white/5 pointer-events-none hidden sm:block" />
+        {/* Background image */}
+        <img
+          src={slide.image}
+          alt={slide.title}
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+          loading={current === 0 ? "eager" : "lazy"}
+        />
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-        <div className="max-w-5xl mx-auto w-full flex flex-col sm:flex-row items-center gap-2 sm:gap-10 relative z-10">
-          {/* Icon */}
-          <div className="shrink-0 hidden sm:flex w-24 h-24 rounded-2xl bg-white/10 backdrop-blur-sm items-center justify-center">
-            {slide.icon}
-          </div>
-
-          {/* Text */}
-          <div className="flex-1 text-center sm:text-left min-w-0">
-            <h2
-              className="text-base sm:text-2xl md:text-3xl font-bold text-white leading-tight"
-              style={{ fontFamily: "'Playfair Display', 'Gabarito', serif" }}
+        <div className="max-w-5xl mx-auto w-full relative z-10">
+          <h2
+            className="text-lg sm:text-2xl md:text-3xl font-bold text-white leading-tight drop-shadow-lg"
+            style={{ fontFamily: "'Playfair Display', 'Gabarito', serif" }}
+          >
+            {slide.title}
+          </h2>
+          <p className="text-xs sm:text-base text-white/90 mt-1 sm:mt-2 max-w-lg drop-shadow">
+            {slide.subtitle}
+          </p>
+          <div className="mt-3 sm:mt-4 hidden sm:block">
+            <button
+              className="inline-block font-bold text-sm rounded-full px-8 py-3 bg-white text-gray-900 hover:bg-white/90 transition-colors shadow-lg"
+              onClick={() => {
+                document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
-              {slide.title}
-            </h2>
-            <p className="text-xs sm:text-base text-white/80 mt-0.5 sm:mt-2 max-w-lg">
-              {slide.subtitle}
-            </p>
-            <div className="mt-2 sm:mt-4 hidden sm:block">
-              <Link
-                to={slide.ctaLink}
-                className="inline-block font-bold text-sm rounded-full px-8 py-3 transition-colors"
-                style={{
-                  backgroundColor: slide.accent,
-                  color: slide.accent === "#FFFFFF" ? "#111" : "#111",
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });
-                }}
-              >
-                {slide.cta} &rarr;
-              </Link>
-            </div>
+              {slide.cta} &rarr;
+            </button>
           </div>
         </div>
 
         {/* Nav arrows */}
         <button
           onClick={prev}
-          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition-colors backdrop-blur-sm"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors backdrop-blur-sm"
           aria-label="Slide anterior"
         >
           <ChevronLeft size={20} />
         </button>
         <button
           onClick={next}
-          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition-colors backdrop-blur-sm"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors backdrop-blur-sm"
           aria-label="Próximo slide"
         >
           <ChevronRight size={20} />
