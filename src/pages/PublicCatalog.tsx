@@ -32,7 +32,7 @@ import NotifyMeButton from "@/components/catalog/NotifyMeButton";
 import Footer from "@/components/Footer";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import HeroBannerCarousel from "@/components/HeroBannerCarousel";
-import QuickLinks from "@/components/catalog/QuickLinks";
+
 import TripCountdown from "@/components/catalog/TripCountdown";
 import TrendingSection from "@/components/catalog/TrendingSection";
 import { ProductGridSkeleton } from "@/components/catalog/ProductCardSkeleton";
@@ -309,12 +309,7 @@ export default function PublicCatalog() {
       {/* Hero Banner Carousel */}
       <HeroBannerCarousel />
 
-      {/* Quick Links (estilo Mercado Livre) */}
-      <QuickLinks
-        onScrollToCatalog={() => document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" })}
-        onFilterDeals={() => { setShowAllFlat(false); setActiveCategory("Todos"); }}
-        onFilterBestSellers={() => { setShowAllFlat(false); setActiveCategory("Todos"); }}
-      />
+      {/* Quick Links removido — badges integrados na CategoryNav */}
 
       {/* Brands bar - desktop only */}
       <section className="hidden sm:block max-w-6xl mx-auto px-4 py-3">

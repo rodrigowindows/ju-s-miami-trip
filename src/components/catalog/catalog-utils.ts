@@ -1,4 +1,4 @@
-import { LayoutGrid, Smartphone, Sparkles, Shirt, Heart } from "lucide-react";
+import { LayoutGrid, Smartphone, Sparkles, Shirt, Heart, Truck, Package } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 /** Deterministic fake rating based on product name hash */
@@ -26,6 +26,9 @@ export interface CategoryDef {
   label: string;
   displayLabel: string;
   icon: LucideIcon;
+  /** If true, this is a badge/tag, not a real category filter */
+  isBadge?: boolean;
+  badgeColor?: string;
 }
 
 export const CATEGORY_LIST: CategoryDef[] = [
@@ -34,6 +37,8 @@ export const CATEGORY_LIST: CategoryDef[] = [
   { label: "Beauty", displayLabel: "Beleza & Cosméticos", icon: Sparkles },
   { label: "Fashion", displayLabel: "Moda & Acessórios", icon: Shirt },
   { label: "Lifestyle", displayLabel: "Casa & Lifestyle", icon: Heart },
+  { label: "_frete", displayLabel: "Frete Grátis", icon: Truck, isBadge: true, badgeColor: "emerald" },
+  { label: "_pronta", displayLabel: "Pronta Entrega", icon: Package, isBadge: true, badgeColor: "blue" },
 ];
 
 export const CATEGORIES = CATEGORY_LIST.map((c) => c.label) as readonly string[];

@@ -54,9 +54,26 @@ export function CategoryNav({ active, onSelect, variant = "dark" }: CategoryNavP
           isDark ? "bg-[#131921]" : "bg-white border-b border-gray-200"
         }`}
       >
-        {CATEGORY_LIST.map(({ label, displayLabel, icon: Icon }) => {
+        {CATEGORY_LIST.map(({ label, displayLabel, icon: Icon, isBadge, badgeColor }) => {
           const isActive = active === label;
           const hasSub = !!PILL_SUBCATEGORIES[label];
+
+          if (isBadge) {
+            const colorMap: Record<string, string> = {
+              emerald: "bg-emerald-50 text-emerald-700 border-emerald-200",
+              blue: "bg-blue-50 text-blue-700 border-blue-200",
+            };
+            const cls = colorMap[badgeColor ?? "emerald"] ?? colorMap.emerald;
+            return (
+              <span
+                key={label}
+                className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${cls}`}
+              >
+                <Icon size={14} />
+                {displayLabel}
+              </span>
+            );
+          }
 
           return (
             <button
