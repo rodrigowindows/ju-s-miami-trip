@@ -76,16 +76,19 @@ export default function HeroBannerCarousel() {
           loading={current === 0 ? "eager" : "lazy"}
         />
         {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/20" />
 
         <div className="max-w-5xl mx-auto w-full relative z-10">
           <h2
-            className="text-lg sm:text-2xl md:text-3xl font-bold text-white leading-tight drop-shadow-lg"
-            style={{ fontFamily: "'Playfair Display', 'Gabarito', serif" }}
+            className="text-lg sm:text-2xl md:text-3xl font-bold text-white leading-tight"
+            style={{ 
+              fontFamily: "'Playfair Display', 'Gabarito', serif",
+              textShadow: "0 2px 8px rgba(0,0,0,0.7)"
+            }}
           >
             {slide.title}
           </h2>
-          <p className="text-xs sm:text-base text-white/90 mt-1 sm:mt-2 max-w-lg drop-shadow">
+          <p className="text-xs sm:text-base text-white mt-1 sm:mt-2 max-w-lg" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>
             {slide.subtitle}
           </p>
           <div className="mt-3 sm:mt-4 hidden sm:block">
