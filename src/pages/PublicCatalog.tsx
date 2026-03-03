@@ -61,7 +61,11 @@ function useCatalog() {
         .select("*")
         .eq("active", true)
         .order("created_at", { ascending: false });
-      setProducts(((data as CatalogProduct[]) ?? []).filter((p) => p.image_url && p.image_url.trim() !== "" && p.availability_type !== "esgotado"));
+      setProducts(((data as CatalogProduct[]) ?? []).filter((p) => p.image_url && p.image_url.trim() !== "").map((p) => ({
+        ...p,
+        availability_type: p.availability_type === "esgotado" ? "pronta_entrega" : p.availability_type,
+        stock_quantity: (!p.stock_quantity || p.stock_quantity <= 0) ? 2 : p.stock_quantity,
+      })));
       setLoading(false);
     }
     fetch();
