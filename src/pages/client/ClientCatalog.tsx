@@ -240,6 +240,7 @@ export default function ClientCatalog() {
                       src={selected.image_url}
                       alt={selected.name}
                       className="max-w-full max-h-full object-contain"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                     />
                   </div>
                   {bestSeller && (

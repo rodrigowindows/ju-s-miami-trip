@@ -126,11 +126,14 @@ function DealCard({
   convert: (usd: number) => number;
   onSelect: (p: CatalogProduct) => void;
 }) {
+  const [imgBroken, setImgBroken] = useState(false);
   const countdown = useCountdown(deal.ends_at);
   const p = deal.product;
   const brl = convert(p.price_usd);
   const discounted = brl * (1 - deal.discount_percent / 100);
   const claimedPct = deal.max_claims ? Math.min(100, (deal.claimed_count / deal.max_claims) * 100) : 0;
+
+  if (imgBroken) return null;
 
   return (
     <button
@@ -142,7 +145,7 @@ function DealCard({
         {deal.discount_percent}% OFF
       </div>
       <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden relative">
-        <img src={p.image_url} alt={p.name} className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform" loading="lazy" />
+        <img src={p.image_url} alt={p.name} className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform" loading="lazy" onError={() => setImgBroken(true)} />
       </div>
       <div className="p-2.5 space-y-1.5 border-t border-gray-100">
         <p className="text-xs text-gray-900 leading-tight line-clamp-2">{p.name}</p>
@@ -399,7 +402,7 @@ export default function PublicCatalog() {
             return (
               <>
                 <div className="bg-white relative">
-                  <div className="aspect-square bg-white p-6 flex items-center justify-center"><img src={selectedProduct.image_url} alt={selectedProduct.name} className="max-w-full max-h-full object-contain" /></div>
+                  <div className="aspect-square bg-white p-6 flex items-center justify-center"><img src={selectedProduct.image_url} alt={selectedProduct.name} className="max-w-full max-h-full object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /></div>
                   <button onClick={() => setSelectedProduct(null)} className="absolute top-3 right-3 bg-white/90 text-gray-600 rounded-full p-1.5 shadow-md hover:bg-white"><X size={16} /></button>
                   {bestSeller && (<div className="absolute top-3 left-3"><span className="bg-[#E47911] text-white text-xs font-bold px-2 py-1 rounded">Mais vendido</span></div>)}
                 </div>

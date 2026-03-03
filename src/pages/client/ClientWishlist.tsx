@@ -74,6 +74,7 @@ export default function ClientWishlist() {
                     src={item.product.image_url}
                     alt={item.product.name}
                     className="max-w-full max-h-full object-contain"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
                 </div>
 
