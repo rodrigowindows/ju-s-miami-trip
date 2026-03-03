@@ -19,6 +19,7 @@ import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchTracker } from "@/hooks/useSearchTracker";
+import { usePageView, useAnalytics } from "@/hooks/useAnalytics";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
@@ -210,6 +211,8 @@ function useProductReviewsLocal(productId: string | null) {
 }
 
 export default function PublicCatalog() {
+  usePageView("Catálogo");
+  const { track } = useAnalytics();
   const { products, loading } = useCatalog();
   const navigate = useNavigate();
   const { convert } = useExchangeRate();
@@ -380,7 +383,7 @@ export default function PublicCatalog() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((product) => {
               const activeDeal = deals.find((d) => d.product_id === product.id);
-              return (<ProductCard key={product.id} product={product} brl={convert(product.price_usd)} onClick={() => navigate(`/produto/${slugify(product.name)}`)} activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null} />);
+              return (<ProductCard key={product.id} product={product} brl={convert(product.price_usd)} onClick={() => { track("product_click", { product_id: product.id, product_name: product.name, product_brand: product.brand, product_category: product.category, product_price_brl: convert(product.price_usd) }); navigate(`/produto/${slugify(product.name)}`); }} activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null} />);
             })}
           </div>
         )}

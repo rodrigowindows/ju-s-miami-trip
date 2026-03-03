@@ -1,7 +1,9 @@
 import { useSettings } from "@/hooks/useSettings";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 export default function WhatsAppButton() {
   const { data: settings } = useSettings();
+  const { track } = useAnalytics();
   if (window.location.pathname.startsWith("/admin")) return null;
 
   const number = settings?.whatsapp_number ?? "5561999999999";
@@ -14,6 +16,7 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Fale conosco pelo WhatsApp"
+      onClick={() => track("whatsapp_click", { page_path: window.location.pathname })}
       className="fixed bottom-6 right-6 z-[1001] flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:scale-110 transition-transform duration-200 animate-whatsapp-pulse"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white">

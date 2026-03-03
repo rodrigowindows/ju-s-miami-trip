@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCatalogProducts } from "@/hooks/useCatalog";
 import { useSettings } from "@/hooks/useSettings";
@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import NotifyMeButton from "@/components/catalog/NotifyMeButton";
 import { ChevronRight, Shield, Truck, RotateCcw, MessageCircle, Share2, Heart, ShoppingBag, Minus, Plus, ZoomIn } from "lucide-react";
 import StickyBuyBar from "@/components/catalog/StickyBuyBar";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 function slugify(text: string) {
   return text
@@ -25,12 +26,14 @@ export default function PublicProductPage() {
   const { slug } = useParams();
   const nav = useNavigate();
   const { toast } = useToast();
+  const { track } = useAnalytics();
   const { data: products = [] } = useCatalogProducts();
   const { data: settings } = useSettings();
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState<"desc" | "details" | "shipping">("desc");
   const [quantity, setQuantity] = useState(1);
   const [zoomed, setZoomed] = useState(false);
+  const trackedRef = useRef<string | null>(null);
 
   const product = useMemo(
     () => products.find((p) => slugify(p.name) === slug),
@@ -55,6 +58,19 @@ export default function PublicProductPage() {
       </div>
     </div>
   );
+
+  // Track product view (once per product)
+  useEffect(() => {
+    if (product && trackedRef.current !== product.id) {
+      trackedRef.current = product.id;
+      track("product_view", {
+        product_id: product.id,
+        product_name: product.name,
+        product_brand: product.brand,
+        product_category: product.category,
+      });
+    }
+  }, [product, track]);
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
@@ -191,7 +207,7 @@ export default function PublicProductPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <Button className="bg-rose-500 hover:bg-rose-600 text-white gap-2 h-12" onClick={() => nav('/login')}>
+                  <Button className="bg-rose-500 hover:bg-rose-600 text-white gap-2 h-12" onClick={() => { track("buy_click", { product_id: product.id, product_name: product.name, product_brand: product.brand, product_category: product.category, product_price_brl: brl }); nav('/login'); }}>
                     <ShoppingBag size={16} /> Comprar agora
                   </Button>
                   <Button variant="outline" className="gap-2 h-12" onClick={() => nav('/login')}>
@@ -203,6 +219,7 @@ export default function PublicProductPage() {
                     <Heart size={14} /> Favoritar
                   </Button>
                   <Button variant="ghost" size="sm" className="flex-1 gap-1 text-gray-600" onClick={() => {
+                    track("share_click", { product_id: product.id, product_name: product.name, product_brand: product.brand });
                     const text = `Olha esse produto: ${product.name} - ${brl.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`;
                     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                   }}>
