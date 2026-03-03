@@ -33,7 +33,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   79.95,
-  'https://m.media-amazon.com/images/I/51AhPqL8TvL._SL1500_.jpg',
+  '/images/products/vs/vs-heavenly-edp.jpg',
   'Eau de Parfum celestial com notas de peônia branca, lírio d''água e sândalo almiscarado. Clássico atemporal.',
   true
 ),
@@ -42,7 +42,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   79.95,
-  'https://m.media-amazon.com/images/I/61bZQFzq0QL._SL1500_.jpg',
+  '/images/products/vs/vs-bombshell-intense-edp.jpg',
   'Versão mais intensa e sedutora do Bombshell com notas de cereja vermelha, peônia escarlate e baunilha sensual.',
   true
 ),
@@ -51,7 +51,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   79.95,
-  'https://m.media-amazon.com/images/I/51qr1VjmgJL._SL1500_.jpg',
+  '/images/products/vs/vs-bombshell-passion-edp.jpg',
   'EDP apaixonante com notas de maracujá dourado, jasmim sambac e musk aveludado.',
   true
 ),
@@ -60,7 +60,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   79.95,
-  'https://m.media-amazon.com/images/I/51yxC-s2EjL._SL1500_.jpg',
+  '/images/products/vs/vs-tease-creme-cloud-edp.jpg',
   'EDP gourmand e leve com notas de lavanda, chantilly e tonka cremosa. Conforto em frasco.',
   true
 ),
@@ -69,7 +69,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   18.50,
-  'https://m.media-amazon.com/images/I/51l-JqCbfNL._SL1000_.jpg',
+  '/images/products/vs/vs-pink-fresh-clean-mist.jpg',
   'Body mist fresco da linha PINK com notas de lírio-do-vale e tangerina. Jovem e vibrante.',
   true
 ),
@@ -78,7 +78,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   18.50,
-  'https://m.media-amazon.com/images/I/51mXq0YyEwL._SL1000_.jpg',
+  '/images/products/vs/vs-pink-warm-cozy-mist.jpg',
   'Body mist aconchegante da linha PINK com notas de baunilha, iris e almíscar suave.',
   true
 ),
@@ -87,7 +87,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   18.50,
-  'https://m.media-amazon.com/images/I/51o0AaV9CmL._SL1000_.jpg',
+  '/images/products/vs/vs-aqua-kiss-mist.jpg',
   'Body mist refrescante com notas de chuva de primavera e margarida. Leve e clean.',
   true
 ),
@@ -96,7 +96,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   18.50,
-  'https://m.media-amazon.com/images/I/51j-ViXyBkL._SL1000_.jpg',
+  '/images/products/vs/vs-midnight-bloom-mist.jpg',
   'Body mist floral noturno com notas de jasmim, íris negra e musk escuro. Para noites especiais.',
   true
 ),
@@ -105,7 +105,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Beauty',
   25.00,
-  'https://m.media-amazon.com/images/I/51pAEF+fXBL._SL1000_.jpg',
+  '/images/products/vs/vs-bombshell-shimmer-mist.jpg',
   'Body mist com brilho dourado na fragrância Bombshell. Perfume + glow em um só produto.',
   true
 ),
@@ -114,7 +114,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   42.00,
-  'https://m.media-amazon.com/images/I/71bK7gHxCjL._SL1500_.jpg',
+  '/images/products/vs/vs-pure-seduction-kit.jpg',
   'Kit com body mist, loção corporal e shower gel na fragrância Pure Seduction. Presente ideal.',
   true
 ),
@@ -123,7 +123,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   42.00,
-  'https://m.media-amazon.com/images/I/71Q3xc5sHOL._SL1500_.jpg',
+  '/images/products/vs/vs-love-spell-kit.jpg',
   'Kit completo Love Spell com body mist, loção e shower gel. Fragrância romântica e floral.',
   true
 ),
@@ -132,7 +132,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   35.00,
-  'https://m.media-amazon.com/images/I/71x8e5QXNxL._SL1500_.jpg',
+  '/images/products/vs/vs-mini-mist-gift-set.jpg',
   'Set com 4 mini body mists (75ml cada): Bombshell, Pure Seduction, Love Spell e Bare Vanilla. Perfeito para experimentar.',
   true
 ),
@@ -141,7 +141,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Perfumes',
   18.00,
-  'https://m.media-amazon.com/images/I/41cTXnhpDTL._SL1000_.jpg',
+  '/images/products/vs/vs-bombshell-rollerball.jpg',
   'Rollerball compacto do EDP Bombshell. Perfeito para levar na bolsa e reaplicar durante o dia.',
   true
 ),
@@ -150,7 +150,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Victoria''s Secret',
   'Beauty',
   18.50,
-  'https://m.media-amazon.com/images/I/51oB8r7n5vL._SL1000_.jpg',
+  '/images/products/vs/vs-love-spell-body-wash.jpg',
   'Sabonete líquido cremoso com fragrância Love Spell. Banho perfumado e pele macia.',
   true
 )
