@@ -33,7 +33,7 @@ ON CONFLICT DO NOTHING;
 -- ─── KIDS & BRINQUEDOS ──────────────────────────────────────
 INSERT INTO catalog_products (name, brand, category, price_usd, image_url, description, active) VALUES
   ('LEGO Star Wars Millennium Falcon', 'LEGO', 'Kids', 159.99,
-   'https://images.unsplash.com/photo-1587654780291-39c9404d7dd0?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=400&h=400&fit=crop',
    'LEGO Star Wars Millennium Falcon com 1351 pecas. Inclui minifiguras de Han Solo, Chewbacca, Lando e mais. Idade 9+.', true),
 
   ('LEGO Technic Ferrari Daytona', 'LEGO', 'Kids', 449.99,
@@ -41,7 +41,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'LEGO Technic Ferrari Daytona SP3 com 3778 pecas. Replica detalhada com portas borboleta e motor V12. Idade 18+.', true),
 
   ('Barbie Dreamhouse 2024', 'Barbie', 'Kids', 99.99,
-   'https://images.unsplash.com/photo-1613682988402-9c3e4c2e8d8b?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
    'Casa dos Sonhos da Barbie com 3 andares, piscina com escorregador, elevador e mais de 75 acessorios. Sucesso absoluto!', true),
 
   ('Hot Wheels Ultimate Garage', 'Hot Wheels', 'Kids', 89.99,
@@ -57,7 +57,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Kit Play-Doh Kitchen Creations Ultimate Ice Cream Truck com 27 acessorios e 12 potes de massinha. Idade 3+.', true),
 
   ('Baby Alive Grows Up', 'Hasbro', 'Kids', 34.99,
-   'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1563396983906-b3795482a59a?w=400&h=400&fit=crop',
    'Baby Alive que cresce de verdade! De bebe para crianca com fases de crescimento, fala e acessorios. Idade 3+.', true),
 
   ('Nerf Elite 2.0 Eaglepoint', 'Nerf', 'Kids', 39.99,
@@ -68,7 +68,7 @@ ON CONFLICT DO NOTHING;
 -- ─── BABY & BEBÊ (Kids category) ─────────────────────────────
 INSERT INTO catalog_products (name, brand, category, price_usd, image_url, description, active) VALUES
   ('Carrinho Graco Modes Pramette', 'Graco', 'Kids', 249.99,
-   'https://images.unsplash.com/photo-1590693563776-79e6b606a642?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400&h=400&fit=crop',
    'Carrinho de bebe Graco Modes Pramette 3-em-1. Converte de moises para assento reversivel. Compativel com bebe conforto.', true),
 
   ('Cadeirinha Graco 4Ever DLX', 'Graco', 'Kids', 299.99,
@@ -76,7 +76,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Cadeirinha auto Graco 4Ever DLX 4-em-1. De bebe ate crianca de 10 anos. Instalacao LATCH facil. Nota maxima em seguranca.', true),
 
   ('Kit Mamadeiras Dr. Browns 9pc', 'Dr. Browns', 'Kids', 39.99,
-   'https://images.unsplash.com/photo-1584839404210-0a41e4791460?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&h=400&fit=crop',
    'Kit Dr. Browns Options+ com 9 pecas: 4 mamadeiras anti-colica, escovas e bicos extras. Sistema de ventilacao interno.', true),
 
   ('Roupinhas Carters 5-Pack', 'Carters', 'Kids', 19.99,
@@ -91,7 +91,7 @@ ON CONFLICT DO NOTHING;
 -- ─── BATH & BODY WORKS (Lifestyle) ───────────────────────────
 INSERT INTO catalog_products (name, brand, category, price_usd, image_url, description, active) VALUES
   ('BBW Japanese Cherry Blossom Mist', 'Bath & Body Works', 'Lifestyle', 16.95,
-   'https://images.unsplash.com/photo-1594035910387-fea081dc9b3c?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400&h=400&fit=crop',
    'Fine Fragrance Mist Japanese Cherry Blossom 236ml. A fragrancia #1 mais vendida da Bath & Body Works no mundo.', true),
 
   ('BBW A Thousand Wishes Cream', 'Bath & Body Works', 'Lifestyle', 16.95,
@@ -99,11 +99,11 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Body Cream A Thousand Wishes 226g. Creme ultra hidratante com manteiga de karite e vitamina E. Fragrancia festiva.', true),
 
   ('BBW Eucalyptus Spearmint Candle', 'Bath & Body Works', 'Lifestyle', 26.50,
-   'https://images.unsplash.com/photo-1602607616524-9d05c1eeb148?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1572726729207-a78d6feb18d7?w=400&h=400&fit=crop',
    'Vela 3 pavios Eucalyptus Spearmint 411g. Aromaterapia Stress Relief. Duracao de 25-45 horas. Sucesso absoluto!', true),
 
   ('BBW Wallflower Refill 2-Pack', 'Bath & Body Works', 'Lifestyle', 12.95,
-   'https://images.unsplash.com/photo-1602607616524-9d05c1eeb148?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1572726729207-a78d6feb18d7?w=400&h=400&fit=crop',
    'Refil Wallflower Fragrance Pack com 2 unidades. Aromatizador de ambiente continuo por ate 60 dias. Varias fragancias.', true),
 
   ('BBW Gift Set Champagne Toast', 'Bath & Body Works', 'Lifestyle', 39.95,
@@ -126,7 +126,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Polo Tommy Hilfiger 1985 Essential em algodao organico. Corte regular, bandeirinha icônica bordada. Estilo classico americano.', true),
 
   ('Calvin Klein Cueca Boxer 3-Pack', 'Calvin Klein', 'Fashion', 34.99,
-   'https://images.unsplash.com/photo-1584208124218-80b342a00e29?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=400&h=400&fit=crop',
    'Pack com 3 cuecas boxer Calvin Klein com elastico icônico da marca. Algodao stretch confortavel. Preto, cinza e branco.', true),
 
   ('Under Armour Tech 2.0 Dry-Fit', 'Under Armour', 'Fashion', 30.00,
@@ -146,7 +146,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Polo Lacoste L.12.12 original em petit pique. O classico desde 1933. Crocodilo bordado, corte regular.', true),
 
   ('The North Face Nuptse 700 Vest', 'The North Face', 'Fashion', 179.00,
-   'https://images.unsplash.com/photo-1544966503-7cc5ac882d5a?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1542060748-10c28b62716f?w=400&h=400&fit=crop',
    'Colete puffer The North Face Nuptse com enchimento de pluma 700-fill. Leve, quente e compactavel. Essencial para frio.', true)
 ON CONFLICT DO NOTHING;
 
@@ -161,7 +161,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Melatonina Kirkland 10mg com 300 capsulas. Dissolucao rapida para melhor absorcao. Auxilia no sono.', true),
 
   ('Biotina 10.000mcg 250 Caps', 'Kirkland', 'Health', 9.99,
-   'https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop',
    'Biotina Kirkland 10.000mcg com 250 capsulas. Vitamina para cabelo, pele e unhas. Suplemento mais vendido nos EUA.', true),
 
   ('Centrum Mulher 200 Caps', 'Centrum', 'Health', 17.99,
@@ -169,7 +169,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Multivitaminico Centrum Multigummies Women com 200 gomas. Vitaminas A, C, D, E, zinco e biotina. Facil de tomar.', true),
 
   ('Ashwagandha 600mg 180 Caps', 'Kirkland', 'Health', 11.99,
-   'https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&h=400&fit=crop',
    'Ashwagandha Kirkland 600mg com 180 capsulas. Adaptogeno para estresse, energia e foco. Raiz KSM-66 patenteada.', true),
 
   ('Glucosamina 1500mg 220 Tabs', 'Kirkland', 'Health', 19.99,
@@ -177,7 +177,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Glucosamina + Condroitina Kirkland 220 comprimidos. Saude articular completa. Mais vendido do Costco.', true),
 
   ('Omega-3 Fish Oil 1000mg 400 Caps', 'Kirkland', 'Health', 14.99,
-   'https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=400&h=400&fit=crop',
    'Omega-3 Kirkland Fish Oil 1000mg com 400 softgels. EPA/DHA para saude do coracao e cerebro. Valor imbativel.', true),
 
   ('Vitamina D3 5000 IU 600 Caps', 'Kirkland', 'Health', 12.49,
@@ -204,7 +204,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Fone Beats Studio Pro com cancelamento ativo, audio espacial, chip Apple e ate 40h de bateria. USB-C e compativel Android/iOS.', true),
 
   ('Echo Dot 5a Geracao', 'Amazon', 'Tech', 49.99,
-   'https://images.unsplash.com/photo-1543512214-318228f8e9c8?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1518444065439-e933c06ce9cd?w=400&h=400&fit=crop',
    'Echo Dot 5a geracao com Alexa. Alto-falante inteligente com som melhorado, sensor de temperatura e design compacto.', true),
 
   ('GoPro Hero 13 Black', 'GoPro', 'Tech', 399.99,

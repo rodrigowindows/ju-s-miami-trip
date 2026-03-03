@@ -210,7 +210,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Dyson',
   'Beauty',
   599.00,
-  'https://images.unsplash.com/photo-1522338242992-e1a54571a9f7?w=600&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=600&h=600&fit=crop',
   'Modelador Dyson Airwrap com tecnologia Coanda. Seca, modela e alisa sem calor extremo. Kit completo com 6 acessorios.',
   true
 ),
@@ -237,7 +237,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Dior',
   'Beauty',
   40.00,
-  'https://images.unsplash.com/photo-1631214500115-598fc2cb8ada?w=600&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=600&h=600&fit=crop',
   'Batom hidratante que realca a cor natural dos labios. 97% ingredientes naturais. Efeito gloss natural.',
   true
 ),
@@ -331,7 +331,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Bath & Body Works',
   'Lifestyle',
   26.00,
-  'https://images.unsplash.com/photo-1602607616524-9d05c1eeb148?w=600&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1572726729207-a78d6feb18d7?w=600&h=600&fit=crop',
   'Vela aromatica de 3 pavios, 411g. Duracao de 25-45h. Fragancias exclusivas que voce nao encontra no Brasil.',
   true
 ),
@@ -340,7 +340,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Kirkland',
   'Lifestyle',
   25.00,
-  'https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=600&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&h=600&fit=crop',
   'Multivitaminico diario com 500 comprimidos. Vitaminas A, C, D, E, complexo B e minerais essenciais. Custo-beneficio imbativel.',
   true
 ),
@@ -349,7 +349,7 @@ INSERT INTO public.catalog_products (name, brand, category, price_usd, image_url
   'Optimum Nutrition',
   'Lifestyle',
   35.00,
-  'https://images.unsplash.com/photo-1593095948071-474c5cc2c989?w=600&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1532384748853-8f54a8f476e2?w=600&h=600&fit=crop',
   'Whey Protein Isolate Gold Standard 2lb. 24g proteina por dose. Sabor Double Rich Chocolate. O whey mais vendido do mundo.',
   true
 ),

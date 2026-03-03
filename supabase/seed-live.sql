@@ -48,7 +48,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Soft Pinch Liquid Blush da marca da Selena Gomez. Formula leve e ultra-pigmentada que dura o dia todo.', true),
 
   ('Dyson Airwrap Complete', 'Dyson', 'Beauty', 599.00,
-   'https://images.unsplash.com/photo-1522338242992-e1a54571a9f7?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=400&h=400&fit=crop',
    'Modelador de cabelo com tecnologia Coanda. Seca, modela e alisa sem calor extremo. Inclui 6 acessorios.', true),
 
   ('Sol de Janeiro Bum Bum Cream', 'Sol de Janeiro', 'Beauty', 48.00,
@@ -74,7 +74,7 @@ INSERT INTO catalog_products (name, brand, category, price_usd, image_url, descr
    'Copo termico Quencher H2.0 de 40oz. Mantem gelado por 11h. Viral no TikTok!', true),
 
   ('Kindle Paperwhite 11th Gen', 'Amazon', 'Lifestyle', 149.99,
-   'https://images.unsplash.com/photo-1594980596870-8aa52a78571e?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=400&fit=crop',
    'E-reader com tela de 6.8", 16GB, a prova d''agua IPX8, luz quente ajustavel.', true),
 
   ('Vitaminas Kirkland Combo', 'Kirkland', 'Lifestyle', 35.00,
@@ -273,7 +273,7 @@ INSERT INTO order_items (order_id, product_name, product_image_url, price_usd, p
 -- PED-007: Carlos - Dyson + Chanel
 INSERT INTO order_items (order_id, product_name, product_image_url, price_usd, price_brl, quantity) VALUES
   ((SELECT id FROM orders WHERE order_number = '#MB-0007'), 'Dyson Airwrap Complete',
-   'https://images.unsplash.com/photo-1522338242992-e1a54571a9f7?w=400&h=400&fit=crop',
+   'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=400&h=400&fit=crop',
    599.00, 3517.13, 1),
   ((SELECT id FROM orders WHERE order_number = '#MB-0007'), 'Perfume Chanel N5',
    'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop',
