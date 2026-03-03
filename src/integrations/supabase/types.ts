@@ -577,6 +577,60 @@ export type Database = {
         }
         Relationships: []
       }
+      site_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          page_path: string | null
+          product_brand: string | null
+          product_category: string | null
+          product_id: string | null
+          product_name: string | null
+          product_price_brl: number | null
+          referrer: string | null
+          screen_width: number | null
+          user_agent: string | null
+          user_id: string | null
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          page_path?: string | null
+          product_brand?: string | null
+          product_category?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          product_price_brl?: number | null
+          referrer?: string | null
+          screen_width?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          page_path?: string | null
+          product_brand?: string | null
+          product_category?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          product_price_brl?: number | null
+          referrer?: string | null
+          screen_width?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       trips: {
         Row: {
           arrival_date: string
