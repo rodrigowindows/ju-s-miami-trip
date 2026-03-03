@@ -41,18 +41,22 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
   const installment = finalPrice / 3;
   const isSoldOut = product.availability_type === "esgotado" || (product.availability_type === "pronta_entrega" && product.stock_quantity <= 0);
 
-  if (imgBroken) return null;
-
   return (
     <div onClick={onClick} className="bg-white rounded-xl overflow-hidden text-left group flex flex-col cursor-pointer border border-gray-100 hover:shadow-md transition-shadow">
       <div className="aspect-square relative overflow-hidden bg-white">
-        <img
-          src={product.image_url}
-          alt={product.name}
-          className="w-full h-full object-cover rounded-t-xl"
-          loading="lazy"
-          onError={() => setImgBroken(true)}
-        />
+        {imgBroken ? (
+          <div className="w-full h-full flex items-center justify-center bg-gray-50">
+            <ShoppingBag size={40} className="text-gray-300" />
+          </div>
+        ) : (
+          <img
+            src={product.image_url}
+            alt={product.name}
+            className="w-full h-full object-cover rounded-t-xl"
+            loading="lazy"
+            onError={() => setImgBroken(true)}
+          />
+        )}
 
         <AvailabilityBadge product={product} />
 

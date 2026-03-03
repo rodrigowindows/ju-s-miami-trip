@@ -70,6 +70,30 @@ function DividerTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* ── Product image showcase in section header ── */
+function ProductShowcase({ products, maxItems = 5 }: { products: CatalogProduct[]; maxItems?: number }) {
+  const items = products.slice(0, maxItems);
+  if (items.length === 0) return null;
+
+  return (
+    <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+      {items.map((p) => (
+        <div
+          key={p.id}
+          className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-white shadow-sm border border-white/60"
+        >
+          <img
+            src={p.image_url}
+            alt={p.name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ── "Ver todos" link ───────────────── */
 function ViewAllButton({ onClick }: { onClick?: () => void }) {
   return (
@@ -199,11 +223,13 @@ export function ThemedProductSections({
               VICTORIA'S SECRET
             </h2>
           </div>
-          <p className="text-sm text-pink-700 mb-4" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+          <p className="text-sm text-pink-700 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
             Body mists, perfumes e kits direto de Miami
           </p>
 
-          <div className="flex justify-end mb-4">
+          <ProductShowcase products={vsProducts} maxItems={5} />
+
+          <div className="flex justify-end mb-4 mt-4">
             <ViewAllButton onClick={onViewAll} />
           </div>
 
@@ -256,11 +282,13 @@ export function ThemedProductSections({
               BATH & BODY WORKS
             </h2>
           </div>
-          <p className="text-sm text-green-800 mb-4" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+          <p className="text-sm text-green-800 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
             Mists, velas e aromatizadores mais amados dos EUA
           </p>
 
-          <div className="flex justify-end mb-4">
+          <ProductShowcase products={bbwProducts} maxItems={5} />
+
+          <div className="flex justify-end mb-4 mt-4">
             <ViewAllButton onClick={onViewAll} />
           </div>
 
@@ -319,7 +347,7 @@ export function ThemedProductSections({
           className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
           style={{ backgroundColor: "#FFF0F5", borderRadius: 12 }}
         >
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-3">
             <Droplets size={24} className="text-pink-500" />
             <h2
               className="text-xl sm:text-2xl font-bold text-black"
@@ -329,7 +357,9 @@ export function ThemedProductSections({
             </h2>
           </div>
 
-          <div className="flex justify-end mb-4">
+          <ProductShowcase products={skincareFinal} maxItems={5} />
+
+          <div className="flex justify-end mb-4 mt-4">
             <ViewAllButton onClick={onViewAll} />
           </div>
 
@@ -352,7 +382,7 @@ export function ThemedProductSections({
             borderRadius: 12,
           }}
         >
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3 mb-3">
             <h2
               className="text-xl sm:text-2xl font-bold text-black tracking-wider"
               style={{
@@ -364,7 +394,9 @@ export function ThemedProductSections({
             </h2>
           </div>
 
-          <div className="flex justify-end mb-4">
+          <ProductShowcase products={perfumeFinal} maxItems={5} />
+
+          <div className="flex justify-end mb-4 mt-4">
             <ViewAllButton onClick={onViewAll} />
           </div>
 
