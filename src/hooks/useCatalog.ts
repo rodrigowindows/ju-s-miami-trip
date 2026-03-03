@@ -6,11 +6,11 @@ export function useCatalogProducts(category?: string) {
   return useQuery<CatalogProduct[]>({
     queryKey: ["catalog_products", category],
     queryFn: async () => {
-      let query = supabase.from("catalog_products").select("*").eq("active", true).order("created_at", { ascending: false });
+      let query = supabase.from("catalog_products").select("*").eq("active", true).neq("availability_type", "esgotado").order("created_at", { ascending: false });
       if (category && category !== "Todos") query = query.eq("category", category);
       const { data, error } = await query;
       if (error) throw error;
-      return (data ?? []) as CatalogProduct[];
+      return ((data ?? []) as CatalogProduct[]).filter((p) => p.image_url && p.image_url.trim() !== "");
     },
   });
 }
