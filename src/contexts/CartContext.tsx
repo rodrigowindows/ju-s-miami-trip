@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from "react";
 import type { CatalogProduct } from "@/types";
+import { supabase } from "@/integrations/supabase/client";
 
 const CART_STORAGE_KEY = "ajuvaiparamiami_cart";
 
@@ -40,6 +41,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const addItem = useCallback((product: CatalogProduct) => {
+    // Track add_to_cart event
+    const vid = localStorage.getItem("ajuvaiparamiami_vid") || "unknown";
+    (supabase as any).from("site_events").insert({
+      event_type: "add_to_cart",
+      visitor_id: vid,
+      product_id: product.id,
+      product_name: product.name,
+      product_brand: product.brand,
+      product_category: product.category,
+      page_path: window.location.pathname,
+      user_agent: navigator.userAgent,
+      screen_width: window.innerWidth,
+      metadata: {},
+    }).then(() => {});
+
     setItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) {
