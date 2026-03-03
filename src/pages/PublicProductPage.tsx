@@ -111,6 +111,7 @@ export default function PublicProductPage() {
                 src={images[selectedImage]}
                 alt={product.name}
                 className={`w-full h-full object-contain transition-transform duration-300 ${zoomed ? "scale-150" : "group-hover:scale-105"}`}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
               />
               <div className="absolute bottom-3 right-3 bg-white/80 rounded-full p-2 shadow-sm">
                 <ZoomIn size={16} className="text-gray-500" />
@@ -130,7 +131,7 @@ export default function PublicProductPage() {
                   }`}
                   onClick={() => setSelectedImage(i)}
                 >
-                  <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
+                  <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 </button>
               ))}
             </div>

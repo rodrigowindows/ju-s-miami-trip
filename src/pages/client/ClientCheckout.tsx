@@ -372,7 +372,7 @@ export default function ClientCheckout() {
             <div className="space-y-3 border-b pb-4">
               {items.map((item) => (
                 <div key={item.product.id} className="flex items-center gap-3 bg-gray-50 rounded-lg p-2">
-                  <img src={item.product.image_url} alt={item.product.name} className="w-14 h-14 rounded-lg object-cover border" />
+                  <img src={item.product.image_url} alt={item.product.name} className="w-14 h-14 rounded-lg object-cover border" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.product.name}</p>
                     <p className="text-xs text-gray-500">Qtd: {item.quantity}</p>
