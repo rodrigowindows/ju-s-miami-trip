@@ -1,4 +1,4 @@
-import { LayoutGrid, Smartphone, Sparkles, Shirt, Heart, Truck, Package, Baby, Pill, Headphones } from "lucide-react";
+import { LayoutGrid, Smartphone, Sparkles, Shirt, Heart, Truck, Package, Baby, Pill } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 /** Deterministic fake rating based on product name hash */

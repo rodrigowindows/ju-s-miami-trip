@@ -429,82 +429,25 @@ export function ThemedProductSections({
         </section>
       )}
 
-      {/* ─── Section 4: PERFUMES IMPORTADOS ───────────── */}
-      {perfumeFinal.length > 0 && (
-        <section
-          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
-          style={{
-            background: "linear-gradient(180deg, #FFFFFF 0%, #F5F0E8 100%)",
-            borderRadius: 12,
-          }}
-        >
-          <div className="flex items-center gap-3 mb-3">
-            <h2
-              className="text-xl sm:text-2xl font-bold text-black tracking-wider"
-              style={{
-                fontFamily: "'Playfair Display', 'Gabarito', serif",
-                letterSpacing: "0.05em",
-              }}
-            >
-              PERFUMES IMPORTADOS
-            </h2>
-          </div>
-
-          <ProductShowcase products={perfumeFinal} maxItems={5} />
-
-          <div className="flex justify-end mb-4 mt-4">
-            <ViewAllButton onClick={onViewAll} />
-          </div>
-
-          <ProductGrid
-            products={perfumeFinal}
-            convert={convert}
-            onSelect={onSelectProduct}
-            deals={deals}
-            maxItems={8}
-          />
-        </section>
-      )}
-
       {/* ─── Section: APPLE ACESSÓRIOS ───────────── */}
       {appleAccessories.length > 0 && (
         <section
           className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
           style={{
-            background: "linear-gradient(135deg, #F5F5F7 0%, #FFFFFF 50%, #E8E8ED 100%)",
+            background: "linear-gradient(135deg, #F5F5F7 0%, #E8E8ED 50%, #FFFFFF 100%)",
             borderRadius: 12,
           }}
         >
           <div className="flex items-center gap-3 mb-2">
-            <Smartphone size={24} className="text-gray-800" />
-            <h2
-              className="text-xl sm:text-2xl font-bold tracking-wider"
-              style={{
-                fontFamily: "'Playfair Display', 'Gabarito', serif",
-                letterSpacing: "0.05em",
-                color: "#1D1D1F",
-              }}
-            >
+            <Smartphone size={24} className="text-gray-700" />
+            <h2 className="text-xl sm:text-2xl font-bold tracking-wider" style={{ fontFamily: "'Playfair Display', 'Gabarito', serif", letterSpacing: "0.05em", color: "#1D1D1F" }}>
               APPLE ACESSÓRIOS
             </h2>
           </div>
-          <p className="text-sm text-gray-600 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
-            AirTags, capas MagSafe, Apple Pencil e mais — direto dos EUA
-          </p>
-
+          <p className="text-sm text-gray-600 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>AirTags, cases, carregadores e mais do ecossistema Apple</p>
           <ProductShowcase products={appleAccessories} maxItems={5} />
-
-          <div className="flex justify-end mb-4 mt-4">
-            <ViewAllButton onClick={onViewAll} />
-          </div>
-
-          <ProductGrid
-            products={appleAccessories}
-            convert={convert}
-            onSelect={onSelectProduct}
-            deals={deals}
-            maxItems={8}
-          />
+          <div className="flex justify-end mb-4 mt-4"><ViewAllButton onClick={onViewAll} /></div>
+          <ProductGrid products={appleAccessories} convert={convert} onSelect={onSelectProduct} deals={deals} maxItems={8} />
         </section>
       )}
 
@@ -513,40 +456,20 @@ export function ThemedProductSections({
         <section
           className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
           style={{
-            background: "linear-gradient(135deg, #FFF3E0 0%, #E3F2FD 50%, #FFF8E1 100%)",
+            background: "linear-gradient(135deg, #FFF3E0 0%, #E3F2FD 50%, #FFFFFF 100%)",
             borderRadius: 12,
           }}
         >
           <div className="flex items-center gap-3 mb-2">
             <Baby size={24} className="text-orange-500" />
-            <h2
-              className="text-xl sm:text-2xl font-bold tracking-wider"
-              style={{
-                fontFamily: "'Playfair Display', 'Gabarito', serif",
-                letterSpacing: "0.05em",
-                color: "#E65100",
-              }}
-            >
+            <h2 className="text-xl sm:text-2xl font-bold tracking-wider" style={{ fontFamily: "'Playfair Display', 'Gabarito', serif", letterSpacing: "0.05em", color: "#E65100" }}>
               KIDS & BRINQUEDOS
             </h2>
           </div>
-          <p className="text-sm text-orange-800 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
-            LEGO, Barbie, Hot Wheels e mais — até 55% mais barato que no Brasil
-          </p>
-
+          <p className="text-sm text-orange-700 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>LEGO, Barbie, Nerf e muito mais para a criançada</p>
           <ProductShowcase products={kidsProducts} maxItems={5} />
-
-          <div className="flex justify-end mb-4 mt-4">
-            <ViewAllButton onClick={onViewAll} />
-          </div>
-
-          <ProductGrid
-            products={kidsProducts}
-            convert={convert}
-            onSelect={onSelectProduct}
-            deals={deals}
-            maxItems={8}
-          />
+          <div className="flex justify-end mb-4 mt-4"><ViewAllButton onClick={onViewAll} /></div>
+          <ProductGrid products={kidsProducts} convert={convert} onSelect={onSelectProduct} deals={deals} maxItems={8} />
         </section>
       )}
 
@@ -555,40 +478,20 @@ export function ThemedProductSections({
         <section
           className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
           style={{
-            background: "linear-gradient(135deg, #FCE4EC 0%, #F3E5F5 50%, #FFFFFF 100%)",
+            background: "linear-gradient(135deg, #FCE4EC 0%, #FFF8E1 50%, #FFFFFF 100%)",
             borderRadius: 12,
           }}
         >
           <div className="flex items-center gap-3 mb-2">
-            <Heart size={24} className="text-pink-400" fill="#f472b6" />
-            <h2
-              className="text-xl sm:text-2xl font-bold tracking-wider"
-              style={{
-                fontFamily: "'Playfair Display', 'Gabarito', serif",
-                letterSpacing: "0.05em",
-                color: "#880E4F",
-              }}
-            >
+            <Heart size={24} className="text-pink-400" fill="#f9a8d4" />
+            <h2 className="text-xl sm:text-2xl font-bold tracking-wider" style={{ fontFamily: "'Playfair Display', 'Gabarito', serif", letterSpacing: "0.05em", color: "#AD1457" }}>
               BABY & BEBÊ
             </h2>
           </div>
-          <p className="text-sm text-pink-800 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
-            Carter's, Graco, Dr. Brown's — o melhor para seu bebê por metade do preço
-          </p>
-
+          <p className="text-sm text-pink-700 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>Carrinhos, mamadeiras e roupinhas importadas</p>
           <ProductShowcase products={babyProducts} maxItems={5} />
-
-          <div className="flex justify-end mb-4 mt-4">
-            <ViewAllButton onClick={onViewAll} />
-          </div>
-
-          <ProductGrid
-            products={babyProducts}
-            convert={convert}
-            onSelect={onSelectProduct}
-            deals={deals}
-            maxItems={8}
-          />
+          <div className="flex justify-end mb-4 mt-4"><ViewAllButton onClick={onViewAll} /></div>
+          <ProductGrid products={babyProducts} convert={convert} onSelect={onSelectProduct} deals={deals} maxItems={8} />
         </section>
       )}
 
@@ -597,40 +500,20 @@ export function ThemedProductSections({
         <section
           className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
           style={{
-            background: "linear-gradient(135deg, #EFEBE9 0%, #FFFFFF 50%, #F5F5F5 100%)",
+            background: "linear-gradient(135deg, #EFEBE9 0%, #FFF8E1 50%, #FFFFFF 100%)",
             borderRadius: 12,
           }}
         >
           <div className="flex items-center gap-3 mb-2">
-            <Shirt size={24} className="text-gray-700" />
-            <h2
-              className="text-xl sm:text-2xl font-bold tracking-wider"
-              style={{
-                fontFamily: "'Playfair Display', 'Gabarito', serif",
-                letterSpacing: "0.05em",
-                color: "#3E2723",
-              }}
-            >
+            <Shirt size={24} className="text-amber-800" />
+            <h2 className="text-xl sm:text-2xl font-bold tracking-wider" style={{ fontFamily: "'Playfair Display', 'Gabarito', serif", letterSpacing: "0.05em", color: "#4E342E" }}>
               ROUPAS DE MARCA
             </h2>
           </div>
-          <p className="text-sm text-gray-700 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
-            Ralph Lauren, Tommy, Calvin Klein — originais com preço de outlet americano
-          </p>
-
+          <p className="text-sm text-amber-900 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>Ralph Lauren, Tommy, CK, TNF e mais com preço de outlet</p>
           <ProductShowcase products={fashionBrandProducts} maxItems={5} />
-
-          <div className="flex justify-end mb-4 mt-4">
-            <ViewAllButton onClick={onViewAll} />
-          </div>
-
-          <ProductGrid
-            products={fashionBrandProducts}
-            convert={convert}
-            onSelect={onSelectProduct}
-            deals={deals}
-            maxItems={8}
-          />
+          <div className="flex justify-end mb-4 mt-4"><ViewAllButton onClick={onViewAll} /></div>
+          <ProductGrid products={fashionBrandProducts} convert={convert} onSelect={onSelectProduct} deals={deals} maxItems={8} />
         </section>
       )}
 
@@ -645,34 +528,14 @@ export function ThemedProductSections({
         >
           <div className="flex items-center gap-3 mb-2">
             <Pill size={24} className="text-green-600" />
-            <h2
-              className="text-xl sm:text-2xl font-bold tracking-wider"
-              style={{
-                fontFamily: "'Playfair Display', 'Gabarito', serif",
-                letterSpacing: "0.05em",
-                color: "#1B5E20",
-              }}
-            >
+            <h2 className="text-xl sm:text-2xl font-bold tracking-wider" style={{ fontFamily: "'Playfair Display', 'Gabarito', serif", letterSpacing: "0.05em", color: "#2E7D32" }}>
               SUPLEMENTOS & VITAMINAS
             </h2>
           </div>
-          <p className="text-sm text-green-800 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
-            Kirkland, Optimum Nutrition, Vital Proteins — até 68% mais barato que no Brasil
-          </p>
-
+          <p className="text-sm text-green-800 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>Kirkland, Optimum Nutrition, Vital Proteins direto dos EUA</p>
           <ProductShowcase products={supplementProducts} maxItems={5} />
-
-          <div className="flex justify-end mb-4 mt-4">
-            <ViewAllButton onClick={onViewAll} />
-          </div>
-
-          <ProductGrid
-            products={supplementProducts}
-            convert={convert}
-            onSelect={onSelectProduct}
-            deals={deals}
-            maxItems={8}
-          />
+          <div className="flex justify-end mb-4 mt-4"><ViewAllButton onClick={onViewAll} /></div>
+          <ProductGrid products={supplementProducts} convert={convert} onSelect={onSelectProduct} deals={deals} maxItems={8} />
         </section>
       )}
 
@@ -687,34 +550,34 @@ export function ThemedProductSections({
         >
           <div className="flex items-center gap-3 mb-2">
             <Headphones size={24} className="text-cyan-400" />
-            <h2
-              className="text-xl sm:text-2xl font-bold tracking-wider"
-              style={{
-                fontFamily: "'Playfair Display', 'Gabarito', serif",
-                letterSpacing: "0.05em",
-                color: "#FFFFFF",
-              }}
-            >
+            <h2 className="text-xl sm:text-2xl font-bold tracking-wider" style={{ fontFamily: "'Playfair Display', 'Gabarito', serif", letterSpacing: "0.05em", color: "#E0F7FA" }}>
               ÁUDIO & ELETRÔNICOS
             </h2>
           </div>
-          <p className="text-sm text-gray-300 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>
-            JBL, Bose, Beats, GoPro — som e tech premium por preço justo
-          </p>
-
+          <p className="text-sm text-cyan-200 mb-3" style={{ fontFamily: "'Gabarito', sans-serif" }}>JBL, Bose, Beats, GoPro — som e tech premium</p>
           <ProductShowcase products={audioProducts} maxItems={5} />
+          <div className="flex justify-end mb-4 mt-4"><ViewAllButton onClick={onViewAll} /></div>
+          <ProductGrid products={audioProducts} convert={convert} onSelect={onSelectProduct} deals={deals} maxItems={8} />
+        </section>
+      )}
 
-          <div className="flex justify-end mb-4 mt-4">
-            <ViewAllButton onClick={onViewAll} />
+      {/* ─── Section: PERFUMES IMPORTADOS ───────────── */}
+      {perfumeFinal.length > 0 && (
+        <section
+          className="rounded-xl px-4 py-6 sm:px-10 sm:py-10"
+          style={{
+            background: "linear-gradient(180deg, #FFFFFF 0%, #F5F0E8 100%)",
+            borderRadius: 12,
+          }}
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <h2 className="text-xl sm:text-2xl font-bold text-black tracking-wider" style={{ fontFamily: "'Playfair Display', 'Gabarito', serif", letterSpacing: "0.05em" }}>
+              PERFUMES IMPORTADOS
+            </h2>
           </div>
-
-          <ProductGrid
-            products={audioProducts}
-            convert={convert}
-            onSelect={onSelectProduct}
-            deals={deals}
-            maxItems={8}
-          />
+          <ProductShowcase products={perfumeFinal} maxItems={5} />
+          <div className="flex justify-end mb-4 mt-4"><ViewAllButton onClick={onViewAll} /></div>
+          <ProductGrid products={perfumeFinal} convert={convert} onSelect={onSelectProduct} deals={deals} maxItems={8} />
         </section>
       )}
     </div>
