@@ -17,10 +17,12 @@ export type Database = {
       catalog_products: {
         Row: {
           active: boolean
+          availability_type: string
           brand: string
           category: string
           created_at: string
           description: string | null
+          estimated_days: number | null
           id: string
           image_url: string
           name: string
@@ -28,14 +30,17 @@ export type Database = {
           rating: number
           review_count: number
           sales_count: number
+          stock_quantity: number
           trending: boolean
         }
         Insert: {
           active?: boolean
+          availability_type?: string
           brand?: string
           category?: string
           created_at?: string
           description?: string | null
+          estimated_days?: number | null
           id?: string
           image_url?: string
           name: string
@@ -43,14 +48,17 @@ export type Database = {
           rating?: number
           review_count?: number
           sales_count?: number
+          stock_quantity?: number
           trending?: boolean
         }
         Update: {
           active?: boolean
+          availability_type?: string
           brand?: string
           category?: string
           created_at?: string
           description?: string | null
+          estimated_days?: number | null
           id?: string
           image_url?: string
           name?: string
@@ -58,6 +66,7 @@ export type Database = {
           rating?: number
           review_count?: number
           sales_count?: number
+          stock_quantity?: number
           trending?: boolean
         }
         Relationships: []
