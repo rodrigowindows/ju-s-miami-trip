@@ -165,13 +165,16 @@ export default function ClientCatalog() {
       )}
 
       {/* Results Bar */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
-        <p className="text-sm text-gray-700">
+      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+        <p className="text-sm sm:text-base text-gray-700">
           {isLoading ? "Carregando..." : (
             <>
               <span className="font-bold text-[#C45500]">{filtered.length}</span>{" "}
               resultado{filtered.length !== 1 ? "s" : ""}
-              {category !== "Todos" && (
+              {searchQuery && (
+                <> para "<span className="font-semibold">{searchQuery}</span>"</>
+              )}
+              {!searchQuery && category !== "Todos" && (
                 <> em <span className="font-semibold">{category}</span></>
               )}
             </>
@@ -181,23 +184,23 @@ export default function ClientCatalog() {
       </div>
 
       {/* Product Grid */}
-      <div className="bg-[#EAEDED] px-3 py-3">
+      <div className="bg-[#EAEDED] px-2 sm:px-3 py-3">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white rounded-lg p-8">
+          <div className="bg-white rounded-lg p-6 sm:p-8">
             <EmptyState
               icon="orders"
               title="Nenhum produto encontrado"
               description={searchQuery ? "Tente outra busca." : "Novos produtos serão adicionados em breve!"}
             />
             {searchQuery && (
-              <div className="text-center mt-2">
+              <div className="text-center mt-3">
                 <button
                   onClick={() => { const p = new URLSearchParams(searchParams); p.delete("q"); setSearchParams(p); }}
-                  className="text-sm text-sky-700 hover:underline"
+                  className="text-base text-sky-700 hover:underline font-medium px-4 py-2"
                 >
                   Limpar busca
                 </button>
@@ -205,7 +208,7 @@ export default function ClientCatalog() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
             {filtered.map((p) => (
               <ProductCard
                 key={p.id}

@@ -146,14 +146,14 @@ export default function PremiumHeader() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="O que você está procurando?"
-              className="w-full h-10 pl-5 pr-12 rounded-full border border-[#ddd] bg-white text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 transition-colors font-poppins"
+              className="w-full h-12 pl-5 pr-14 rounded-full border border-[#ddd] bg-[#f5f5f5] text-base text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 focus:bg-white transition-colors font-poppins"
             />
             <button
               type="submit"
-              className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-gray-800 transition-colors"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-[#C45500] hover:bg-[#a34700] text-white rounded-full p-2.5 transition-colors"
               aria-label="Buscar"
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-5 w-5" />
             </button>
           </div>
         </form>
