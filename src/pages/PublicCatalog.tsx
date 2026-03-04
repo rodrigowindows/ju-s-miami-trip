@@ -308,6 +308,17 @@ export default function PublicCatalog() {
           <Link to="/login" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><ShoppingBag size={18} /></Link>
         </div>
         <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="light" />
+
+        {/* Brand tags — inside header, below categories */}
+        {topBrands.length > 0 && (
+          <div className="border-t border-gray-100 px-4 py-1.5 bg-gray-50/60">
+            <div className="max-w-6xl mx-auto flex gap-2 overflow-x-auto scrollbar-hide">
+              {topBrands.map((b) => (
+                <button key={b} onClick={() => navigate(`/marca/${slugify(b)}`)} className="shrink-0 bg-white border border-gray-200 rounded-full px-3.5 py-1 text-xs font-medium text-gray-700 hover:shadow-sm hover:border-gray-300 transition-all">{b}</button>
+              ))}
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Trip Countdown Banner */}
@@ -315,19 +326,6 @@ export default function PublicCatalog() {
 
       {/* Hero Banner Carousel */}
       <HeroBannerCarousel />
-
-      {/* Brands bar - between banner and results */}
-      {topBrands.length > 0 && (
-        <div className="bg-white border-b border-gray-200 px-4 py-2">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              {topBrands.map((b) => (
-                <button key={b} onClick={() => navigate(`/marca/${slugify(b)}`)} className="shrink-0 bg-gray-50 border border-gray-200 rounded-full px-4 py-1.5 text-sm font-medium text-gray-700 hover:shadow-md hover:border-gray-300 transition-all">{b}</button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Compact results + filters bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-1.5 flex items-center justify-between max-w-6xl mx-auto">
