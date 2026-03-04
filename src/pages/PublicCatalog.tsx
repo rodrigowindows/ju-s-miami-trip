@@ -19,6 +19,7 @@ import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchTracker } from "@/hooks/useSearchTracker";
+import { useSettings } from "@/hooks/useSettings";
 import { usePageView, useAnalytics } from "@/hooks/useAnalytics";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
@@ -223,6 +224,7 @@ export default function PublicCatalog() {
   const { products, loading } = useCatalog();
   const navigate = useNavigate();
   const { convert } = useExchangeRate();
+  const { data: settings } = useSettings();
   const { deals, loading: dealsLoading } = useDeals();
 
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
@@ -370,9 +372,26 @@ export default function PublicCatalog() {
         {loading ? (
           <ProductGridSkeleton count={8} />
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-lg">
-            <p className="text-gray-500 text-sm">Nenhum produto encontrado.</p>
-            {searchQuery && (<button onClick={() => setSearchQuery("")} className="text-sm text-sky-700 hover:underline mt-2">Limpar busca</button>)}
+          <div className="text-center py-16 bg-white rounded-lg">
+            <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+              <Search size={24} className="text-gray-400" />
+            </div>
+            <p className="text-gray-500 text-sm mb-1">Nenhum produto encontrado.</p>
+            {searchQuery && (<button onClick={() => setSearchQuery("")} className="text-sm text-sky-700 hover:underline mt-2 block mx-auto">Limpar busca</button>)}
+            <div className="mt-6 pt-6 border-t border-gray-100 max-w-xs mx-auto">
+              <p className="text-sm text-gray-600 font-medium mb-1">Não achou o que procura?</p>
+              <p className="text-xs text-gray-400 mb-4">Compramos qualquer produto pra você dos EUA!</p>
+              <a
+                href={`https://wa.me/${settings?.whatsapp_number ?? "5561999999999"}?text=${encodeURIComponent("Olá! Procurei no catálogo mas não encontrei o que quero. Pode me ajudar? 🛍️")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all hover:scale-105"
+                style={{ backgroundColor: "#25D366" }}
+              >
+                <MessageSquare size={16} />
+                Manda no WhatsApp
+              </a>
+            </div>
           </div>
         ) : activeCategory === "Todos" && !searchQuery.trim() && !showAllFlat ? (
           <>
@@ -382,12 +401,29 @@ export default function PublicCatalog() {
             </div>
           </>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filtered.map((product) => {
-              const activeDeal = deals.find((d) => d.product_id === product.id);
-              return (<ProductCard key={product.id} product={product} brl={convert(product.price_usd)} onClick={() => { track("product_click", { product_id: product.id, product_name: product.name, product_brand: product.brand, product_category: product.category, product_price_brl: convert(product.price_usd) }); navigate(`/produto/${slugify(product.name)}`); }} activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null} />);
-            })}
-          </div>
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filtered.map((product) => {
+                const activeDeal = deals.find((d) => d.product_id === product.id);
+                return (<ProductCard key={product.id} product={product} brl={convert(product.price_usd)} onClick={() => { track("product_click", { product_id: product.id, product_name: product.name, product_brand: product.brand, product_category: product.category, product_price_brl: convert(product.price_usd) }); navigate(`/produto/${slugify(product.name)}`); }} activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null} />);
+              })}
+            </div>
+            {/* WhatsApp CTA after grid */}
+            <div className="mt-10 text-center py-8 bg-gradient-to-r from-green-50 to-white rounded-xl">
+              <p className="text-sm text-gray-600 font-medium mb-1">Não achou seu produto?</p>
+              <p className="text-xs text-gray-400 mb-4">Compramos de qualquer loja dos EUA pra você!</p>
+              <a
+                href={`https://wa.me/${settings?.whatsapp_number ?? "5561999999999"}?text=${encodeURIComponent("Olá! Não encontrei o produto que procuro no catálogo. Pode me ajudar? 🛍️")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all hover:scale-105"
+                style={{ backgroundColor: "#25D366" }}
+              >
+                <MessageSquare size={16} />
+                Manda no WhatsApp
+              </a>
+            </div>
+          </>
         )}
       </main>
 
