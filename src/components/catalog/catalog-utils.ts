@@ -51,3 +51,102 @@ export const SORT_OPTIONS = [
   { value: "price_desc", label: "Maior Preço" },
   { value: "name", label: "Nome A-Z" },
 ] as const;
+
+/* ── Product Grouping (variants by scent/fragrance) ──────── */
+
+import type { CatalogProduct } from "@/types";
+
+export interface ProductVariant {
+  product: CatalogProduct;
+  variantName: string;
+}
+
+export interface ProductGroup {
+  groupName: string;
+  variants: ProductVariant[];
+}
+
+export type GroupedItem = CatalogProduct | ProductGroup;
+
+export function isProductGroup(item: GroupedItem): item is ProductGroup {
+  return "variants" in item && "groupName" in item;
+}
+
+function findCommonParts(names: string[]): { prefix: string; suffix: string } {
+  if (names.length <= 1) return { prefix: "", suffix: "" };
+
+  let prefixLen = 0;
+  const minLen = Math.min(...names.map((n) => n.length));
+  for (let i = 0; i < minLen; i++) {
+    if (names.every((n) => n[i] === names[0][i])) prefixLen = i + 1;
+    else break;
+  }
+
+  let suffixLen = 0;
+  for (let i = 0; i < minLen - prefixLen; i++) {
+    if (names.every((n) => n[n.length - 1 - i] === names[0][names[0].length - 1 - i])) suffixLen = i + 1;
+    else break;
+  }
+
+  return {
+    prefix: names[0].slice(0, prefixLen),
+    suffix: suffixLen > 0 ? names[0].slice(names[0].length - suffixLen) : "",
+  };
+}
+
+/**
+ * Groups similar products (same brand, same price, same product type)
+ * into a single GroupedItem with variant options.
+ * E.g., 14 VS Body Mists become 1 group with 14 scent variants.
+ */
+export function groupSimilarProducts(products: CatalogProduct[], minGroupSize = 3): GroupedItem[] {
+  const byKey = new Map<string, CatalogProduct[]>();
+  for (const p of products) {
+    const key = `${(p.brand || "").toLowerCase().trim()}|${p.price_usd}`;
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key)!.push(p);
+  }
+
+  const grouped = new Set<string>();
+  const groups: ProductGroup[] = [];
+
+  for (const [, items] of byKey) {
+    if (items.length < minGroupSize) continue;
+
+    const names = items.map((p) => p.name);
+    const { prefix, suffix } = findCommonParts(names);
+
+    if (prefix.trim().length < 5 || suffix.trim().length < 2) continue;
+
+    const variants = items.map((p) => ({
+      product: p,
+      variantName: p.name.slice(prefix.length, p.name.length - (suffix.length || 0)).trim(),
+    }));
+
+    if (!variants.every((v) => v.variantName.length > 0)) continue;
+
+    groups.push({
+      groupName: `${prefix.trim()} ${suffix.trim()}`,
+      variants: variants.sort((a, b) => a.variantName.localeCompare(b.variantName)),
+    });
+    items.forEach((p) => grouped.add(p.id));
+  }
+
+  // Build result maintaining original order, inserting group at first occurrence
+  const result: GroupedItem[] = [];
+  const addedGroups = new Set<number>();
+
+  for (const p of products) {
+    if (grouped.has(p.id)) {
+      const gIdx = groups.findIndex((g) => g.variants.some((v) => v.product.id === p.id));
+      if (gIdx >= 0 && !addedGroups.has(gIdx)) {
+        result.push(groups[gIdx]);
+        addedGroups.add(gIdx);
+      }
+    } else {
+      result.push(p);
+    }
+  }
+
+  return result;
+}
