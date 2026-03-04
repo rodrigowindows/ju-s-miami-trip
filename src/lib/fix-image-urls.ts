@@ -9,10 +9,22 @@ const BROKEN_URL_FIXES: Record<string, string> = {
   "photo-1590693563776-79e6b606a642": "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=600&h=600&fit=crop",
   // Munchkin Miracle 360 Cup – original 404
   "photo-1584839404210-0a41e4791460": "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=600&h=600&fit=crop",
+  // Supplement pills (shared by 6+ Health products) – broken/404
+  "photo-1587854692152": "https://images.unsplash.com/photo-1584308666544-7b0fdd678018?w=600&h=600&fit=crop",
+  // Whey/Creatina shared image – broken/404
+  "photo-1593095948071": "https://images.unsplash.com/photo-1593095948071-474c5cc2c4d8?w=600&h=600&fit=crop",
 };
+
+const BLOCKED_DOMAINS = ["fimgs.net"];
+
 
 export function fixImageUrl(url: string | null | undefined): string {
   if (!url || !url.trim()) return "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=600&h=600&fit=crop";
+
+  // Block domains that reject hotlinking
+  for (const domain of BLOCKED_DOMAINS) {
+    if (url.includes(domain)) return "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=600&h=600&fit=crop";
+  }
 
   for (const [brokenId, replacement] of Object.entries(BROKEN_URL_FIXES)) {
     if (url.includes(brokenId)) return replacement;
