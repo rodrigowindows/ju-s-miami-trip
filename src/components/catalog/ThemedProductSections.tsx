@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Zap, Droplets, Timer, Heart, Flame, Smartphone, Baby, Shirt, Headphones, Pill } from "lucide-react";
+import { Zap, Droplets, Timer, Heart, Flame, Smartphone, Baby, Shirt, Headphones, Pill, MessageCircle, ShoppingBag } from "lucide-react";
+import { useSettings } from "@/hooks/useSettings";
 import { ProductCard, type ActiveDeal } from "./ProductCard";
 import { isBestSeller } from "./catalog-utils";
 import type { CatalogProduct } from "@/types";
@@ -198,6 +199,57 @@ const FASHION_BRAND_KEYWORDS = [
 function matchesKeywords(product: CatalogProduct, keywords: string[]): boolean {
   const text = `${product.name} ${product.description ?? ""} ${product.brand ?? ""}`.toLowerCase();
   return keywords.some((kw) => text.includes(kw));
+}
+
+/* ── WhatsApp CTA Section ────────────── */
+function WhatsAppCTA() {
+  const { data: settings } = useSettings();
+  const number = settings?.whatsapp_number ?? "5561999999999";
+  const message = encodeURIComponent(
+    "Olá! Não encontrei o produto que procuro no catálogo. Pode me ajudar? 🛍️"
+  );
+  const url = `https://wa.me/${number}?text=${message}`;
+
+  return (
+    <section
+      className="rounded-xl px-5 py-8 sm:px-10 sm:py-10 text-center"
+      style={{
+        background: "linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 40%, #FFFFFF 100%)",
+        borderRadius: 12,
+      }}
+    >
+      <div className="max-w-md mx-auto">
+        <div className="w-16 h-16 rounded-full bg-[#25D366]/10 flex items-center justify-center mx-auto mb-4">
+          <ShoppingBag size={28} className="text-[#25D366]" />
+        </div>
+        <h2
+          className="text-xl sm:text-2xl font-bold text-gray-900 mb-2"
+          style={{ fontFamily: "'Playfair Display', 'Gabarito', serif" }}
+        >
+          Não achou o que procura?
+        </h2>
+        <p className="text-sm text-gray-600 mb-1" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+          Compramos qualquer produto pra você direto dos EUA!
+        </p>
+        <p className="text-xs text-gray-500 mb-6" style={{ fontFamily: "'Gabarito', sans-serif" }}>
+          Amazon, Walmart, Target, Apple Store e mais — manda o link!
+        </p>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+          style={{ backgroundColor: "#25D366", fontFamily: "'Gabarito', sans-serif" }}
+        >
+          <MessageCircle size={20} fill="white" stroke="white" />
+          Manda no WhatsApp
+        </a>
+        <p className="text-[11px] text-gray-400 mt-4">
+          Resposta rápida · Cotação sem compromisso
+        </p>
+      </div>
+    </section>
+  );
 }
 
 /* ── Main Component ──────────────────── */
@@ -580,6 +632,9 @@ export function ThemedProductSections({
           <ProductGrid products={perfumeFinal} convert={convert} onSelect={onSelectProduct} deals={deals} maxItems={8} />
         </section>
       )}
+
+      {/* ─── Section: NÃO ACHOU? WHATSAPP CTA ───────────── */}
+      <WhatsAppCTA />
     </div>
   );
 }
