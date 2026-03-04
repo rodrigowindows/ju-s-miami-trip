@@ -48,8 +48,8 @@ export const ORDER_STATUS_COLORS: Record<string, string> = Object.fromEntries(
 
 // ── Default settings ─────────────────────────
 export const DEFAULT_SETTINGS = {
-  exchange_rate: '5.70',
-  spread_percent: '3',
+  exchange_rate: '5.80',
+  spread_percent: '45',
   whatsapp_number: '',
   referral_credit: '30',
 } as const;

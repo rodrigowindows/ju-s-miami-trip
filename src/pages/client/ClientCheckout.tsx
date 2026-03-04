@@ -55,8 +55,8 @@ export default function ClientCheckout() {
     }
   }, [profile]);
 
-  const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
-  const spread = Number(settings?.spread_percent ?? "3");
+  const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
+  const spread = Number(settings?.spread_percent ?? "45");
   const totalBRL = useMemo(() => items.reduce((sum, i) => sum + calculatePriceBRL(i.product.price_usd, exchangeRate, spread) * i.quantity, 0), [items, exchangeRate, spread]);
 
   const matchedPromo = useMemo(() => {

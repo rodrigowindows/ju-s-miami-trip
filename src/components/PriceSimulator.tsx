@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const EXCHANGE_RATE = 5.8;
-const SERVICE_FEE_PERCENT = 15;
+const SERVICE_FEE_PERCENT = 45;
 
 const PriceSimulator = () => {
   const [usd, setUsd] = useState("");

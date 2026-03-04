@@ -17,8 +17,8 @@ export default function ClientWishlist() {
   const { addItem } = useCart();
   const { data: settings } = useSettings();
 
-  const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
-  const spread = Number(settings?.spread_percent ?? "3");
+  const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
+  const spread = Number(settings?.spread_percent ?? "45");
   const calcBRL = (usd: number) => calculatePriceBRL(usd, exchangeRate, spread);
 
   const handleRemove = (productId: string) => {

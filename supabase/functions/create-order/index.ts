@@ -64,8 +64,8 @@ Deno.serve(async (req) => {
       .select("key, value")
       .in("key", ["exchange_rate_usd_brl", "spread_percentage"]);
 
-    let rate = 6.05;
-    let spread = 8;
+    let rate = 5.80;
+    let spread = 45;
     if (settings) {
       for (const row of settings) {
         if (row.key === "exchange_rate_usd_brl") rate = parseFloat(row.value);

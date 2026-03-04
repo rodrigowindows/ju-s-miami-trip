@@ -75,8 +75,8 @@ export default function ClientCatalog() {
   const createReview = useCreateProductReview();
   const trackSearch = useSearchTracker("client", user?.id);
 
-  const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
-  const spread = Number(settings?.spread_percent ?? "3");
+  const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
+  const spread = Number(settings?.spread_percent ?? "45");
 
   const calcBRL = useMemo(() => (usd: number) => calculatePriceBRL(usd, exchangeRate, spread), [exchangeRate, spread]);
 
