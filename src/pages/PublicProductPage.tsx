@@ -72,8 +72,8 @@ export default function PublicProductPage() {
     }
   }, [product, track]);
 
-  const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
-  const spread = Number(settings?.spread_percent ?? "3");
+  const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
+  const spread = Number(settings?.spread_percent ?? "45");
   const brl = calculatePriceBRL(product.price_usd, exchangeRate, spread);
 
   // Simulate multiple images (in production, product would have image_urls array)

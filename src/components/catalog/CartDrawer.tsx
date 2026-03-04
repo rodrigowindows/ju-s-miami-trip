@@ -17,8 +17,8 @@ export function CartDrawer() {
   const createOrderItem = useCreateOrderItem();
   const [ordering, setOrdering] = useState(false);
 
-  const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
-  const spread = Number(settings?.spread_percent ?? "3");
+  const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
+  const spread = Number(settings?.spread_percent ?? "45");
   const calcBRL = (usd: number) => calculatePriceBRL(usd, exchangeRate, spread);
 
   const totalUSD = items.reduce((sum, i) => sum + i.product.price_usd * i.quantity, 0);

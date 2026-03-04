@@ -12,8 +12,8 @@ export function useSettings() {
       const map: Record<string, string> = {};
       (data as Setting[]).forEach((s) => { map[s.key] = s.value; });
       return {
-        exchange_rate: map.exchange_rate ?? "5.70",
-        spread_percent: map.spread_percent ?? "3",
+        exchange_rate: map.exchange_rate ?? "5.80",
+        spread_percent: map.spread_percent ?? "45",
         whatsapp_number: map.whatsapp_number ?? "5561999999999",
         referral_credit: map.referral_credit ?? "30",
       };

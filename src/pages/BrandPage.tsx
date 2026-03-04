@@ -56,8 +56,8 @@ export default function BrandPage() {
   }, [products, slug, sortBy]);
 
   const brandName = brandInfo?.name ?? brandProducts[0]?.brand ?? String(slug ?? "Marca");
-  const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
-  const spread = Number(settings?.spread_percent ?? "3");
+  const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
+  const spread = Number(settings?.spread_percent ?? "45");
 
   const categories = useMemo(() => {
     const cats = new Set<string>();

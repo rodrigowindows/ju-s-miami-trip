@@ -193,7 +193,7 @@ function useQuestions(productId: string | null) {
 }
 
 function useExchangeRate() {
-  const [effectiveRate, setEffectiveRate] = useState(6.05 * 1.08);
+  const [effectiveRate, setEffectiveRate] = useState(5.80 * 1.45);
   useEffect(() => {
     async function fetch() {
       const { data, error } = await supabase.functions.invoke("get-exchange-rate");

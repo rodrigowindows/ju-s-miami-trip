@@ -17,8 +17,8 @@ const SETTING_LABELS: Record<string, { label: string; description: string; type:
 };
 
 const DEFAULT_SETTINGS: Record<string, string> = {
-  exchange_rate_usd_brl: "6.05",
-  spread_percentage: "8",
+  exchange_rate_usd_brl: "5.80",
+  spread_percentage: "45",
   whatsapp_phone: "5561999999999",
   prohibited_items: "Armas\nDrogas\nMedicamentos controlados\nAlimentos perecíveis\nAnimais vivos",
 };
