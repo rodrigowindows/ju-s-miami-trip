@@ -9,7 +9,8 @@ import { StarRating } from "@/components/catalog/StarRating";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { useToast } from "@/hooks/use-toast";
 import NotifyMeButton from "@/components/catalog/NotifyMeButton";
-import { ChevronRight, Shield, Truck, RotateCcw, MessageCircle, Share2, Heart, ShoppingBag, Minus, Plus, ZoomIn } from "lucide-react";
+import { ChevronRight, Shield, Truck, RotateCcw, MessageCircle, Share2, Heart, ShoppingBag, Minus, Plus, ZoomIn, TrendingDown } from "lucide-react";
+import { getMLComparison } from "@/lib/ml-prices";
 import StickyBuyBar from "@/components/catalog/StickyBuyBar";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
@@ -82,6 +83,7 @@ export default function PublicProductPage() {
   const isSoldOut = product.availability_type === "esgotado";
   const installment3x = brl / 3;
   const installment6x = brl / 6;
+  const mlComparison = getMLComparison(brl, product.brand, product.category);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -184,6 +186,23 @@ export default function PublicProductPage() {
                 </p>
               </div>
             </div>
+
+            {/* ML Price Comparison */}
+            {mlComparison && (
+              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                <TrendingDown size={16} className="text-emerald-600 shrink-0" />
+                <div className="text-sm">
+                  <span className="text-emerald-700 font-semibold">
+                    {mlComparison.savingsPercent}% mais barato
+                  </span>
+                  <span className="text-emerald-600">
+                    {" "}que no Mercado Livre (
+                    {mlComparison.mlPrice.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    )
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Quantity + Actions */}
             {!isSoldOut && (
