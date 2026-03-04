@@ -1,89 +1,207 @@
 /**
- * Upload product images to Supabase Storage
+ * Download ALL product images and upload to Supabase Storage
+ *
+ * This script:
+ *   1. Fetches all products from catalog_products
+ *   2. Downloads each image from its current URL (Amazon, Apple, Unsplash, etc.)
+ *   3. Uploads to Supabase Storage bucket "product-images"
+ *   4. Updates the database with the new Supabase Storage public URL
  *
  * Prerequisites:
- *   1. Run migration 20260303180000_create_product_images_bucket.sql first
- *   2. Set SUPABASE_SERVICE_ROLE_KEY env var
+ *   - Supabase Storage bucket "product-images" must exist (public)
+ *   - SUPABASE_SERVICE_ROLE_KEY env var must be set
  *
  * Usage:
  *   SUPABASE_SERVICE_ROLE_KEY=your-key npx tsx scripts/upload-product-images.ts
+ *
+ * Options:
+ *   --dry-run    Show what would be done without uploading
+ *   --force      Re-upload even if already on Supabase Storage
  */
 
 import { createClient } from "@supabase/supabase-js";
-import * as fs from "fs";
-import * as path from "path";
 
 const SUPABASE_URL = "https://aleenmfaugxymtxqlyyz.supabase.co";
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const BUCKET = "product-images";
+const DRY_RUN = process.argv.includes("--dry-run");
+const FORCE = process.argv.includes("--force");
 
 if (!SERVICE_KEY) {
-  console.error("Set SUPABASE_SERVICE_ROLE_KEY env var before running.");
+  console.error("❌ Set SUPABASE_SERVICE_ROLE_KEY env var before running.");
+  console.error("   SUPABASE_SERVICE_ROLE_KEY=your-key npx tsx scripts/upload-product-images.ts");
   process.exit(1);
 }
 
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
-const BUCKET = "product-images";
-const IMG_DIR = path.resolve(__dirname, "../tmp/product-images/vs");
 
-/** product name in DB → local filename (without .jpg) */
-const IMAGE_MAP: Record<string, string> = {
-  "Victoria's Secret Bombshell Body Mist 250ml": "vs-bombshell-mist",
-  "Victoria's Secret Tease Body Mist 250ml": "vs-tease-mist",
-  "Victoria's Secret Velvet Petals Body Mist 250ml": "vs-velvet-petals-mist",
-  "Victoria's Secret Pure Seduction Body Mist 250ml": "vs-pure-seduction-mist",
-  "Victoria's Secret Love Spell Body Mist 250ml": "vs-love-spell-mist",
-  "Victoria's Secret Bare Vanilla Body Mist 250ml": "vs-bare-vanilla-mist",
-  "Victoria's Secret Coconut Passion Body Mist 250ml": "vs-coconut-passion-mist",
-  "Victoria's Secret Amber Romance Body Mist 250ml": "vs-amber-romance-mist",
-  "Victoria's Secret Strawberries & Champagne Body Mist 250ml": "vs-strawberries-champagne-mist",
-  "Victoria's Secret Aqua Kiss Body Mist 250ml": "vs-aqua-kiss-mist",
-  "Victoria's Secret Midnight Bloom Body Mist 250ml": "vs-midnight-bloom-mist",
-  "Victoria's Secret Bombshell Shimmer Body Mist 250ml": "vs-bombshell-shimmer-mist",
-  "Victoria's Secret PINK Fresh & Clean Body Mist 250ml": "vs-pink-fresh-clean-mist",
-  "Victoria's Secret PINK Warm & Cozy Body Mist 250ml": "vs-pink-warm-cozy-mist",
-  "Victoria's Secret Bombshell Eau de Parfum 100ml": "vs-bombshell-edp",
-  "Victoria's Secret Tease Eau de Parfum 100ml": "vs-tease-edp",
-  "Victoria's Secret Noir Tease Eau de Parfum 100ml": "vs-noir-tease-edp",
-  "Victoria's Secret Very Sexy Eau de Parfum 100ml": "vs-very-sexy-edp",
-  "Victoria's Secret Heavenly Eau de Parfum 100ml": "vs-heavenly-edp",
-  "Victoria's Secret Bombshell Intense Eau de Parfum 100ml": "vs-bombshell-intense-edp",
-  "Victoria's Secret Bombshell Passion Eau de Parfum 100ml": "vs-bombshell-passion-edp",
-  "Victoria's Secret Tease Crème Cloud Eau de Parfum 100ml": "vs-tease-creme-cloud-edp",
-  "Victoria's Secret Bombshell Body Lotion 236ml": "vs-bombshell-lotion",
-  "Victoria's Secret Pure Seduction Body Lotion 236ml": "vs-pure-seduction-lotion",
-  "Victoria's Secret Love Spell La Crème Body Wash 250ml": "vs-love-spell-body-wash",
-  "Victoria's Secret Kit Bombshell 3 Peças": "vs-bombshell-kit",
-  "Victoria's Secret Kit Pure Seduction 3 Peças": "vs-pure-seduction-kit",
-  "Victoria's Secret Kit Love Spell 3 Peças": "vs-love-spell-kit",
-  "Victoria's Secret Mini Mist Gift Set 4 Peças": "vs-mini-mist-gift-set",
-  "Victoria's Secret Bombshell Rollerball 7ml": "vs-bombshell-rollerball",
-};
+/** Generate a clean filename from product name */
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove accents
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+/** Detect content type from response headers or URL */
+function getContentType(url: string, headers: Headers): string {
+  const ct = headers.get("content-type");
+  if (ct?.includes("image/png")) return "image/png";
+  if (ct?.includes("image/webp")) return "image/webp";
+  if (url.includes(".png")) return "image/png";
+  if (url.includes(".webp")) return "image/webp";
+  return "image/jpeg";
+}
+
+/** Get file extension from content type */
+function getExtension(contentType: string): string {
+  if (contentType.includes("png")) return "png";
+  if (contentType.includes("webp")) return "webp";
+  return "jpg";
+}
+
+/** Download image with retries */
+async function downloadImage(url: string, retries = 3): Promise<{ buffer: ArrayBuffer; contentType: string } | null> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+          "Accept": "image/*,*/*",
+        },
+        redirect: "follow",
+      });
+
+      if (!res.ok) {
+        console.warn(`  ⚠️ HTTP ${res.status} for ${url} (attempt ${i + 1})`);
+        if (i < retries - 1) await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+        continue;
+      }
+
+      const buffer = await res.arrayBuffer();
+      if (buffer.byteLength < 500) {
+        console.warn(`  ⚠️ Tiny image (${buffer.byteLength}b) - likely blocked`);
+        return null;
+      }
+
+      const contentType = getContentType(url, res.headers);
+      return { buffer, contentType };
+    } catch (err) {
+      console.warn(`  ⚠️ Fetch error: ${(err as Error).message} (attempt ${i + 1})`);
+      if (i < retries - 1) await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+    }
+  }
+  return null;
+}
+
+/** Map category to storage folder */
+function getFolder(category: string): string {
+  const cat = category.toLowerCase();
+  if (cat.includes("tech") || cat.includes("eletr")) return "tech";
+  if (cat.includes("beauty") || cat.includes("beleza") || cat.includes("skincare") || cat.includes("maquiagem")) return "beauty";
+  if (cat.includes("perfum") || cat.includes("fragr")) return "perfumes";
+  if (cat.includes("victoria")) return "vs";
+  if (cat.includes("fashion") || cat.includes("moda") || cat.includes("roupa") || cat.includes("tenis") || cat.includes("acess")) return "fashion";
+  if (cat.includes("lifestyle") || cat.includes("casa") || cat.includes("bath")) return "lifestyle";
+  if (cat.includes("health") || cat.includes("saude") || cat.includes("suplement") || cat.includes("vitamin")) return "supplements";
+  if (cat.includes("kid") || cat.includes("baby") || cat.includes("brinquedo") || cat.includes("infantil")) return "kids";
+  return "other";
+}
 
 async function main() {
+  console.log(`\n🔄 Fetching all products from catalog_products...\n`);
+
+  const { data: products, error } = await supabase
+    .from("catalog_products")
+    .select("id, name, brand, category, image_url")
+    .eq("active", true)
+    .order("category")
+    .order("name");
+
+  if (error) {
+    console.error("❌ Failed to fetch products:", error.message);
+    process.exit(1);
+  }
+
+  if (!products || products.length === 0) {
+    console.log("No products found.");
+    return;
+  }
+
+  console.log(`📦 Found ${products.length} active products\n`);
+
+  // Ensure bucket exists
+  if (!DRY_RUN) {
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const bucketExists = buckets?.some((b) => b.name === BUCKET);
+    if (!bucketExists) {
+      console.log(`📁 Creating bucket "${BUCKET}"...`);
+      const { error: createErr } = await supabase.storage.createBucket(BUCKET, {
+        public: true,
+        allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
+        fileSizeLimit: 5 * 1024 * 1024, // 5MB
+      });
+      if (createErr) {
+        console.error("❌ Failed to create bucket:", createErr.message);
+        process.exit(1);
+      }
+    }
+  }
+
   let uploaded = 0;
+  let skipped = 0;
   let failed = 0;
 
-  for (const [productName, filename] of Object.entries(IMAGE_MAP)) {
-    const filePath = path.join(IMG_DIR, `${filename}.jpg`);
-    const storagePath = `vs/${filename}.jpg`;
+  for (const product of products) {
+    const { id, name, brand, category, image_url } = product;
 
-    if (!fs.existsSync(filePath)) {
-      console.warn(`SKIP (file not found): ${filename}.jpg`);
+    // Skip if already on Supabase Storage (unless --force)
+    if (!FORCE && image_url?.includes("supabase.co/storage")) {
+      skipped++;
+      continue;
+    }
+
+    // Skip if no image URL
+    if (!image_url) {
+      console.warn(`⏭️  [${name}] No image URL - skipping`);
+      skipped++;
+      continue;
+    }
+
+    const folder = getFolder(category);
+    const slug = slugify(`${brand}-${name}`);
+
+    console.log(`[${uploaded + failed + 1}/${products.length - skipped}] ${name}`);
+    console.log(`  📥 Downloading: ${image_url.slice(0, 80)}...`);
+
+    if (DRY_RUN) {
+      console.log(`  📁 Would upload to: ${folder}/${slug}.jpg`);
+      uploaded++;
+      continue;
+    }
+
+    const result = await downloadImage(image_url);
+    if (!result) {
+      console.error(`  ❌ Failed to download image`);
       failed++;
       continue;
     }
 
-    const fileBuffer = fs.readFileSync(filePath);
+    const ext = getExtension(result.contentType);
+    const storagePath = `${folder}/${slug}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from(BUCKET)
-      .upload(storagePath, fileBuffer, {
-        contentType: "image/jpeg",
+      .upload(storagePath, result.buffer, {
+        contentType: result.contentType,
         upsert: true,
       });
 
     if (uploadError) {
-      console.error(`FAIL upload ${filename}: ${uploadError.message}`);
+      console.error(`  ❌ Upload failed: ${uploadError.message}`);
       failed++;
       continue;
     }
@@ -97,19 +215,27 @@ async function main() {
     const { error: updateError } = await supabase
       .from("catalog_products")
       .update({ image_url: publicUrl })
-      .eq("name", productName);
+      .eq("id", id);
 
     if (updateError) {
-      console.error(`FAIL update DB for ${productName}: ${updateError.message}`);
+      console.error(`  ❌ DB update failed: ${updateError.message}`);
       failed++;
       continue;
     }
 
-    console.log(`OK: ${productName} → ${publicUrl}`);
+    console.log(`  ✅ ${publicUrl}`);
     uploaded++;
+
+    // Small delay to avoid rate limiting
+    await new Promise((r) => setTimeout(r, 200));
   }
 
-  console.log(`\nDone: ${uploaded} uploaded, ${failed} failed`);
+  console.log(`\n${"=".repeat(50)}`);
+  console.log(`✅ Uploaded: ${uploaded}`);
+  console.log(`⏭️  Skipped: ${skipped}`);
+  console.log(`❌ Failed:   ${failed}`);
+  console.log(`📦 Total:    ${products.length}`);
+  if (DRY_RUN) console.log(`\n⚠️  DRY RUN - no changes were made`);
 }
 
 main().catch(console.error);
