@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Zap, Droplets, Timer, Heart, Flame, Smartphone, Baby, Shirt, Headphones, Pill, MessageCircle, ShoppingBag } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { ProductCard, type ActiveDeal } from "./ProductCard";
-import { isBestSeller } from "./catalog-utils";
+import { GroupedProductCard } from "./GroupedProductCard";
+import { isBestSeller, groupSimilarProducts, isProductGroup } from "./catalog-utils";
 import type { CatalogProduct } from "@/types";
 
 /* ── Types ────────────────────────────── */
@@ -122,23 +123,32 @@ function ProductGrid({
   deals: DealInfo[];
   maxItems?: number;
 }) {
-  const visible = products.slice(0, maxItems);
+  const grouped = groupSimilarProducts(products);
+  const visible = grouped.slice(0, maxItems);
+  const dealMap = new Map(deals.map((d) => [d.product_id, { discount_percent: d.discount_percent, deal_type: d.deal_type }]));
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
-      {visible.map((product) => {
-        const activeDeal = deals.find((d) => d.product_id === product.id);
+      {visible.map((item) => {
+        if (isProductGroup(item)) {
+          return (
+            <GroupedProductCard
+              key={item.groupName}
+              group={item}
+              convert={convert}
+              onClick={onSelect}
+              activeDealMap={dealMap}
+            />
+          );
+        }
+        const activeDeal = dealMap.get(item.id);
         return (
           <ProductCard
-            key={product.id}
-            product={product}
-            brl={convert(product.price_usd)}
-            onClick={() => onSelect(product)}
-            activeDeal={
-              activeDeal
-                ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type }
-                : null
-            }
+            key={item.id}
+            product={item}
+            brl={convert(item.price_usd)}
+            onClick={() => onSelect(item)}
+            activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null}
           />
         );
       })}

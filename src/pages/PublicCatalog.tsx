@@ -27,7 +27,8 @@ import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
 import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
-import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORY_LIST } from "@/components/catalog/catalog-utils";
+import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORY_LIST, groupSimilarProducts, isProductGroup } from "@/components/catalog/catalog-utils";
+import { GroupedProductCard } from "@/components/catalog/GroupedProductCard";
 import SearchAutocomplete from "@/components/catalog/SearchAutocomplete";
 
 import NotifyMeButton from "@/components/catalog/NotifyMeButton";
@@ -405,9 +406,21 @@ export default function PublicCatalog() {
         ) : (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filtered.map((product) => {
-                const activeDeal = deals.find((d) => d.product_id === product.id);
-                return (<ProductCard key={product.id} product={product} brl={convert(product.price_usd)} onClick={() => { track("product_click", { product_id: product.id, product_name: product.name, product_brand: product.brand, product_category: product.category, product_price_brl: convert(product.price_usd) }); navigate(`/produto/${slugify(product.name)}`); }} activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null} />);
+              {groupSimilarProducts(filtered).map((item) => {
+                if (isProductGroup(item)) {
+                  const dealMap = new Map(deals.map((d) => [d.product_id, { discount_percent: d.discount_percent, deal_type: d.deal_type }]));
+                  return (
+                    <GroupedProductCard
+                      key={item.groupName}
+                      group={item}
+                      convert={convert}
+                      onClick={(p) => { track("product_click", { product_id: p.id, product_name: p.name, product_brand: p.brand, product_category: p.category, product_price_brl: convert(p.price_usd) }); navigate(`/produto/${slugify(p.name)}`); }}
+                      activeDealMap={dealMap}
+                    />
+                  );
+                }
+                const activeDeal = deals.find((d) => d.product_id === item.id);
+                return (<ProductCard key={item.id} product={item} brl={convert(item.price_usd)} onClick={() => { track("product_click", { product_id: item.id, product_name: item.name, product_brand: item.brand, product_category: item.category, product_price_brl: convert(item.price_usd) }); navigate(`/produto/${slugify(item.name)}`); }} activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null} />);
               })}
             </div>
             {/* WhatsApp CTA after grid */}
