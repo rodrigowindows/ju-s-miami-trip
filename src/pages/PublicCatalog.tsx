@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { fixImageUrl } from "@/lib/fix-image-urls";
 import type { CatalogProduct, ProductQuestion, ProductReview } from "@/types";
 import type { Tables } from "@/integrations/supabase/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -64,6 +65,7 @@ function useCatalog() {
         .order("created_at", { ascending: false });
       setProducts(((data as CatalogProduct[]) ?? []).filter((p) => p.image_url && p.image_url.trim() !== "").map((p) => ({
         ...p,
+        image_url: fixImageUrl(p.image_url),
         availability_type: (!p.availability_type || p.availability_type === "esgotado") ? "pronta_entrega" : p.availability_type,
         stock_quantity: (!p.stock_quantity || p.stock_quantity <= 0) ? 2 : p.stock_quantity,
       })));
