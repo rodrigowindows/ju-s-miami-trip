@@ -13,7 +13,7 @@ import { usePixCharge } from "@/hooks/usePixCharge";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
-import { ChevronLeft, CheckCircle2, Loader2, MapPin, CreditCard, ClipboardList, PartyPopper, Copy, QrCode, Shield, Clock } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Loader2, MapPin, CreditCard, ClipboardList, PartyPopper, Copy, QrCode, Shield, Clock, Phone, Mail } from "lucide-react";
 
 const steps = [
   { label: "Endereço", icon: MapPin },
@@ -29,7 +29,7 @@ export default function ClientCheckout() {
   const [couponApplied, setCouponApplied] = useState(false);
   const [doneOrder, setDoneOrder] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [address, setAddress] = useState({ cep: "", city: "", state: "", street: "", number: "", complement: "", neighborhood: "" });
+  const [address, setAddress] = useState({ cep: "", city: "", state: "", street: "", number: "", complement: "", neighborhood: "", phone: "", email: "" });
   const [addressError, setAddressError] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
   const [pixCopied, setPixCopied] = useState(false);
@@ -43,6 +43,17 @@ export default function ClientCheckout() {
   const createOrderItem = useCreateOrderItem();
   const { data: promotions = [] } = useActivePromotions();
   const { charge: pixCharge, loading: pixLoading, error: pixError, createCharge: createPixCharge } = usePixCharge();
+
+  // Pre-fill phone and email from profile
+  useEffect(() => {
+    if (profile) {
+      setAddress((prev) => ({
+        ...prev,
+        phone: prev.phone || profile.phone || "",
+        email: prev.email || profile.email || "",
+      }));
+    }
+  }, [profile]);
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.70");
   const spread = Number(settings?.spread_percent ?? "3");
@@ -102,6 +113,14 @@ export default function ClientCheckout() {
     }
   }
 
+  function handlePhoneChange(value: string) {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    let formatted = digits;
+    if (digits.length > 6) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    else if (digits.length > 2) formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    setAddress({ ...address, phone: formatted });
+  }
+
   function validateAddress() {
     if (!address.cep.trim() || !address.city.trim() || !address.state.trim() || !address.street.trim() || !address.number.trim()) {
       setAddressError("Preencha todos os campos obrigatórios.");
@@ -109,6 +128,14 @@ export default function ClientCheckout() {
     }
     if (address.cep.replace(/\D/g, "").length !== 8) {
       setAddressError("CEP deve ter 8 dígitos.");
+      return false;
+    }
+    if (address.phone.replace(/\D/g, "").length < 10) {
+      setAddressError("Informe um telefone válido com DDD.");
+      return false;
+    }
+    if (!address.email.trim() || !address.email.includes("@")) {
+      setAddressError("Informe um e-mail válido.");
       return false;
     }
     setAddressError("");
@@ -147,13 +174,13 @@ export default function ClientCheckout() {
       const order = await createOrder.mutateAsync({
         client_id: user.id,
         customer_name: profile.full_name ?? "",
-        customer_phone: profile.phone ?? undefined,
+        customer_phone: address.phone || profile.phone || undefined,
         items: itemNames,
         total_usd: items.reduce((s, i) => s + i.product.price_usd * i.quantity, 0),
         total_brl: finalTotal,
         total_amount: finalTotal,
         deposit_amount: depositAmount,
-        notes: `Pagamento: ${payment}. Endereço: ${address.street}, ${address.number}${address.neighborhood ? ` - ${address.neighborhood}` : ""} - ${address.city}/${address.state} - CEP: ${address.cep}${matchedPromo ? `. Cupom: ${matchedPromo.coupon_code}` : ""}`,
+        notes: `Pagamento: ${payment}. Endereço: ${address.street}, ${address.number}${address.neighborhood ? ` - ${address.neighborhood}` : ""}${address.complement ? ` (${address.complement})` : ""} - ${address.city}/${address.state} - CEP: ${address.cep}. Tel: ${address.phone}. Email: ${address.email}${matchedPromo ? `. Cupom: ${matchedPromo.coupon_code}` : ""}`,
       });
       for (const item of items) {
         await createOrderItem.mutateAsync({
@@ -243,6 +270,17 @@ export default function ClientCheckout() {
                   className="flex-1"
                 />
                 {cepLoading && <Loader2 size={18} className="animate-spin text-gray-400 self-center" />}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block font-medium">WhatsApp / Telefone *</label>
+                <Input placeholder="(11) 99999-9999" value={address.phone} onChange={(e) => handlePhoneChange(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block font-medium">E-mail *</label>
+                <Input type="email" placeholder="seu@email.com" value={address.email} onChange={(e) => setAddress({ ...address, email: e.target.value })} />
               </div>
             </div>
 
@@ -395,6 +433,14 @@ export default function ClientCheckout() {
                 <p className="text-gray-700">
                   {address.street}, {address.number}{address.neighborhood ? ` - ${address.neighborhood}` : ""}{address.complement ? ` (${address.complement})` : ""} - {address.city}/{address.state} - CEP: {address.cep}
                 </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone size={14} className="text-gray-400 shrink-0" />
+                <p className="text-gray-700">{address.phone}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail size={14} className="text-gray-400 shrink-0" />
+                <p className="text-gray-700">{address.email}</p>
               </div>
               <div className="flex items-center gap-2">
                 <CreditCard size={14} className="text-gray-400 shrink-0" />
