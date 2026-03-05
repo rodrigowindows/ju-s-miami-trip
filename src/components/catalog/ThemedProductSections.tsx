@@ -96,7 +96,7 @@ function ShowcaseThumbnail({ product }: { product: CatalogProduct }) {
 }
 
 function ProductShowcase({ products, maxItems = 5 }: { products: CatalogProduct[]; maxItems?: number }) {
-  const items = products.filter((p) => p.image_url).slice(0, maxItems);
+  const items = products.slice(0, maxItems);
   if (items.length === 0) return null;
 
   return (
