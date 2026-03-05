@@ -73,24 +73,36 @@ function DividerTitle({ children }: { children: React.ReactNode }) {
 }
 
 /* ── Product image showcase in section header ── */
+function ShowcaseThumbnail({ product }: { product: CatalogProduct }) {
+  const [broken, setBroken] = useState(false);
+
+  return (
+    <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-gray-50 shadow-sm border border-white/60">
+      {broken || !product.image_url ? (
+        <div className="w-full h-full flex items-center justify-center bg-gray-50">
+          <ShoppingBag size={24} className="text-gray-300" />
+        </div>
+      ) : (
+        <img
+          src={product.image_url}
+          alt={product.name}
+          className="w-full h-full object-cover"
+          loading="lazy"
+          onError={() => setBroken(true)}
+        />
+      )}
+    </div>
+  );
+}
+
 function ProductShowcase({ products, maxItems = 5 }: { products: CatalogProduct[]; maxItems?: number }) {
-  const items = products.slice(0, maxItems);
+  const items = products.filter((p) => p.image_url).slice(0, maxItems);
   if (items.length === 0) return null;
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
       {items.map((p) => (
-        <div
-          key={p.id}
-          className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-white shadow-sm border border-white/60"
-        >
-          <img
-            src={p.image_url}
-            alt={p.name}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        </div>
+        <ShowcaseThumbnail key={p.id} product={p} />
       ))}
     </div>
   );
