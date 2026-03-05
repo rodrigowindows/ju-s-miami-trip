@@ -233,6 +233,7 @@ export default function PublicCatalog() {
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [showAllFlat, setShowAllFlat] = useState(false);
   const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "pronta_entrega" | "sob_encomenda">("all");
@@ -302,15 +303,30 @@ export default function PublicCatalog() {
       <AnnouncementBar />
       <header className="sticky top-0 z-40 bg-white border-b border-rose-100">
         <div className="px-4 py-3 flex items-center gap-3">
-          <button onClick={() => { setSearchQuery(""); setActiveCategory("Todos"); setShowAllFlat(false); window.scrollTo(0, 0); }} className="shrink-0"><Logo size="sm" /></button>
+          {!searchFocused && (
+            <button onClick={() => { setSearchQuery(""); setActiveCategory("Todos"); setShowAllFlat(false); window.scrollTo(0, 0); }} className="shrink-0"><Logo size="sm" /></button>
+          )}
           <div className="flex-1 relative max-w-xl mx-auto">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input placeholder="Buscar skincare, maquiagem, perfumes..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-3 h-10 rounded-full bg-white text-gray-900 border border-rose-200 text-sm focus-visible:ring-2 focus-visible:ring-[#F43F5E]" />
-            <SearchAutocomplete query={searchQuery} products={products} onSelect={(p) => navigate(`/produto/${slugify(p.name)}`)} />
+            <Input
+              placeholder="Buscar skincare, maquiagem, perfumes..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => { if (!searchQuery.trim()) setTimeout(() => setSearchFocused(false), 150); }}
+              className="w-full pl-9 pr-3 h-11 rounded-full bg-white text-gray-900 border border-rose-200 text-base focus-visible:ring-2 focus-visible:ring-[#F43F5E]"
+            />
+            <SearchAutocomplete query={searchQuery} products={products} onSelect={(p) => { setSearchFocused(false); navigate(`/produto/${slugify(p.name)}`); }} />
           </div>
-          <Link to="/login" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><LogIn size={18} /></Link>
-          <Link to="/client/wishlist" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><Heart size={18} /></Link>
-          <Link to="/login" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><ShoppingBag size={18} /></Link>
+          {searchFocused ? (
+            <button onClick={() => { setSearchQuery(""); setSearchFocused(false); }} className="shrink-0 text-sm text-gray-500 hover:text-gray-800 font-medium">Cancelar</button>
+          ) : (
+            <>
+              <Link to="/login" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><LogIn size={18} /></Link>
+              <Link to="/client/wishlist" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><Heart size={18} /></Link>
+              <Link to="/login" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><ShoppingBag size={18} /></Link>
+            </>
+          )}
         </div>
         <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="light" />
 
