@@ -1,41 +1,23 @@
 
 
-## Fix Missing Product Images
+## Habilitando Stripe no Lovable
 
-### Problem
-The screenshot shows 2 out of 4 supplement products displaying placeholder icons instead of images. Multiple Health/supplement products share the same Unsplash URLs (`photo-1587854692152` and `photo-1593095948071`), and some of those are returning 404 errors. Additionally, there are duplicate products (e.g., "Probiotico 50 Bilhoes" vs "Probiotico 50 Bilhões").
+Não preciso gerar um prompt externo — posso habilitar o Stripe diretamente aqui no projeto. O processo é:
 
-### Root Cause
-- 6 products use `photo-1587854692152` (same generic pill image — may be deleted/404)
-- 2 products use `photo-1593095948071` (same image for Whey and Creatina — may be 404)
-- Duplicate "Probiotico" entries with slightly different names
+1. **Eu rodo a ferramenta `enable_stripe`** — isso configura a integração automaticamente
+2. **Você fornece a Secret Key do Stripe** — o sistema pede via interface segura (não no chat)
+3. **Após habilitado**, ganho acesso a ferramentas para criar produtos, preços, checkout sessions, etc.
 
-### Plan
+### O que você precisa ter pronto
 
-**1. Database migration — Fix images + remove duplicate**
+- Conta no [Stripe Dashboard](https://dashboard.stripe.com)
+- **Secret Key** (começa com `sk_test_` ou `sk_live_`) — encontrada em Developers → API Keys
 
-Update each Health product with a distinct, working Unsplash URL:
+### Importante para seu caso
 
-| Product | New Unsplash Photo ID |
-|---|---|
-| Whey Protein Gold Standard 2lb | protein powder photo |
-| Creatina Monohidratada 400g | creatine/supplement photo |
-| Probiotico 50 Bilhoes CFU | probiotic capsules photo |
-| Vitamin D3 5000 IU 400 Softgels | vitamin D photo |
-| Biotina 10.000mcg 250 Caps | biotin supplement photo |
-| Hair Skin & Nails 250 Softgels | beauty supplement photo |
-| Magnesium Glycinate 400mg | magnesium photo |
-| Melatonina 10mg 300 Caps | melatonin/sleep photo |
-| Centrum Mulher 200 Caps | multivitamin photo |
-| Vitaminas Kirkland Daily Multi | daily vitamin photo |
+Seu projeto já usa **PIX via OpenPix** para pagamentos. O Stripe seria um método **adicional** (cartão de crédito). Ambos podem coexistir.
 
-Also delete the duplicate "Probiotico 50 Bilhões" (keeping "Bilhoes").
+---
 
-**2. Update `fix-image-urls.ts`**
-
-Add the broken Unsplash IDs (`photo-1587854692152`, `photo-1593095948071`) to the `BROKEN_URL_FIXES` map as a frontend fallback, so even before the migration runs, images display correctly.
-
-### Files Changed
-- New SQL migration (via migration tool)
-- `src/lib/fix-image-urls.ts` — add fallback entries
+Se quiser que eu habilite agora, é só confirmar e eu rodo a ferramenta. Não precisa de outra LLM para isso.
 
