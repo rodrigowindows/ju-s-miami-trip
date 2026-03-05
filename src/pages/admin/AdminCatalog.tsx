@@ -23,10 +23,16 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Loader2, Store, Pencil, Trash2 } from "lucide-react";
+import { Plus, Loader2, Store, Pencil, Trash2, Download } from "lucide-react";
+import { useSettings } from "@/hooks/useSettings";
+
+function slugify(text: string) {
+  return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
 
 export default function AdminCatalog() {
   const { toast } = useToast();
+  const { data: settings } = useSettings();
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -126,6 +132,66 @@ export default function AdminCatalog() {
     fetchProducts();
   }
 
+  function exportCSV() {
+    if (products.length === 0) return;
+    const whatsappNumber = settings?.whatsapp_number ?? "5561999999999";
+    const siteUrl = "https://ajuvaiparamiami.com.br";
+
+    const headers = [
+      "ID", "Nome", "Marca", "Categoria", "Preço (USD)", "Descrição",
+      "Disponibilidade", "Prazo Estimado (dias)", "Qtd Estoque",
+      "Ativo", "Avaliação", "Qtd Reviews", "Qtd Vendas", "Trending",
+      "URL Imagem", "Link Produto", "Link WhatsApp", "Criado em"
+    ];
+
+    const escapeCSV = (val: string) => {
+      if (val.includes(",") || val.includes('"') || val.includes("\n")) {
+        return `"${val.replace(/"/g, '""')}"`;
+      }
+      return val;
+    };
+
+    const availLabel = (t: string) =>
+      t === "pronta_entrega" ? "Pronta Entrega" : t === "sob_encomenda" ? "Sob Encomenda" : "Esgotado";
+
+    const rows = products.map((p) => {
+      const productUrl = `${siteUrl}/produto/${slugify(p.name)}`;
+      const whatsMsg = encodeURIComponent(`Olá! Tenho interesse no produto: ${p.name} (${availLabel(p.availability_type ?? "sob_encomenda")}) - US$ ${p.price_usd.toFixed(2)}`);
+      const whatsLink = `https://wa.me/${whatsappNumber}?text=${whatsMsg}`;
+      return [
+        p.id,
+        p.name,
+        p.brand,
+        p.category,
+        p.price_usd.toFixed(2),
+        p.description ?? "",
+        availLabel(p.availability_type ?? "sob_encomenda"),
+        p.estimated_days != null ? String(p.estimated_days) : "",
+        String(p.stock_quantity ?? 0),
+        p.active ? "Sim" : "Não",
+        String(p.rating ?? 0),
+        String(p.review_count ?? 0),
+        String(p.sales_count ?? 0),
+        p.trending ? "Sim" : "Não",
+        p.image_url,
+        productUrl,
+        whatsLink,
+        p.created_at,
+      ].map((v) => escapeCSV(String(v)));
+    });
+
+    const bom = "\uFEFF";
+    const csv = bom + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `catalogo_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "CSV exportado!", description: `${products.length} produtos exportados.` });
+  }
+
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -135,10 +201,16 @@ export default function AdminCatalog() {
             Gerencie os produtos da vitrine
           </p>
         </div>
-        <Button onClick={openCreate} className="gap-2 w-full sm:w-auto">
-          <Plus size={16} />
-          Novo Produto
-        </Button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button variant="outline" onClick={exportCSV} disabled={loading || products.length === 0} className="gap-2 flex-1 sm:flex-initial">
+            <Download size={16} />
+            Exportar CSV
+          </Button>
+          <Button onClick={openCreate} className="gap-2 flex-1 sm:flex-initial">
+            <Plus size={16} />
+            Novo Produto
+          </Button>
+        </div>
       </div>
 
       {loading ? (
