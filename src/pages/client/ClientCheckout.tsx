@@ -40,7 +40,6 @@ export default function ClientCheckout() {
   const createOrder = useCreateOrder();
   const createOrderItem = useCreateOrderItem();
   const { data: promotions = [] } = useActivePromotions();
-  const { charge: pixCharge, loading: pixLoading, error: pixError, createCharge: createPixCharge } = usePixCharge();
 
   // Pre-fill phone and email from profile
   useEffect(() => {
