@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ShoppingBag, Truck } from "lucide-react";
 import { StarRating } from "./StarRating";
-import { fakeRating, fakePreviousPrice, type ProductGroup } from "./catalog-utils";
+import { fakeRating, type ProductGroup } from "./catalog-utils";
 import type { CatalogProduct } from "@/types";
 
 interface GroupedProductCardProps {
@@ -19,10 +19,8 @@ export function GroupedProductCard({ group, convert, onClick, activeDealMap }: G
 
   const brl = convert(product.price_usd);
   const { rating, reviews } = fakeRating(product.name);
-  const prevPrice = fakePreviousPrice(brl, product.name);
   const activeDeal = activeDealMap?.get(product.id);
   const finalPrice = activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl;
-  const installment = finalPrice / 3;
 
   const MAX_PILLS = 4;
   const visibleVariants = group.variants.slice(0, MAX_PILLS);
@@ -86,11 +84,10 @@ export function GroupedProductCard({ group, convert, onClick, activeDealMap }: G
         <StarRating rating={rating} reviews={reviews} />
 
         <div className="mt-auto pt-1.5">
-          <p className="text-[13px] text-[#999] line-through">R$ {prevPrice.toFixed(2).replace(".", ",")}</p>
           <p className="text-lg font-bold text-black" style={{ fontFamily: "Poppins, sans-serif" }}>
             R$ {finalPrice.toFixed(2).replace(".", ",")}
           </p>
-          <p className="text-xs text-[#666]">3x de R$ {installment.toFixed(2).replace(".", ",")}</p>
+          <p className="text-xs text-emerald-600 font-medium">à vista no PIX</p>
         </div>
 
         <div className="flex items-center gap-1.5 mt-1.5">

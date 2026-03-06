@@ -27,7 +27,7 @@ import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
 import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
-import { fakeRating, isBestSeller, fakePreviousPrice, CATEGORY_LIST, groupSimilarProducts, isProductGroup } from "@/components/catalog/catalog-utils";
+import { fakeRating, isBestSeller, CATEGORY_LIST, groupSimilarProducts, isProductGroup } from "@/components/catalog/catalog-utils";
 import { GroupedProductCard } from "@/components/catalog/GroupedProductCard";
 import SearchAutocomplete from "@/components/catalog/SearchAutocomplete";
 
@@ -469,7 +469,6 @@ export default function PublicCatalog() {
             const { rating, reviews } = getRating(selectedProduct);
             const brl = convert(selectedProduct.price_usd);
             const bestSeller = isBestSeller(selectedProduct.name);
-            const prevPrice = fakePreviousPrice(brl, selectedProduct.name);
             return (
               <>
                 <div className="bg-white relative">
@@ -490,18 +489,11 @@ export default function PublicCatalog() {
                   <StarRating rating={rating} reviews={reviews} />
                   {selectedProduct.description && (<p className="text-sm text-gray-600 leading-relaxed">{selectedProduct.description}</p>)}
                   <div className="border-t border-gray-200 pt-3">
-                    <p className="text-base text-[#999] line-through">R$ {prevPrice.toFixed(2).replace(".", ",")}</p>
                     <div className="flex items-baseline gap-2">
                       <span className="text-[28px] font-bold text-gray-900">R$ {brl.toFixed(2).replace(".", ",")}</span>
-                      <span className="bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">-{Math.round(((prevPrice - brl) / prevPrice) * 100)}% OFF</span>
                     </div>
-                    <p className="text-sm text-[#28a745] font-medium mt-0.5">Economize R$ {(prevPrice - brl).toFixed(2).replace(".", ",")}</p>
-                    <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1.5">
-                      <p className="text-sm text-gray-700">1x de <span className="font-semibold">R$ {brl.toFixed(2).replace(".", ",")}</span> sem juros</p>
-                      <p className="text-sm text-gray-700">2x de <span className="font-semibold">R$ {(brl / 2).toFixed(2).replace(".", ",")}</span> sem juros</p>
-                      <p className="text-sm text-gray-700">3x de <span className="font-semibold">R$ {(brl / 3).toFixed(2).replace(".", ",")}</span> sem juros</p>
-                    </div>
-                    <p className="text-sm text-gray-400 mt-2">Preco nos EUA: US$ {selectedProduct.price_usd.toFixed(2)}</p>
+                    <p className="text-sm text-emerald-600 font-medium mt-1">à vista no PIX</p>
+                    <p className="text-sm text-gray-400 mt-2">Preço nos EUA: US$ {selectedProduct.price_usd.toFixed(2)}</p>
                     <div className="flex items-center gap-1.5 mt-2"><Truck size={14} className="text-[#007600]" /><span className="text-sm text-[#007600] font-medium">Entrega via viagem Miami</span></div>
                   </div>
                   <div className="border-t border-gray-200 pt-4">

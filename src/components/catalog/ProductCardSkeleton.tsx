@@ -17,12 +17,10 @@ export function ProductCardSkeleton() {
             <div key={i} className="w-3 h-3 bg-gray-200 rounded" />
           ))}
         </div>
-        {/* Previous price */}
-        <div className="h-3 bg-gray-200 rounded w-20" />
         {/* Price */}
         <div className="h-5 bg-gray-200 rounded w-28" />
-        {/* Installment */}
-        <div className="h-3 bg-gray-200 rounded w-32" />
+        {/* PIX label */}
+        <div className="h-3 bg-gray-200 rounded w-20" />
         {/* Shipping badge */}
         <div className="h-5 bg-gray-200 rounded w-24" />
         {/* Button */}

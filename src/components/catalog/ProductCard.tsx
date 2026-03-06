@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Heart, ShoppingBag, Truck } from "lucide-react";
 import { StarRating } from "./StarRating";
-import { fakeRating, fakePreviousPrice } from "./catalog-utils";
+import { fakeRating } from "./catalog-utils";
 import { getMLComparison } from "@/lib/ml-prices";
 import type { CatalogProduct } from "@/types";
 
@@ -37,9 +37,7 @@ function AvailabilityBadge({ product }: { product: CatalogProduct }) {
 export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wishlisted, onToggleWishlist }: ProductCardProps) {
   const [imgBroken, setImgBroken] = useState(false);
   const { rating, reviews } = fakeRating(product.name);
-  const prevPrice = fakePreviousPrice(brl, product.name);
   const finalPrice = activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl;
-  const installment = finalPrice / 3;
   const isSoldOut = product.availability_type === "esgotado" && product.stock_quantity != null && product.stock_quantity <= 0;
   const mlComparison = getMLComparison(finalPrice, product.brand, product.category);
 
@@ -90,11 +88,10 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
         <StarRating rating={rating} reviews={reviews} />
 
         <div className="mt-auto pt-1.5">
-          <p className="text-[13px] text-[#999] line-through">R$ {prevPrice.toFixed(2).replace(".", ",")}</p>
           <p className="text-lg font-bold text-black" style={{ fontFamily: "Poppins, sans-serif" }}>
             R$ {finalPrice.toFixed(2).replace(".", ",")}
           </p>
-          <p className="text-xs text-[#666]">3x de R$ {installment.toFixed(2).replace(".", ",")}</p>
+          <p className="text-xs text-emerald-600 font-medium">à vista no PIX</p>
           {mlComparison && (
             <p className="text-[11px] text-emerald-600 font-medium mt-0.5">
               {mlComparison.savingsPercent}% mais barato que ML
