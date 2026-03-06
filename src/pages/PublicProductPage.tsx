@@ -81,8 +81,6 @@ export default function PublicProductPage() {
   const images = [product.image_url, product.image_url, product.image_url];
   const brandSlug = slugify(product.brand || "marca");
   const isSoldOut = product.availability_type === "esgotado";
-  const installment3x = brl / 3;
-  const installment6x = brl / 6;
   const mlComparison = getMLComparison(brl, product.brand, product.category);
 
   return (
@@ -174,17 +172,12 @@ export default function PublicProductPage() {
               <p className="text-3xl font-bold text-gray-900">
                 {brl.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-emerald-600 font-medium mt-1">
+                à vista no PIX
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
                 US$ {product.price_usd.toFixed(2)} · Taxa de câmbio inclusa
               </p>
-              <div className="mt-2 space-y-0.5">
-                <p className="text-sm text-emerald-600 font-medium">
-                  3x de {installment3x.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} sem juros
-                </p>
-                <p className="text-xs text-gray-500">
-                  ou 6x de {installment6x.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                </p>
-              </div>
             </div>
 
             {/* ML Price Comparison */}

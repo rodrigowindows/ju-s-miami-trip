@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const MESSAGES = [
   "Compras dos EUA direto para você · Produtos 100% originais e lacrados",
-  "Frete grátis acima de R$500 · Parcelamos em até 3x sem juros",
+  "Frete grátis acima de R$500 · Pagamento à vista via PIX",
   "Use o código MIAMI10 e ganhe 10% OFF na primeira compra",
   "Entrega em até 15 dias úteis · Acompanhamento via WhatsApp",
 ];

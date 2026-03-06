@@ -20,7 +20,7 @@ import { formatBRL } from "@/lib/format";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
-import { fakeRating, isBestSeller, fakePreviousPrice } from "@/components/catalog/catalog-utils";
+import { fakeRating, isBestSeller } from "@/components/catalog/catalog-utils";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useSearchTracker } from "@/hooks/useSearchTracker";
 
@@ -231,7 +231,6 @@ export default function ClientCatalog() {
             const { rating, reviews } = getRating(selected);
             const brl = calcBRL(selected.price_usd);
             const bestSeller = isBestSeller(selected.name);
-            const prevPrice = fakePreviousPrice(brl, selected.name);
             const inCart = isInCart(selected.id);
             const wasJustAdded = justAdded === selected.id;
 
@@ -289,29 +288,17 @@ export default function ClientCatalog() {
                   )}
 
                   <div className="border-t border-gray-200 pt-3">
-                    <p className="text-base text-[#999] line-through">
-                      R$ {prevPrice.toFixed(2).replace(".", ",")}
-                    </p>
                     <div className="flex items-baseline gap-2">
                       <span className="text-[28px] font-bold text-gray-900">
                         {formatBRL(brl)}
                       </span>
-                      <span className="bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                        -{Math.round(((prevPrice - brl) / prevPrice) * 100)}% OFF
-                      </span>
                     </div>
-                    <p className="text-sm text-[#28a745] font-medium mt-0.5">
-                      Economize {formatBRL(prevPrice - brl)}
+                    <p className="text-sm text-emerald-600 font-medium mt-1">
+                      à vista no PIX
                     </p>
 
-                    <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1.5">
-                      <p className="text-sm text-gray-700">1x de <span className="font-semibold">{formatBRL(brl)}</span> sem juros</p>
-                      <p className="text-sm text-gray-700">2x de <span className="font-semibold">{formatBRL(brl / 2)}</span> sem juros</p>
-                      <p className="text-sm text-gray-700">3x de <span className="font-semibold">{formatBRL(brl / 3)}</span> sem juros</p>
-                    </div>
-
                     <p className="text-sm text-gray-400 mt-2">
-                      Preco nos EUA: US$ {selected.price_usd.toFixed(2)}
+                      Preço nos EUA: US$ {selected.price_usd.toFixed(2)}
                     </p>
 
                     <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1 text-sm">
