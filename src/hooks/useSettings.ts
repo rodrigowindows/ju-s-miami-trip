@@ -16,6 +16,8 @@ export function useSettings() {
         spread_percent: map.spread_percent ?? "45",
         whatsapp_number: map.whatsapp_number ?? "5561999999999",
         referral_credit: map.referral_credit ?? "30",
+        pix_key: map.pix_key ?? "",
+        pix_key_holder: map.pix_key_holder ?? "",
       };
     },
   });

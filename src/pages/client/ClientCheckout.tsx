@@ -9,7 +9,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSettings } from "@/hooks/useSettings";
 import { useCreateOrder, useCreateOrderItem } from "@/hooks/useOrders";
 import { useActivePromotions } from "@/hooks/usePromotions";
-import { usePixCharge } from "@/hooks/usePixCharge";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
