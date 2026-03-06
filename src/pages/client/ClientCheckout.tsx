@@ -190,13 +190,6 @@ export default function ClientCheckout() {
         });
       }
 
-      setCreatedOrderId(order.id);
-
-      // Generate PIX charge automatically for PIX payments
-      if (payment === "pix") {
-        await createPixCharge(order.id, depositAmount);
-      }
-
       clearCart();
       setDoneOrder(order.order_number);
       setStep(3);
