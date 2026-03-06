@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart, ShoppingBag, Truck } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating, fakePreviousPrice } from "./catalog-utils";
@@ -35,7 +35,12 @@ function AvailabilityBadge({ product }: { product: CatalogProduct }) {
 }
 
 export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wishlisted, onToggleWishlist }: ProductCardProps) {
-  const [imgBroken, setImgBroken] = useState(false);
+  const fallbackImage = "/images/product-placeholder.jpg";
+  const [imgSrc, setImgSrc] = useState(product.image_url || fallbackImage);
+
+  useEffect(() => {
+    setImgSrc(product.image_url || fallbackImage);
+  }, [product.image_url]);
   const { rating, reviews } = fakeRating(product.name);
   const prevPrice = fakePreviousPrice(brl, product.name);
   const finalPrice = activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl;
@@ -46,19 +51,17 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
   return (
     <div onClick={onClick} className="bg-white rounded-xl overflow-hidden text-left group flex flex-col cursor-pointer border border-gray-100 hover:shadow-md transition-shadow">
       <div className="aspect-square relative overflow-hidden bg-white">
-        {imgBroken ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-50">
-            <ShoppingBag size={40} className="text-gray-300" />
-          </div>
-        ) : (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="w-full h-full object-cover rounded-t-xl"
-            loading="lazy"
-            onError={() => setImgBroken(true)}
-          />
-        )}
+        <img
+          src={imgSrc}
+          alt={product.name}
+          className="w-full h-full object-cover rounded-t-xl"
+          loading="lazy"
+          onError={() => {
+            if (imgSrc !== fallbackImage) {
+              setImgSrc(fallbackImage);
+            }
+          }}
+        />
 
         <AvailabilityBadge product={product} />
 
