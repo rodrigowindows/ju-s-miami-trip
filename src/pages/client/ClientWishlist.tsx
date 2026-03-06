@@ -8,6 +8,7 @@ import { useSettings } from "@/hooks/useSettings";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
+import { ProductImage } from "@/components/catalog/ProductImage";
 import type { CatalogProduct } from "@/types";
 
 export default function ClientWishlist() {
@@ -70,11 +71,12 @@ export default function ClientWishlist() {
                 className="bg-white rounded-lg border border-gray-200 p-3 flex gap-3"
               >
                 <div className="w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 overflow-hidden p-1">
-                  <img
+                  <ProductImage
                     src={item.product.image_url}
                     alt={item.product.name}
+                    brand={item.product.brand}
+                    category={item.product.category}
                     className="max-w-full max-h-full object-contain"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
                 </div>
 

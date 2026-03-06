@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { Heart, ShoppingBag, Truck } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating } from "./catalog-utils";
 import { getMLComparison } from "@/lib/ml-prices";
+import { ProductImage } from "./ProductImage";
 import type { CatalogProduct } from "@/types";
 
 export interface ActiveDeal {
@@ -35,7 +35,6 @@ function AvailabilityBadge({ product }: { product: CatalogProduct }) {
 }
 
 export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wishlisted, onToggleWishlist }: ProductCardProps) {
-  const [imgBroken, setImgBroken] = useState(false);
   const { rating, reviews } = fakeRating(product.name);
   const finalPrice = activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl;
   const isSoldOut = product.availability_type === "esgotado" && product.stock_quantity != null && product.stock_quantity <= 0;
@@ -44,19 +43,13 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
   return (
     <div onClick={onClick} className="bg-white rounded-xl overflow-hidden text-left group flex flex-col cursor-pointer border border-gray-100 hover:shadow-md transition-shadow">
       <div className="aspect-square relative overflow-hidden bg-white">
-        {imgBroken ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-50">
-            <ShoppingBag size={40} className="text-gray-300" />
-          </div>
-        ) : (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="w-full h-full object-cover rounded-t-xl"
-            loading="lazy"
-            onError={() => setImgBroken(true)}
-          />
-        )}
+        <ProductImage
+          src={product.image_url}
+          alt={product.name}
+          brand={product.brand}
+          category={product.category}
+          className="w-full h-full object-cover rounded-t-xl"
+        />
 
         <AvailabilityBadge product={product} />
 

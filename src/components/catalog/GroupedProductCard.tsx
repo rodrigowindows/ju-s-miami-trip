@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ShoppingBag, Truck } from "lucide-react";
+import { ProductImage } from "./ProductImage";
 import { StarRating } from "./StarRating";
 import { fakeRating, type ProductGroup } from "./catalog-utils";
 import type { CatalogProduct } from "@/types";
@@ -15,7 +16,6 @@ export function GroupedProductCard({ group, convert, onClick, activeDealMap }: G
   const [selectedIdx, setSelectedIdx] = useState(0);
   const current = group.variants[selectedIdx];
   const product = current.product;
-  const [imgBroken, setImgBroken] = useState(false);
 
   const brl = convert(product.price_usd);
   const { rating, reviews } = fakeRating(product.name);
@@ -32,19 +32,13 @@ export function GroupedProductCard({ group, convert, onClick, activeDealMap }: G
       className="bg-white rounded-xl overflow-hidden text-left group/card flex flex-col cursor-pointer border border-gray-100 hover:shadow-md transition-shadow"
     >
       <div className="aspect-square relative overflow-hidden bg-white">
-        {imgBroken ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-50">
-            <ShoppingBag size={40} className="text-gray-300" />
-          </div>
-        ) : (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="w-full h-full object-cover rounded-t-xl"
-            loading="lazy"
-            onError={() => setImgBroken(true)}
-          />
-        )}
+        <ProductImage
+          src={product.image_url}
+          alt={product.name}
+          brand={product.brand}
+          category={product.category}
+          className="w-full h-full object-cover rounded-t-xl"
+        />
 
         <span className="absolute top-2 left-2 bg-white/95 text-gray-700 text-[10px] font-semibold px-2 py-1 rounded-full shadow-sm">
           {group.variants.length} fragrâncias
