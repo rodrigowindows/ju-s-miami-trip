@@ -63,6 +63,7 @@ export interface AppSettings {
   referral_credit: string;
   pix_key: string;
   pix_key_holder: string;
+  pix_qr_image: string;
 }
 
 // ── Kanban Board Config ──────────────────────

@@ -18,6 +18,7 @@ export function useSettings() {
         referral_credit: map.referral_credit ?? "30",
         pix_key: map.pix_key ?? "",
         pix_key_holder: map.pix_key_holder ?? "",
+        pix_qr_image: map.pix_qr_image ?? "",
       };
     },
   });
