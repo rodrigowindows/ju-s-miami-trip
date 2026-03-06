@@ -151,13 +151,13 @@ export default function ClientCheckout() {
     }
   }
 
-  const pixKeyFallback = "ajuvaiparamiami@pix.com";
+  const pixKey = settings?.pix_key || "ajuvaiparamiami@pix.com";
+  const pixKeyHolder = settings?.pix_key_holder || "AjuVaiParaMiami";
 
   function copyPixCode() {
-    const codeToCopy = pixCharge?.br_code || pixKeyFallback;
-    navigator.clipboard.writeText(codeToCopy).then(() => {
+    navigator.clipboard.writeText(pixKey).then(() => {
       setPixCopied(true);
-      toast.success(pixCharge?.br_code ? "Código PIX copiado!" : "Chave PIX copiada!");
+      toast.success("Chave PIX copiada!");
       setTimeout(() => setPixCopied(false), 3000);
     });
   }
