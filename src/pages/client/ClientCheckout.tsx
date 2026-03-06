@@ -468,92 +468,32 @@ export default function ClientCheckout() {
 
             {/* Dynamic PIX QR Code */}
             {payment === "pix" && (
-              <div className="space-y-3">
-                {pixLoading && (
-                  <div className="flex items-center justify-center gap-2 text-gray-500">
-                    <Loader2 size={18} className="animate-spin" />
-                    <span className="text-sm">Gerando QR Code PIX...</span>
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 space-y-3">
+                <div className="flex items-center justify-center gap-2">
+                  <QrCode size={18} className="text-emerald-600" />
+                  <p className="text-sm font-semibold text-emerald-800">Pague via PIX</p>
+                </div>
+
+                <p className="text-xs text-gray-600">
+                  Depósito de <strong>{formatBRL(finalTotal * 0.5)}</strong>
+                </p>
+
+                <div className="bg-white rounded-lg p-3 space-y-2">
+                  <p className="text-xs text-gray-500">Chave PIX:</p>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 text-sm text-gray-800 font-medium break-all">{pixKey}</code>
+                    <Button variant="ghost" size="sm" onClick={copyPixCode} className="shrink-0 gap-1 text-xs">
+                      <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
+                    </Button>
                   </div>
-                )}
+                  {pixKeyHolder && (
+                    <p className="text-xs text-gray-500">Titular: <strong>{pixKeyHolder}</strong></p>
+                  )}
+                </div>
 
-                {pixCharge && pixCharge.status === "ACTIVE" && (
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
-                    <div className="flex items-center justify-center gap-2">
-                      <QrCode size={18} className="text-emerald-600" />
-                      <p className="text-sm font-semibold text-emerald-800">Pague via PIX</p>
-                    </div>
-
-                    <p className="text-xs text-gray-600">
-                      Depósito de <strong>{formatBRL(finalTotal * 0.5)}</strong>
-                    </p>
-
-                    {pixCharge.qr_code_image && (
-                      <div className="flex justify-center">
-                        <img
-                          src={pixCharge.qr_code_image}
-                          alt="QR Code PIX"
-                          className="w-48 h-48 rounded-lg border bg-white p-2"
-                        />
-                      </div>
-                    )}
-
-                    {pixCharge.br_code && (
-                      <div className="bg-white rounded-lg p-3 flex items-center gap-2">
-                        <code className="flex-1 text-[10px] text-gray-600 break-all line-clamp-2">
-                          {pixCharge.br_code}
-                        </code>
-                        <Button variant="ghost" size="sm" onClick={copyPixCode} className="shrink-0 gap-1 text-xs">
-                          <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
-                        </Button>
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-center gap-1 text-xs text-amber-600">
-                      <Clock size={12} />
-                      <span>Expira em 1 hora</span>
-                    </div>
-
-                    <p className="text-xs text-emerald-700">
-                      O pagamento será confirmado automaticamente em segundos.
-                    </p>
-                  </div>
-                )}
-
-                {pixCharge && pixCharge.status === "COMPLETED" && (
-                  <div className="bg-emerald-100 border border-emerald-300 rounded-xl p-4">
-                    <div className="flex items-center justify-center gap-2">
-                      <CheckCircle2 size={18} className="text-emerald-600" />
-                      <p className="text-sm font-semibold text-emerald-800">PIX pago com sucesso!</p>
-                    </div>
-                  </div>
-                )}
-
-                {pixError && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
-                    <p className="text-sm text-amber-800">QR Code indisponível no momento.</p>
-                    <p className="text-xs text-amber-700">Use a chave PIX manual:</p>
-                    <div className="bg-white rounded-lg p-3 flex items-center gap-2">
-                      <code className="flex-1 text-xs text-gray-700 break-all">{pixKeyFallback}</code>
-                      <Button variant="ghost" size="sm" onClick={copyPixCode} className="shrink-0 gap-1 text-xs">
-                        <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
-                      </Button>
-                    </div>
-                    <p className="text-xs text-amber-700">Envie o comprovante pelo WhatsApp para confirmação.</p>
-                  </div>
-                )}
-
-                {!pixLoading && !pixCharge && !pixError && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2">
-                    <p className="text-xs text-gray-600">Chave PIX manual:</p>
-                    <div className="bg-white rounded-lg p-3 flex items-center gap-2">
-                      <code className="flex-1 text-xs text-gray-700 break-all">{pixKeyFallback}</code>
-                      <Button variant="ghost" size="sm" onClick={copyPixCode} className="shrink-0 gap-1 text-xs">
-                        <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
-                      </Button>
-                    </div>
-                    <p className="text-xs text-gray-500">Envie o comprovante pelo WhatsApp.</p>
-                  </div>
-                )}
+                <p className="text-xs text-amber-700 bg-amber-50 rounded-lg p-2">
+                  📲 Após o pagamento, envie o comprovante pelo WhatsApp para confirmação rápida.
+                </p>
               </div>
             )}
 
