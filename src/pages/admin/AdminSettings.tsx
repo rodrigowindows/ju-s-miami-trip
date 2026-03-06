@@ -13,6 +13,8 @@ const SETTING_LABELS: Record<string, { label: string; description: string; type:
   exchange_rate_usd_brl: { label: "Câmbio USD → BRL", description: "Taxa de câmbio do dólar para o real", type: "number" },
   spread_percentage: { label: "Spread (%)", description: "Margem de lucro sobre o câmbio", type: "number" },
   whatsapp_phone: { label: "Telefone WhatsApp", description: "Número do operador para links wa.me (ex: 5561999999999)", type: "text" },
+  pix_key: { label: "Chave PIX", description: "Chave PIX para receber pagamentos (CPF, e-mail, telefone ou aleatória)", type: "text" },
+  pix_key_holder: { label: "Titular da Chave PIX", description: "Nome do titular da conta PIX", type: "text" },
   prohibited_items: { label: "Itens Proibidos", description: "Lista de itens que não podem ser trazidos (um por linha)", type: "textarea" },
 };
 
@@ -20,6 +22,8 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   exchange_rate_usd_brl: "5.80",
   spread_percentage: "45",
   whatsapp_phone: "5561999999999",
+  pix_key: "",
+  pix_key_holder: "",
   prohibited_items: "Armas\nDrogas\nMedicamentos controlados\nAlimentos perecíveis\nAnimais vivos",
 };
 

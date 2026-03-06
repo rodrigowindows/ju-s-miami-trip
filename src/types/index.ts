@@ -61,6 +61,8 @@ export interface AppSettings {
   spread_percent: string;
   whatsapp_number: string;
   referral_credit: string;
+  pix_key: string;
+  pix_key_holder: string;
 }
 
 // ── Kanban Board Config ──────────────────────
