@@ -59,7 +59,6 @@ export function GroupedProductCard({ group, convert, onClick, activeDealMap }: G
               onClick={(e) => {
                 e.stopPropagation();
                 setSelectedIdx(i);
-                setImgBroken(false);
               }}
               className={`text-[9px] leading-tight px-1.5 py-0.5 rounded-full whitespace-nowrap border transition-colors ${
                 i === selectedIdx
