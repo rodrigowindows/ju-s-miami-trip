@@ -351,11 +351,11 @@ export default function ClientCheckout() {
                   <p className="text-sm font-medium text-emerald-800">Pagamento via PIX</p>
                 </div>
                 <p className="text-xs text-emerald-700">
-                  O QR Code PIX será gerado automaticamente ao confirmar o pedido. Valor do depósito (50%) será cobrado.
+                  Ao confirmar, você receberá a chave PIX para transferência. Envie o comprovante pelo WhatsApp.
                 </p>
                 <div className="flex items-center gap-2 text-xs text-emerald-600">
                   <CheckCircle2 size={14} />
-                  <span>Confirmação automática em segundos</span>
+                  <span>Sem taxas de gateway — direto na conta</span>
                 </div>
               </div>
             )}
