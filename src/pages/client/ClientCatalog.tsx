@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import EmptyState from "@/components/shared/EmptyState";
+import { ProductImage } from "@/components/catalog/ProductImage";
 import { useCatalogProducts } from "@/hooks/useCatalog";
 import { useProductReviews, useCreateProductReview } from "@/hooks/useProductReviews";
 import { useSettings } from "@/hooks/useSettings";
@@ -239,11 +240,13 @@ export default function ClientCatalog() {
               <>
                 <div className="bg-white relative">
                   <div className="aspect-square bg-white p-6 flex items-center justify-center">
-                    <img
+                    <ProductImage
                       src={selected.image_url}
                       alt={selected.name}
+                      brand={selected.brand}
+                      category={selected.category}
                       className="max-w-full max-h-full object-contain"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      loading="eager"
                     />
                   </div>
                   {bestSeller && (

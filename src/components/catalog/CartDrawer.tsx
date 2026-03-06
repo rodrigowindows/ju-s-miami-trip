@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
+import { ProductImage } from "./ProductImage";
 
 export function CartDrawer() {
   const { items, removeItem, updateQuantity, clearCart, isOpen, closeCart, totalItems } = useCart();
@@ -102,11 +103,12 @@ export function CartDrawer() {
                 return (
                   <div key={item.product.id} className="flex gap-3 p-4">
                     <div className="w-20 h-20 bg-gray-50 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
-                      <img
+                      <ProductImage
                         src={item.product.image_url}
                         alt={item.product.name}
+                        brand={item.product.brand}
+                        category={item.product.category}
                         className="max-w-full max-h-full object-contain"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                       />
                     </div>
                     <div className="flex-1 min-w-0">

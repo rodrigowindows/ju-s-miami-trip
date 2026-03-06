@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
 import { Heart, ShoppingBag, Truck } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating, fakePreviousPrice } from "./catalog-utils";
 import { getMLComparison } from "@/lib/ml-prices";
+import { ProductImage } from "./ProductImage";
 import type { CatalogProduct } from "@/types";
 
 export interface ActiveDeal {
@@ -35,12 +35,6 @@ function AvailabilityBadge({ product }: { product: CatalogProduct }) {
 }
 
 export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wishlisted, onToggleWishlist }: ProductCardProps) {
-  const fallbackImage = "/images/product-placeholder.jpg";
-  const [imgSrc, setImgSrc] = useState(product.image_url || fallbackImage);
-
-  useEffect(() => {
-    setImgSrc(product.image_url || fallbackImage);
-  }, [product.image_url]);
   const { rating, reviews } = fakeRating(product.name);
   const prevPrice = fakePreviousPrice(brl, product.name);
   const finalPrice = activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl;
@@ -51,16 +45,12 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
   return (
     <div onClick={onClick} className="bg-white rounded-xl overflow-hidden text-left group flex flex-col cursor-pointer border border-gray-100 hover:shadow-md transition-shadow">
       <div className="aspect-square relative overflow-hidden bg-white">
-        <img
-          src={imgSrc}
+        <ProductImage
+          src={product.image_url}
           alt={product.name}
+          brand={product.brand}
+          category={product.category}
           className="w-full h-full object-cover rounded-t-xl"
-          loading="lazy"
-          onError={() => {
-            if (imgSrc !== fallbackImage) {
-              setImgSrc(fallbackImage);
-            }
-          }}
         />
 
         <AvailabilityBadge product={product} />

@@ -13,6 +13,7 @@ import { ChevronRight, Shield, Truck, RotateCcw, MessageCircle, Share2, Heart, S
 import { getMLComparison } from "@/lib/ml-prices";
 import StickyBuyBar from "@/components/catalog/StickyBuyBar";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { ProductImage } from "@/components/catalog/ProductImage";
 
 function slugify(text: string) {
   return text
@@ -109,11 +110,13 @@ export default function PublicProductPage() {
               className="aspect-square bg-white border rounded-xl p-6 relative cursor-zoom-in overflow-hidden group"
               onClick={() => setZoomed(!zoomed)}
             >
-              <img
+              <ProductImage
                 src={images[selectedImage]}
                 alt={product.name}
+                brand={product.brand}
+                category={product.category}
                 className={`w-full h-full object-contain transition-transform duration-300 ${zoomed ? "scale-150" : "group-hover:scale-105"}`}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                loading="eager"
               />
               <div className="absolute bottom-3 right-3 bg-white/80 rounded-full p-2 shadow-sm">
                 <ZoomIn size={16} className="text-gray-500" />

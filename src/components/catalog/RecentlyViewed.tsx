@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Clock } from "lucide-react";
+import { ProductImage } from "./ProductImage";
 import type { CatalogProduct } from "@/types";
 
 interface RecentlyViewedProps {
@@ -45,12 +46,12 @@ export function RecentlyViewed({ productIds, calcBRL, onSelect }: RecentlyViewed
                 className="shrink-0 w-[120px] text-left group"
               >
                 <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden mb-1.5 flex items-center justify-center p-2">
-                  <img
+                  <ProductImage
                     src={p.image_url}
                     alt={p.name}
+                    brand={p.brand}
+                    category={p.category}
                     className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform"
-                    loading="lazy"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
                 </div>
                 <p className="text-[11px] text-gray-900 leading-tight line-clamp-2">{p.name}</p>

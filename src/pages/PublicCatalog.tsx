@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { fixImageUrl } from "@/lib/fix-image-urls";
+import { ProductImage } from "@/components/catalog/ProductImage";
 import type { CatalogProduct, ProductQuestion, ProductReview } from "@/types";
 import type { Tables } from "@/integrations/supabase/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -153,7 +154,7 @@ function DealCard({
         {deal.discount_percent}% OFF
       </div>
       <div className="aspect-square bg-white p-3 flex items-center justify-center overflow-hidden relative">
-        <img src={p.image_url} alt={p.name} className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform" loading="lazy" onError={() => setImgBroken(true)} />
+        <ProductImage src={p.image_url} alt={p.name} brand={p.brand} category={p.category} className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform" />
       </div>
       <div className="p-2.5 space-y-1.5 border-t border-gray-100">
         <p className="text-xs text-gray-900 leading-tight line-clamp-2">{p.name}</p>
@@ -473,7 +474,7 @@ export default function PublicCatalog() {
             return (
               <>
                 <div className="bg-white relative">
-                  <div className="aspect-square bg-white p-6 flex items-center justify-center"><img src={selectedProduct.image_url} alt={selectedProduct.name} className="max-w-full max-h-full object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} /></div>
+                  <div className="aspect-square bg-white p-6 flex items-center justify-center"><ProductImage src={selectedProduct.image_url} alt={selectedProduct.name} brand={selectedProduct.brand} category={selectedProduct.category} className="max-w-full max-h-full object-contain" loading="eager" /></div>
                   <button onClick={() => setSelectedProduct(null)} className="absolute top-3 right-3 bg-white/90 text-gray-600 rounded-full p-1.5 shadow-md hover:bg-white"><X size={16} /></button>
                   {bestSeller && (<div className="absolute top-3 left-3"><span className="bg-[#E47911] text-white text-xs font-bold px-2 py-1 rounded">Mais vendido</span></div>)}
                 </div>

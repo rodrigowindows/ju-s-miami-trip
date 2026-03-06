@@ -8,6 +8,7 @@ import { useSettings } from "@/hooks/useSettings";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
 import EmptyState from "@/components/shared/EmptyState";
+import { ProductImage } from "@/components/catalog/ProductImage";
 
 export default function ClientCart() {
   const { items, removeItem, updateQuantity, clearCart } = useCart();
@@ -64,11 +65,12 @@ export default function ClientCart() {
             <Card key={item.product.id}>
               <CardContent className="p-3 flex gap-3">
                 <div className="w-20 h-20 bg-gray-50 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
-                  <img
+                  <ProductImage
                     src={item.product.image_url}
                     alt={item.product.name}
+                    brand={item.product.brand}
+                    category={item.product.category}
                     className="max-w-full max-h-full object-contain"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
                 </div>
                 <div className="flex-1 min-w-0">

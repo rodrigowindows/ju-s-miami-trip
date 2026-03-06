@@ -11,7 +11,7 @@ export function useCatalogProducts(category?: string) {
       if (category && category !== "Todos") query = query.eq("category", category);
       const { data, error } = await query;
       if (error) throw error;
-      return ((data ?? []) as CatalogProduct[]).filter((p) => p.image_url && p.image_url.trim() !== "").map((p) => ({
+      return ((data ?? []) as CatalogProduct[]).map((p) => ({
         ...p,
         image_url: fixImageUrl(p.image_url),
         availability_type: (!p.availability_type || p.availability_type === "esgotado") ? "pronta_entrega" : p.availability_type,
