@@ -1,0 +1,1 @@
+INSERT INTO settings (key, value) VALUES ('pix_key', 'ajuvaiparamiami@pix.com'), ('pix_key_holder', 'AjuVaiParaMiami') ON CONFLICT (key) DO NOTHING;
