@@ -12,18 +12,16 @@ import { useActivePromotions } from "@/hooks/usePromotions";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
-import { ChevronLeft, CheckCircle2, Loader2, MapPin, CreditCard, ClipboardList, PartyPopper, Copy, QrCode, Shield, Clock, Phone, Mail } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Loader2, MapPin, ClipboardList, PartyPopper, Copy, QrCode, Shield, Phone, Mail, MessageCircle } from "lucide-react";
 
 const steps = [
   { label: "Endereço", icon: MapPin },
-  { label: "Pagamento", icon: CreditCard },
   { label: "Revisão", icon: ClipboardList },
   { label: "Confirmação", icon: PartyPopper },
 ];
 
 export default function ClientCheckout() {
   const [step, setStep] = useState(0);
-  const [payment, setPayment] = useState<"pix" | "cartao" | "wallet">("pix");
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [doneOrder, setDoneOrder] = useState<string | null>(null);
@@ -100,7 +98,6 @@ export default function ClientCheckout() {
   }, []);
 
   function handleCepChange(value: string) {
-    // Format CEP: 12345-678
     const digits = value.replace(/\D/g, "").slice(0, 8);
     const formatted = digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
     setAddress({ ...address, cep: formatted });
@@ -153,6 +150,8 @@ export default function ClientCheckout() {
 
   const pixKey = settings?.pix_key || "ajuvaiparamiami@pix.com";
   const pixKeyHolder = settings?.pix_key_holder || "AjuVaiParaMiami";
+  const pixQrImage = settings?.pix_qr_image || "";
+  const whatsappNumber = settings?.whatsapp_number || "5561999999999";
 
   function copyPixCode() {
     navigator.clipboard.writeText(pixKey).then(() => {
@@ -160,6 +159,14 @@ export default function ClientCheckout() {
       toast.success("Chave PIX copiada!");
       setTimeout(() => setPixCopied(false), 3000);
     });
+  }
+
+  function openWhatsApp() {
+    const depositAmount = formatBRL(finalTotal * 0.5);
+    const message = encodeURIComponent(
+      `Olá! Segue o comprovante do PIX referente ao pedido *${doneOrder}*.\n\nValor do sinal: *${depositAmount}*\n\nAguardo confirmação!`
+    );
+    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
   }
 
   async function confirmOrder() {
@@ -177,7 +184,7 @@ export default function ClientCheckout() {
         total_brl: finalTotal,
         total_amount: finalTotal,
         deposit_amount: depositAmount,
-        notes: `Pagamento: ${payment}. Endereço: ${address.street}, ${address.number}${address.neighborhood ? ` - ${address.neighborhood}` : ""}${address.complement ? ` (${address.complement})` : ""} - ${address.city}/${address.state} - CEP: ${address.cep}. Tel: ${address.phone}. Email: ${address.email}${matchedPromo ? `. Cupom: ${matchedPromo.coupon_code}` : ""}`,
+        notes: `Pagamento: PIX. Endereço: ${address.street}, ${address.number}${address.neighborhood ? ` - ${address.neighborhood}` : ""}${address.complement ? ` (${address.complement})` : ""} - ${address.city}/${address.state} - CEP: ${address.cep}. Tel: ${address.phone}. Email: ${address.email}${matchedPromo ? `. Cupom: ${matchedPromo.coupon_code}` : ""}`,
       });
       for (const item of items) {
         await createOrderItem.mutateAsync({
@@ -192,7 +199,7 @@ export default function ClientCheckout() {
 
       clearCart();
       setDoneOrder(order.order_number);
-      setStep(3);
+      setStep(2);
     } catch {
       toast.error("Erro ao criar pedido. Tente novamente.");
     } finally {
@@ -200,7 +207,7 @@ export default function ClientCheckout() {
     }
   }
 
-  if (items.length === 0 && step < 3) {
+  if (items.length === 0 && step < 2) {
     return (
       <div className="text-center py-16 space-y-3">
         <p className="text-gray-500">Seu carrinho está vazio.</p>
@@ -214,7 +221,7 @@ export default function ClientCheckout() {
       <h1 className="font-display text-xl font-bold">Checkout</h1>
 
       {/* Steps indicator */}
-      <div className="grid grid-cols-4 gap-1">
+      <div className="grid grid-cols-3 gap-1">
         {steps.map((s, i) => {
           const Icon = s.icon;
           return (
@@ -234,7 +241,7 @@ export default function ClientCheckout() {
       </div>
 
       {/* Back button */}
-      {step > 0 && step < 3 && (
+      {step > 0 && step < 2 && (
         <Button variant="ghost" size="sm" onClick={() => setStep(step - 1)} className="gap-1 text-gray-600">
           <ChevronLeft size={16} /> Voltar
         </Button>
@@ -308,59 +315,36 @@ export default function ClientCheckout() {
 
             {addressError && <p className="text-sm text-red-500 bg-red-50 p-2 rounded-md">{addressError}</p>}
             <Button className="w-full h-11" onClick={() => { if (validateAddress()) setStep(1); }}>
-              Continuar para pagamento
+              Revisar pedido
             </Button>
           </CardContent>
         </Card>
       )}
 
-      {/* Step 1: Payment */}
+      {/* Step 1: Review + Coupon (merged) */}
       {step === 1 && (
         <Card className="shadow-sm">
           <CardContent className="pt-5 space-y-4">
             <div className="flex items-center gap-2">
-              <CreditCard size={18} className="text-rose-500" />
-              <h2 className="font-semibold">Forma de pagamento</h2>
+              <ClipboardList size={18} className="text-rose-500" />
+              <h2 className="font-semibold">Resumo do pedido</h2>
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
-              {([
-                { key: "pix" as const, label: "PIX", desc: "Desconto 5%" },
-                { key: "cartao" as const, label: "Cartão", desc: "Até 6x" },
-                { key: "wallet" as const, label: "Saldo", desc: "Wallet" },
-              ]).map((opt) => (
-                <button
-                  key={opt.key}
-                  onClick={() => setPayment(opt.key)}
-                  className={`p-3 rounded-xl border-2 text-center transition-all ${
-                    payment === opt.key
-                      ? "border-rose-500 bg-rose-50"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                >
-                  <p className="text-sm font-semibold">{opt.label}</p>
-                  <p className="text-[10px] text-gray-500">{opt.desc}</p>
-                </button>
+            <div className="space-y-3 border-b pb-4">
+              {items.map((item) => (
+                <div key={item.product.id} className="flex items-center gap-3 bg-gray-50 rounded-lg p-2">
+                  <img src={item.product.image_url} alt={item.product.name} className="w-14 h-14 rounded-lg object-cover border" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{item.product.name}</p>
+                    <p className="text-xs text-gray-500">Qtd: {item.quantity}</p>
+                  </div>
+                  <p className="text-sm font-bold">{formatBRL(calculatePriceBRL(item.product.price_usd, exchangeRate, spread) * item.quantity)}</p>
+                </div>
               ))}
             </div>
 
-            {payment === "pix" && (
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <QrCode size={18} className="text-emerald-600" />
-                  <p className="text-sm font-medium text-emerald-800">Pagamento via PIX</p>
-                </div>
-                <p className="text-xs text-emerald-700">
-                  Ao confirmar, você receberá a chave PIX para transferência. Envie o comprovante pelo WhatsApp.
-                </p>
-                <div className="flex items-center gap-2 text-xs text-emerald-600">
-                  <CheckCircle2 size={14} />
-                  <span>Sem taxas de gateway — direto na conta</span>
-                </div>
-              </div>
-            )}
-
-            <div className="pt-2">
+            {/* Coupon section */}
+            <div className="pt-1">
               <div className="flex items-center gap-2 mb-2">
                 <h3 className="font-semibold text-sm">Cupom de desconto</h3>
               </div>
@@ -383,38 +367,14 @@ export default function ClientCheckout() {
               )}
             </div>
 
-            <Button className="w-full h-11" onClick={() => setStep(2)}>Revisar pedido</Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Step 2: Review */}
-      {step === 2 && (
-        <Card className="shadow-sm">
-          <CardContent className="pt-5 space-y-4">
-            <div className="flex items-center gap-2">
-              <ClipboardList size={18} className="text-rose-500" />
-              <h2 className="font-semibold">Resumo do pedido</h2>
-            </div>
-
-            <div className="space-y-3 border-b pb-4">
-              {items.map((item) => (
-                <div key={item.product.id} className="flex items-center gap-3 bg-gray-50 rounded-lg p-2">
-                  <img src={item.product.image_url} alt={item.product.name} className="w-14 h-14 rounded-lg object-cover border" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{item.product.name}</p>
-                    <p className="text-xs text-gray-500">Qtd: {item.quantity}</p>
-                  </div>
-                  <p className="text-sm font-bold">{formatBRL(calculatePriceBRL(item.product.price_usd, exchangeRate, spread) * item.quantity)}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2 text-sm border-t pt-3">
               <div className="flex justify-between"><span className="text-gray-600">Subtotal</span><span>{formatBRL(totalBRL)}</span></div>
               {discount > 0 && <div className="flex justify-between text-emerald-600"><span>Desconto ({matchedPromo?.coupon_code})</span><span>-{formatBRL(discount)}</span></div>}
               <div className="flex justify-between font-bold text-lg pt-2 border-t"><span>Total</span><span>{formatBRL(finalTotal)}</span></div>
-              <p className="text-xs text-gray-500">Depósito (50%): {formatBRL(finalTotal * 0.5)}</p>
+              <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 rounded-lg p-2">
+                <QrCode size={14} />
+                <span className="text-xs font-medium">Pagamento via PIX — Sinal (50%): {formatBRL(finalTotal * 0.5)}</span>
+              </div>
             </div>
 
             <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-2">
@@ -432,10 +392,6 @@ export default function ClientCheckout() {
                 <Mail size={14} className="text-gray-400 shrink-0" />
                 <p className="text-gray-700">{address.email}</p>
               </div>
-              <div className="flex items-center gap-2">
-                <CreditCard size={14} className="text-gray-400 shrink-0" />
-                <p className="text-gray-700">{payment === "pix" ? "PIX" : payment === "cartao" ? "Cartão" : "Saldo wallet"}</p>
-              </div>
             </div>
 
             <div className="flex items-center gap-2 bg-blue-50 rounded-lg p-3 text-xs text-blue-700">
@@ -450,8 +406,8 @@ export default function ClientCheckout() {
         </Card>
       )}
 
-      {/* Step 3: Confirmation */}
-      {step === 3 && (
+      {/* Step 2: Confirmation */}
+      {step === 2 && (
         <Card className="shadow-sm">
           <CardContent className="pt-8 pb-8 space-y-5 text-center">
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
@@ -466,36 +422,50 @@ export default function ClientCheckout() {
               <p className="text-lg font-bold text-gray-900">{doneOrder}</p>
             </div>
 
-            {/* Dynamic PIX QR Code */}
-            {payment === "pix" && (
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 space-y-3">
-                <div className="flex items-center justify-center gap-2">
-                  <QrCode size={18} className="text-emerald-600" />
-                  <p className="text-sm font-semibold text-emerald-800">Pague via PIX</p>
-                </div>
-
-                <p className="text-xs text-gray-600">
-                  Depósito de <strong>{formatBRL(finalTotal * 0.5)}</strong>
-                </p>
-
-                <div className="bg-white rounded-lg p-3 space-y-2">
-                  <p className="text-xs text-gray-500">Chave PIX:</p>
-                  <div className="flex items-center gap-2">
-                    <code className="flex-1 text-sm text-gray-800 font-medium break-all">{pixKey}</code>
-                    <Button variant="ghost" size="sm" onClick={copyPixCode} className="shrink-0 gap-1 text-xs">
-                      <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
-                    </Button>
-                  </div>
-                  {pixKeyHolder && (
-                    <p className="text-xs text-gray-500">Titular: <strong>{pixKeyHolder}</strong></p>
-                  )}
-                </div>
-
-                <p className="text-xs text-amber-700 bg-amber-50 rounded-lg p-2">
-                  📲 Após o pagamento, envie o comprovante pelo WhatsApp para confirmação rápida.
-                </p>
+            {/* PIX Payment Section */}
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 space-y-4">
+              <div className="flex items-center justify-center gap-2">
+                <QrCode size={18} className="text-emerald-600" />
+                <p className="text-sm font-semibold text-emerald-800">Pague via PIX</p>
               </div>
-            )}
+
+              <p className="text-xs text-gray-600">
+                Depósito de <strong>{formatBRL(finalTotal * 0.5)}</strong>
+              </p>
+
+              {/* QR Code Image */}
+              {pixQrImage && (
+                <div className="flex justify-center">
+                  <img
+                    src={pixQrImage}
+                    alt="QR Code PIX"
+                    className="w-48 h-48 rounded-lg border border-emerald-200 bg-white p-2"
+                  />
+                </div>
+              )}
+
+              <div className="bg-white rounded-lg p-3 space-y-2">
+                <p className="text-xs text-gray-500">Chave PIX:</p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 text-sm text-gray-800 font-medium break-all">{pixKey}</code>
+                  <Button variant="ghost" size="sm" onClick={copyPixCode} className="shrink-0 gap-1 text-xs">
+                    <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
+                  </Button>
+                </div>
+                {pixKeyHolder && (
+                  <p className="text-xs text-gray-500">Titular: <strong>{pixKeyHolder}</strong></p>
+                )}
+              </div>
+
+              {/* WhatsApp Button */}
+              <Button
+                onClick={openWhatsApp}
+                className="w-full h-11 bg-[#25D366] hover:bg-[#20BD5A] text-white gap-2"
+              >
+                <MessageCircle size={18} />
+                Enviar comprovante via WhatsApp
+              </Button>
+            </div>
 
             <p className="text-sm text-gray-600">
               Você receberá atualizações sobre seu pedido via WhatsApp e notificações.

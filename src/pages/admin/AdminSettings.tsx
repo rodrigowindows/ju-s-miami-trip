@@ -15,6 +15,7 @@ const SETTING_LABELS: Record<string, { label: string; description: string; type:
   whatsapp_phone: { label: "Telefone WhatsApp", description: "Número do operador para links wa.me (ex: 5561999999999)", type: "text" },
   pix_key: { label: "Chave PIX", description: "Chave PIX para receber pagamentos (CPF, e-mail, telefone ou aleatória)", type: "text" },
   pix_key_holder: { label: "Titular da Chave PIX", description: "Nome do titular da conta PIX", type: "text" },
+  pix_qr_image: { label: "QR Code PIX (URL da imagem)", description: "URL da imagem do QR Code PIX para exibir no checkout (cole o link da imagem)", type: "text" },
   prohibited_items: { label: "Itens Proibidos", description: "Lista de itens que não podem ser trazidos (um por linha)", type: "textarea" },
 };
 
@@ -24,6 +25,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   whatsapp_phone: "5561999999999",
   pix_key: "",
   pix_key_holder: "",
+  pix_qr_image: "",
   prohibited_items: "Armas\nDrogas\nMedicamentos controlados\nAlimentos perecíveis\nAnimais vivos",
 };
 
