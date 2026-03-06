@@ -32,7 +32,6 @@ export default function ClientCheckout() {
   const [addressError, setAddressError] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
   const [pixCopied, setPixCopied] = useState(false);
-  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const nav = useNavigate();
 
   const { items, clearCart } = useCart();
