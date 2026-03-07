@@ -56,7 +56,7 @@ export default function PremiumHeader() {
               className="text-black font-bold text-2xl"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              MalaBridge
+              a ju vai para miami
             </span>
           </button>
 
@@ -182,7 +182,7 @@ export default function PremiumHeader() {
                 className="text-black font-bold text-xl"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                MalaBridge
+                a ju vai para miami
               </span>
               <button
                 onClick={() => setMobileMenuOpen(false)}
