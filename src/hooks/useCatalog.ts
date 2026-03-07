@@ -16,7 +16,7 @@ export function useCatalogProducts(category?: string) {
         image_url: fixImageUrl(p.image_url),
         availability_type: (!p.availability_type || p.availability_type === "esgotado") ? "pronta_entrega" : p.availability_type,
         stock_quantity: (!p.stock_quantity || p.stock_quantity <= 0) ? 2 : p.stock_quantity,
-      })).filter((p) => p.image_url && p.image_url.trim() !== "");
+      }));
     },
   });
 }
