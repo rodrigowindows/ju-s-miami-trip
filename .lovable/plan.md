@@ -1,23 +1,28 @@
 
 
-## Habilitando Stripe no Lovable
+## Diagnóstico: Migration NÃO foi aplicada
 
-Não preciso gerar um prompt externo — posso habilitar o Stripe diretamente aqui no projeto. O processo é:
+A migration `20260306130000_fix_verified_product_images.sql` **existe no repo mas NÃO foi executada no banco**. Evidências:
 
-1. **Eu rodo a ferramenta `enable_stripe`** — isso configura a integração automaticamente
-2. **Você fornece a Secret Key do Stripe** — o sistema pede via interface segura (não no chat)
-3. **Após habilitado**, ganho acesso a ferramentas para criar produtos, preços, checkout sessions, etc.
+- **AirPods Pro 2**: DB tem `61f1YfTkTDL`, migration define `61SUj2aKoEL`
+- **3 produtos VS** compartilham a mesma URL `71nK4v8BQPL` (dados da migration `120000` ainda ativos)
+- **150 produtos** com URLs Amazon, muitas provavelmente retornando 404
 
-### O que você precisa ter pronto
+## Plano de execução
 
-- Conta no [Stripe Dashboard](https://dashboard.stripe.com)
-- **Secret Key** (começa com `sk_test_` ou `sk_live_`) — encontrada em Developers → API Keys
+### 1. Aplicar a migration pendente via insert tool
+Executar os ~381 linhas de UPDATE statements da migration `20260306130000_fix_verified_product_images.sql` em blocos:
+- **Fase 1**: Restaurar 21 URLs verificadas da Amazon (Apple, Gaming, Audio, etc.)
+- **Fase 2**: Adicionar URLs oficiais de marcas (VS local, BBW, Nike, etc.)
+- **Fase 3**: Blanquear URLs quebradas restantes (Amazon genéricas, Unsplash, fimgs.net) → `image_url = ''`
+- Resultado: ~21 produtos com imagem real verificada, restante com `image_url = ''` que ativa o fallback `placehold.co` com nome da marca
 
-### Importante para seu caso
+### 2. Verificar resultado pós-execução
+- Query para confirmar distribuição: quantos com URL real vs. vazio
+- Testar no preview que o fallback branded placeholder funciona para produtos sem URL
 
-Seu projeto já usa **PIX via OpenPix** para pagamentos. O Stripe seria um método **adicional** (cartão de crédito). Ambos podem coexistir.
-
----
-
-Se quiser que eu habilite agora, é só confirmar e eu rodo a ferramenta. Não precisa de outra LLM para isso.
+### Impacto
+- Produtos com URLs verificadas: imagem real da Amazon
+- Produtos sem URL real: placeholder bonito com nome da marca (já funciona via `ProductImage.tsx`)
+- Zero imagens quebradas/404
 
