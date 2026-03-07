@@ -1,67 +1,28 @@
-import { useState } from "react";
-import { X, Minus, Plus, Trash2, ShoppingBag, Truck, Loader2 } from "lucide-react";
+import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { useCreateOrder, useCreateOrderItem } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
-import { useAuth } from "@/contexts/AuthContext";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
-import { toast } from "sonner";
 import { ProductImage } from "./ProductImage";
 
 export function CartDrawer() {
-  const { items, removeItem, updateQuantity, clearCart, isOpen, closeCart, totalItems } = useCart();
+  const { items, removeItem, updateQuantity, isOpen, closeCart, totalItems } = useCart();
   const { data: settings } = useSettings();
-  const { user, profile } = useAuth();
-  const createOrder = useCreateOrder();
-  const createOrderItem = useCreateOrderItem();
-  const [ordering, setOrdering] = useState(false);
+  const nav = useNavigate();
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
   const spread = Number(settings?.spread_percent ?? "45");
   const calcBRL = (usd: number) => calculatePriceBRL(usd, exchangeRate, spread);
 
-  const totalUSD = items.reduce((sum, i) => sum + i.product.price_usd * i.quantity, 0);
   const totalBRL = items.reduce((sum, i) => sum + calcBRL(i.product.price_usd) * i.quantity, 0);
   const deposit = totalBRL * 0.5;
 
-  async function handleCheckout() {
-    if (!user || !profile || items.length === 0) return;
-    setOrdering(true);
-    try {
-      const itemNames = items.map((i) => `${i.product.name}${i.quantity > 1 ? ` (x${i.quantity})` : ""}`).join(", ");
-
-      const order = await createOrder.mutateAsync({
-        client_id: user.id,
-        customer_name: profile.full_name ?? "",
-        customer_phone: profile.phone ?? undefined,
-        items: itemNames,
-        total_usd: totalUSD,
-        total_brl: totalBRL,
-        total_amount: totalBRL,
-        deposit_amount: deposit,
-      });
-
-      for (const item of items) {
-        await createOrderItem.mutateAsync({
-          order_id: order.id,
-          product_name: item.product.name,
-          product_image_url: item.product.image_url,
-          quantity: item.quantity,
-          price_usd: item.product.price_usd * item.quantity,
-          price_brl: calcBRL(item.product.price_usd) * item.quantity,
-        });
-      }
-
-      clearCart();
-      closeCart();
-      toast.success("Pedido criado! Acompanhe em Meus Pedidos.");
-    } catch {
-      toast.error("Erro ao criar pedido.");
-    } finally {
-      setOrdering(false);
-    }
+  function handleCheckout() {
+    if (items.length === 0) return;
+    closeCart();
+    nav("/client/checkout");
   }
 
   if (!isOpen) return null;
@@ -168,15 +129,10 @@ export function CartDrawer() {
 
             <Button
               onClick={handleCheckout}
-              disabled={ordering}
               className="w-full bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full border border-[#FCD200] font-medium h-11"
             >
-              {ordering ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <ShoppingBag className="h-4 w-4 mr-2" />
-              )}
-              {ordering ? "Finalizando..." : `Finalizar pedido - ${formatBRL(deposit)}`}
+              <ShoppingBag className="h-4 w-4 mr-2" />
+              {`Ir para checkout - ${formatBRL(deposit)}`}
             </Button>
 
             <p className="text-[11px] text-gray-500 text-center">
