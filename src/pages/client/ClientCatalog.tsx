@@ -311,11 +311,6 @@ export default function ClientCatalog() {
                         </p>
                       </div>
                     )}
-
-                    <div className="flex items-center gap-1.5 mt-3">
-                      <Truck size={14} className="text-[#007600]" />
-                      <span className="text-sm text-[#007600] font-medium">Entrega via viagem Miami</span>
-                    </div>
                   </div>
 
                   {/* Reviews Section */}

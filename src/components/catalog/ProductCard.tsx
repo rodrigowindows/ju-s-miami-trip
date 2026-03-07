@@ -1,4 +1,4 @@
-import { Heart, ShoppingBag, Truck } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating } from "./catalog-utils";
 import { getMLComparison } from "@/lib/ml-prices";
@@ -92,23 +92,6 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
           )}
         </div>
 
-        {/* Frete badge */}
-        <div className="flex items-center gap-1.5 mt-1.5">
-          {finalPrice >= 500 ? (
-            <span
-              className="text-[11px] font-medium px-1.5 py-0.5 rounded"
-              style={{ color: "#28a745", border: "1px solid #28a745" }}
-            >
-              <Truck size={10} className="inline mr-0.5 -mt-0.5" />
-              Frete grátis
-            </span>
-          ) : (
-            <span className="text-[11px] font-medium px-1.5 py-0.5 rounded text-gray-500 border border-gray-300">
-              <Truck size={10} className="inline mr-0.5 -mt-0.5" />
-              Frete a calcular
-            </span>
-          )}
-        </div>
 
         <button
           onClick={(e) => {
