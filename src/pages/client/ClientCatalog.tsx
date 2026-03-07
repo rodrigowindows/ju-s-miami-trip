@@ -61,7 +61,7 @@ export default function ClientCatalog() {
   const { data: settings } = useSettings();
   const { user, profile } = useAuth();
   const { items, openCart } = useCart();
-  const { handleAddToCart: buyAddToCart } = useBuyAction();
+  const { handleAddToCart: buyAddToCart, handleBuyNow } = useBuyAction();
   const { data: wishlistIds } = useWishlist(user?.id);
   const toggleWishlist = useToggleWishlist();
   const { recentIds, addViewed } = useRecentlyViewed();
@@ -221,7 +221,7 @@ export default function ClientCatalog() {
                 product={p}
                 brl={calcBRL(p.price_usd)}
                 onClick={() => handleSelectProduct(p)}
-                onAddToCart={() => handleAddToCart(p)}
+                onAddToCart={() => handleBuyNow(p)}
                 wishlisted={(wishlistIds ?? []).includes(p.id)}
                 onToggleWishlist={() => handleToggleWishlist(p.id)}
               />
