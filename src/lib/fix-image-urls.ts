@@ -3,6 +3,13 @@
  */
 const BLOCKED_DOMAINS = [
   "fimgs.net",
+  "dior.com",
+  "theordinary.com",
+  "cerave.com",
+  "olaplex.com",
+  "toofaced.com",
+  "sdcdn.io",       // MAC
+  "soldejaneiro.com",
 ];
 
 const FALLBACK = "/images/product-placeholder.jpg";
