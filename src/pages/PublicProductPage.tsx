@@ -14,6 +14,7 @@ import { getMLComparison } from "@/lib/ml-prices";
 import StickyBuyBar from "@/components/catalog/StickyBuyBar";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { ProductImage } from "@/components/catalog/ProductImage";
+import { useBuyAction } from "@/hooks/useBuyAction";
 
 function slugify(text: string) {
   return text
@@ -29,6 +30,7 @@ export default function PublicProductPage() {
   const nav = useNavigate();
   const { toast } = useToast();
   const { track } = useAnalytics();
+  const { isLoggedIn, handleAddToCart, handleBuyNow, goToLogin } = useBuyAction();
   const { data: products = [] } = useCatalogProducts();
   const { data: settings } = useSettings();
   const [selectedImage, setSelectedImage] = useState(0);
@@ -223,15 +225,15 @@ export default function PublicProductPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <Button className="bg-rose-500 hover:bg-rose-600 text-white gap-2 h-12" onClick={() => { track("buy_click", { product_id: product.id, product_name: product.name, product_brand: product.brand, product_category: product.category, product_price_brl: brl }); nav('/login'); }}>
-                    <ShoppingBag size={16} /> Comprar agora
+                  <Button className="bg-rose-500 hover:bg-rose-600 text-white gap-2 h-12" onClick={() => { track("buy_click", { product_id: product.id, product_name: product.name, product_brand: product.brand, product_category: product.category, product_price_brl: brl }); handleBuyNow(product, { quantity }); }}>
+                    <ShoppingBag size={16} /> {isLoggedIn ? "Comprar agora" : "Login para comprar"}
                   </Button>
-                  <Button variant="outline" className="gap-2 h-12" onClick={() => nav('/login')}>
-                    Adicionar ao carrinho
+                  <Button variant="outline" className="gap-2 h-12" onClick={() => { if (handleAddToCart(product, { quantity })) { toast({ title: "Produto adicionado ao carrinho!" }); } }}>
+                    {isLoggedIn ? "Adicionar ao carrinho" : "Criar conta"}
                   </Button>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" className="flex-1 gap-1 text-gray-600" onClick={() => nav('/login')}>
+                  <Button variant="ghost" size="sm" className="flex-1 gap-1 text-gray-600" onClick={() => isLoggedIn ? toast({ title: "Em breve!" }) : goToLogin()}>
                     <Heart size={14} /> Favoritar
                   </Button>
                   <Button variant="ghost" size="sm" className="flex-1 gap-1 text-gray-600" onClick={() => {

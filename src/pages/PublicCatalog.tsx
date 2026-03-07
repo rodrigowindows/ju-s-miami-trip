@@ -20,6 +20,7 @@ import Logo from "@/components/shared/Logo";
 import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
+import { useBuyAction } from "@/hooks/useBuyAction";
 import { useSearchTracker } from "@/hooks/useSearchTracker";
 import { useSettings } from "@/hooks/useSettings";
 import { usePageView, useAnalytics } from "@/hooks/useAnalytics";
@@ -244,6 +245,7 @@ export default function PublicCatalog() {
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { reviews: productReviews, loading: reviewsLoading } = useProductReviewsLocal(selectedProduct?.id ?? null);
   const { toast } = useToast();
+  const { isLoggedIn, handleAddToCart } = useBuyAction();
   const trackSearch = useSearchTracker("public");
 
   const [askName, setAskName] = useState("");
@@ -524,7 +526,7 @@ export default function PublicCatalog() {
                   </div>
                   {selectedProduct.availability_type === "esgotado" && (<div className="mt-2"><NotifyMeButton productId={selectedProduct.id} productName={selectedProduct.name} /></div>)}
                   <div className="flex gap-2 mt-2">
-                    <Link to="/login" className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]"><LogIn size={16} />Login para comprar</Link>
+                    <button onClick={() => { const added = handleAddToCart(selectedProduct); if (added) { setSelectedProduct(null); toast({ title: "Produto adicionado ao carrinho!" }); } }} className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]">{isLoggedIn ? <ShoppingBag size={16} /> : <LogIn size={16} />}{isLoggedIn ? "Adicionar ao carrinho" : "Login para comprar"}</button>
                     <button onClick={() => shareProductWhatsApp(selectedProduct, brl)} className="flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-full py-2.5 px-4 font-medium text-sm transition-colors"><Share2 size={16} /></button>
                   </div>
                 </div>
