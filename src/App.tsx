@@ -102,6 +102,7 @@ const App = () => (
         <Sonner />
         <CookieBanner />
         <WhatsAppButton />
+        <CartProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<PublicCatalog />} />
@@ -132,9 +133,7 @@ const App = () => (
               path="/client"
               element={
                 <RequireClient>
-                  <CartProvider>
                     <ClientLayout />
-                  </CartProvider>
                 </RequireClient>
               }
             >
@@ -192,6 +191,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </CartProvider>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
