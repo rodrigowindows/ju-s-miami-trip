@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useOrder, useOrderItems, useOrderEvents } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
+import { usePixCharge } from "@/hooks/usePixCharge";
 import { formatBRL, formatDate, formatDateTime, formatRelativeTime } from "@/lib/format";
 import type { OrderStatus } from "@/types";
 
@@ -142,6 +143,7 @@ export default function ClientOrderDetail() {
   const { data: events } = useOrderEvents(id ?? "");
   const { data: settings } = useSettings();
   const whatsappNumber = settings?.whatsapp_number ?? "5561999999999";
+  const { charge, loading: pixLoading, error: pixError, createCharge } = usePixCharge();
 
   if (isLoading || !order) {
     return (
@@ -308,6 +310,55 @@ export default function ClientOrderDetail() {
                 </p>
               </div>
             </div>
+
+            {/* Pay Deposit Button */}
+            {!depositPaid && order.deposit_amount > 0 && order.status !== "cancelado" && (
+              <div className="pt-3 space-y-3">
+                {!charge ? (
+                  <Button
+                    onClick={() => createCharge(order.id, order.deposit_amount)}
+                    disabled={pixLoading}
+                    className="w-full gap-2 bg-[#007600] hover:bg-[#005f00] text-white"
+                  >
+                    {pixLoading ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <CreditCard size={16} />
+                    )}
+                    {pixLoading ? "Gerando PIX..." : `Pagar Sinal ${formatBRL(order.deposit_amount)}`}
+                  </Button>
+                ) : (
+                  <div className="bg-gray-50 rounded-lg p-4 text-center space-y-3">
+                    <p className="text-sm font-semibold">Escaneie o QR Code para pagar</p>
+                    {charge.qr_code_image && (
+                      <img
+                        src={charge.qr_code_image}
+                        alt="QR Code PIX"
+                        className="mx-auto w-48 h-48"
+                      />
+                    )}
+                    {charge.br_code && (
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Ou copie o código PIX:</p>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(charge.br_code!);
+                          }}
+                          className="w-full text-xs bg-white border rounded-md px-3 py-2 font-mono break-all text-left hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                        >
+                          {charge.br_code}
+                        </button>
+                        <p className="text-[10px] text-muted-foreground">Toque para copiar</p>
+                      </div>
+                    )}
+                    <p className="text-xs text-amber-600">Expira em 1 hora</p>
+                  </div>
+                )}
+                {pixError && (
+                  <p className="text-xs text-red-600 text-center">{pixError}</p>
+                )}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
