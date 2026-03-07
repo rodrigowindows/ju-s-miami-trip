@@ -18,6 +18,7 @@ import type { CatalogProduct } from "@/types";
 import { toast } from "sonner";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
+import { getMLComparison } from "@/lib/ml-prices";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
@@ -231,6 +232,7 @@ export default function ClientCatalog() {
           {selected && (() => {
             const { rating, reviews } = getRating(selected);
             const brl = calcBRL(selected.price_usd);
+            const mlComparison = getMLComparison(brl, selected.brand, selected.category);
             const bestSeller = isBestSeller(selected.name);
             const inCart = isInCart(selected.id);
             const wasJustAdded = justAdded === selected.id;
@@ -299,21 +301,16 @@ export default function ClientCatalog() {
                     <p className="text-sm text-emerald-600 font-medium mt-1">
                       à vista no PIX
                     </p>
-
-                    <p className="text-sm text-gray-400 mt-2">
-                      Preço nos EUA: US$ {selected.price_usd.toFixed(2)}
-                    </p>
-
-                    <div className="bg-gray-50 rounded-lg p-3 mt-2 space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Cambio</span>
-                        <span className="text-gray-700">{exchangeRate.toFixed(2).replace(".", ",")} + {spread}%</span>
+                    {mlComparison && (
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mt-2">
+                        <p className="text-sm font-semibold text-emerald-700">
+                          {mlComparison.savingsPercent}% mais barato que no Mercado Livre
+                        </p>
+                        <p className="text-xs text-emerald-600 mt-0.5">
+                          No ML: {mlComparison.mlPrice.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                        </p>
                       </div>
-                      <div className="flex justify-between font-semibold">
-                        <span>Sinal (50%)</span>
-                        <span className="text-[#007600]">{formatBRL(brl * 0.5)}</span>
-                      </div>
-                    </div>
+                    )}
 
                     <div className="flex items-center gap-1.5 mt-3">
                       <Truck size={14} className="text-[#007600]" />

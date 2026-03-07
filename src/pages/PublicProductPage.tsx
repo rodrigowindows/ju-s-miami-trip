@@ -179,7 +179,7 @@ export default function PublicProductPage() {
                 à vista no PIX
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                US$ {product.price_usd.toFixed(2)} · Taxa de câmbio inclusa
+                Preço nos EUA: US$ {product.price_usd.toFixed(2)}
               </p>
             </div>
 

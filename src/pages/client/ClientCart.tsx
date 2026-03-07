@@ -122,22 +122,11 @@ export default function ClientCart() {
         <CardContent className="pt-4 space-y-3">
           <h3 className="font-semibold text-sm">Resumo do pedido</h3>
           <div className="space-y-1.5 text-sm">
-            <div className="flex justify-between text-gray-600">
-              <span>Subtotal (USD)</span>
-              <span>US$ {totalUSD.toFixed(2).replace(".", ",")}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Cambio + {spread}%</span>
-              <span>{exchangeRate.toFixed(2).replace(".", ",")}</span>
-            </div>
-            <div className="flex justify-between font-bold text-gray-900 text-base pt-1 border-t border-gray-200">
+            <div className="flex justify-between font-bold text-gray-900 text-base">
               <span>Total</span>
               <span>{formatBRL(totalBRL)}</span>
             </div>
-            <div className="flex justify-between text-[#007600] font-semibold">
-              <span>Sinal (50%)</span>
-              <span>{formatBRL(deposit)}</span>
-            </div>
+            <p className="text-xs text-emerald-600 font-medium">à vista no PIX</p>
           </div>
 
           <div className="flex items-center gap-1.5">

@@ -374,7 +374,7 @@ export default function ClientCheckout() {
               <div className="flex justify-between font-bold text-lg pt-2 border-t"><span>Total</span><span>{formatBRL(finalTotal)}</span></div>
               <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 rounded-lg p-2">
                 <QrCode size={14} />
-                <span className="text-xs font-medium">Pagamento via PIX — Sinal (50%): {formatBRL(finalTotal * 0.5)}</span>
+                <span className="text-xs font-medium">Pagamento à vista via PIX</span>
               </div>
             </div>
 
