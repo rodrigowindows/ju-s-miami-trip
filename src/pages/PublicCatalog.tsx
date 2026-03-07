@@ -495,7 +495,6 @@ export default function PublicCatalog() {
                     </div>
                     <p className="text-sm text-emerald-600 font-medium mt-1">à vista no PIX</p>
                     <p className="text-sm text-gray-400 mt-2">Preço nos EUA: US$ {selectedProduct.price_usd.toFixed(2)}</p>
-                    <div className="flex items-center gap-1.5 mt-2"><Truck size={14} className="text-[#007600]" /><span className="text-sm text-[#007600] font-medium">Entrega via viagem Miami</span></div>
                   </div>
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex items-center gap-2 mb-3"><MessageSquare size={16} className="text-[#007185]" /><h3 className="font-semibold text-sm text-gray-900">Avaliações de clientes</h3>{productReviews.length > 0 && (<Badge variant="secondary" className="text-[10px]">{productReviews.length}</Badge>)}</div>

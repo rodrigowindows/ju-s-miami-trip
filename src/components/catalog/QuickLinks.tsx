@@ -1,4 +1,4 @@
-import { Truck, Package, HelpCircle, Zap, Award } from "lucide-react";
+import { Package, HelpCircle, Zap, Award, CreditCard } from "lucide-react";
 
 interface QuickLinksProps {
   onScrollToCatalog?: () => void;
@@ -8,9 +8,9 @@ interface QuickLinksProps {
 
 const links = [
   {
-    icon: Truck,
-    label: "Frete Grátis",
-    sub: "Acima de R$500",
+    icon: CreditCard,
+    label: "PIX à Vista",
+    sub: "Pagamento fácil",
     color: "text-emerald-600",
     bg: "bg-emerald-50",
     border: "border-emerald-200",

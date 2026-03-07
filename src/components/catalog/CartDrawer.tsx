@@ -166,11 +166,6 @@ export function CartDrawer() {
               <p className="text-xs text-emerald-600 font-medium">à vista no PIX</p>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <Truck size={14} className="text-[#007600]" />
-              <span className="text-xs text-[#007600] font-medium">Entrega via viagem Miami</span>
-            </div>
-
             <Button
               onClick={handleCheckout}
               disabled={ordering}
