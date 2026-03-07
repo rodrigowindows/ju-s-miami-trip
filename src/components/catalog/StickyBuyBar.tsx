@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
-import { ShoppingBag } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ShoppingBag, LogIn } from "lucide-react";
+import { useBuyAction } from "@/hooks/useBuyAction";
+import type { CatalogProduct } from "@/types";
 
 interface StickyBuyBarProps {
   productName: string;
   priceBrl: number;
   isSoldOut: boolean;
+  product?: CatalogProduct;
 }
 
-export default function StickyBuyBar({ productName, priceBrl, isSoldOut }: StickyBuyBarProps) {
+export default function StickyBuyBar({ productName, priceBrl, isSoldOut, product }: StickyBuyBarProps) {
   const [visible, setVisible] = useState(false);
-  const nav = useNavigate();
+  const { isLoggedIn, handleAddToCart, goToLogin } = useBuyAction();
 
   useEffect(() => {
     function onScroll() {
@@ -22,6 +24,14 @@ export default function StickyBuyBar({ productName, priceBrl, isSoldOut }: Stick
 
   if (!visible) return null;
 
+  const handleClick = () => {
+    if (product && isLoggedIn) {
+      handleAddToCart(product);
+    } else {
+      goToLogin();
+    }
+  };
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] md:hidden">
       <div className="flex items-center gap-3 px-4 py-3">
@@ -32,12 +42,12 @@ export default function StickyBuyBar({ productName, priceBrl, isSoldOut }: Stick
           </p>
         </div>
         <button
-          onClick={() => nav("/login")}
+          onClick={handleClick}
           disabled={isSoldOut}
           className="shrink-0 bg-[#F43F5E] text-white rounded-lg font-semibold text-sm flex items-center gap-2 px-5 py-3 hover:opacity-90 transition-colors disabled:opacity-50"
         >
-          <ShoppingBag size={16} />
-          {isSoldOut ? "Esgotado" : "Comprar"}
+          {isSoldOut ? <ShoppingBag size={16} /> : isLoggedIn ? <ShoppingBag size={16} /> : <LogIn size={16} />}
+          {isSoldOut ? "Esgotado" : isLoggedIn ? "Comprar" : "Login"}
         </button>
       </div>
     </div>

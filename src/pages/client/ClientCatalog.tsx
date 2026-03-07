@@ -11,6 +11,7 @@ import { useProductReviews, useCreateProductReview } from "@/hooks/useProductRev
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
+import { useBuyAction } from "@/hooks/useBuyAction";
 import { useWishlist, useToggleWishlist } from "@/hooks/useWishlist";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { RecentlyViewed } from "@/components/catalog/RecentlyViewed";
@@ -59,7 +60,8 @@ export default function ClientCatalog() {
   const { data: products, isLoading } = useCatalogProducts(category);
   const { data: settings } = useSettings();
   const { user, profile } = useAuth();
-  const { addItem, items, openCart } = useCart();
+  const { items, openCart } = useCart();
+  const { handleAddToCart: buyAddToCart } = useBuyAction();
   const { data: wishlistIds } = useWishlist(user?.id);
   const toggleWishlist = useToggleWishlist();
   const { recentIds, addViewed } = useRecentlyViewed();
@@ -131,10 +133,12 @@ export default function ClientCatalog() {
   };
 
   const handleAddToCart = (product: CatalogProduct) => {
-    addItem(product);
-    setJustAdded(product.id);
-    toast.success("Adicionado ao carrinho!");
-    setTimeout(() => setJustAdded(null), 1500);
+    const added = buyAddToCart(product, { showCart: false });
+    if (added) {
+      setJustAdded(product.id);
+      toast.success("Adicionado ao carrinho!");
+      setTimeout(() => setJustAdded(null), 1500);
+    }
   };
 
   const handleSubmitReview = async () => {
