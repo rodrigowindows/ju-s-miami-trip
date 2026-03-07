@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -14,14 +15,17 @@ import {
   XCircle,
   Receipt,
   CircleDollarSign,
+  Copy,
+  QrCode,
+  MessageCircle,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useOrder, useOrderItems, useOrderEvents } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
-import { usePixCharge } from "@/hooks/usePixCharge";
 import { formatBRL, formatDate, formatDateTime, formatRelativeTime } from "@/lib/format";
+import { toast } from "sonner";
 import type { OrderStatus } from "@/types";
 
 // ── Status flow (ordered) ─────────────────────
@@ -143,7 +147,11 @@ export default function ClientOrderDetail() {
   const { data: events } = useOrderEvents(id ?? "");
   const { data: settings } = useSettings();
   const whatsappNumber = settings?.whatsapp_number ?? "5561999999999";
-  const { charge, loading: pixLoading, error: pixError, createCharge } = usePixCharge();
+  const pixKey = settings?.pix_key || "ajuvaiparamiami@pix.com";
+  const pixKeyHolder = settings?.pix_key_holder || "AjuVaiParaMiami";
+  const pixQrImage = settings?.pix_qr_image || "";
+  const [showPix, setShowPix] = useState(false);
+  const [pixCopied, setPixCopied] = useState(false);
 
   if (isLoading || !order) {
     return (
@@ -311,51 +319,77 @@ export default function ClientOrderDetail() {
               </div>
             </div>
 
-            {/* Pay Deposit Button */}
+            {/* Pay Deposit via PIX */}
             {!depositPaid && order.deposit_amount > 0 && order.status !== "cancelado" && (
               <div className="pt-3 space-y-3">
-                {!charge ? (
+                {!showPix ? (
                   <Button
-                    onClick={() => createCharge(order.id, order.deposit_amount)}
-                    disabled={pixLoading}
+                    onClick={() => setShowPix(true)}
                     className="w-full gap-2 bg-[#007600] hover:bg-[#005f00] text-white"
                   >
-                    {pixLoading ? (
-                      <Loader2 size={16} className="animate-spin" />
-                    ) : (
-                      <CreditCard size={16} />
-                    )}
-                    {pixLoading ? "Gerando PIX..." : `Pagar Sinal ${formatBRL(order.deposit_amount)}`}
+                    <CreditCard size={16} />
+                    Pagar Sinal {formatBRL(order.deposit_amount)}
                   </Button>
                 ) : (
-                  <div className="bg-gray-50 rounded-lg p-4 text-center space-y-3">
-                    <p className="text-sm font-semibold">Escaneie o QR Code para pagar</p>
-                    {charge.qr_code_image && (
-                      <img
-                        src={charge.qr_code_image}
-                        alt="QR Code PIX"
-                        className="mx-auto w-48 h-48"
-                      />
-                    )}
-                    {charge.br_code && (
-                      <div className="space-y-1">
-                        <p className="text-xs text-muted-foreground">Ou copie o código PIX:</p>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(charge.br_code!);
-                          }}
-                          className="w-full text-xs bg-white border rounded-md px-3 py-2 font-mono break-all text-left hover:bg-gray-50 active:bg-gray-100 transition-colors"
-                        >
-                          {charge.br_code}
-                        </button>
-                        <p className="text-[10px] text-muted-foreground">Toque para copiar</p>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 space-y-4">
+                    <div className="flex items-center justify-center gap-2">
+                      <QrCode size={18} className="text-emerald-600" />
+                      <p className="text-sm font-semibold text-emerald-800">Pague via PIX</p>
+                    </div>
+
+                    <p className="text-xs text-gray-600 text-center">
+                      Valor do sinal: <strong>{formatBRL(order.deposit_amount)}</strong>
+                    </p>
+
+                    {/* QR Code Image */}
+                    {pixQrImage && (
+                      <div className="flex justify-center">
+                        <img
+                          src={pixQrImage}
+                          alt="QR Code PIX"
+                          className="w-48 h-48 rounded-lg border border-emerald-200 bg-white p-2"
+                        />
                       </div>
                     )}
-                    <p className="text-xs text-amber-600">Expira em 1 hora</p>
+
+                    {/* PIX Key */}
+                    <div className="bg-white rounded-lg p-3 space-y-2">
+                      <p className="text-xs text-gray-500">Chave PIX:</p>
+                      <div className="flex items-center gap-2">
+                        <code className="flex-1 text-sm text-gray-800 font-medium break-all">{pixKey}</code>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            navigator.clipboard.writeText(pixKey);
+                            setPixCopied(true);
+                            toast.success("Chave PIX copiada!");
+                            setTimeout(() => setPixCopied(false), 3000);
+                          }}
+                          className="shrink-0 gap-1 text-xs"
+                        >
+                          <Copy size={12} /> {pixCopied ? "Copiado!" : "Copiar"}
+                        </Button>
+                      </div>
+                      {pixKeyHolder && (
+                        <p className="text-xs text-gray-500">Titular: <strong>{pixKeyHolder}</strong></p>
+                      )}
+                    </div>
+
+                    {/* Send receipt via WhatsApp */}
+                    <a
+                      href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                        `Olá! Segue o comprovante do PIX referente ao pedido *${order.order_number}*.\n\nValor do sinal: *${formatBRL(order.deposit_amount)}*\n\nAguardo confirmação!`
+                      )}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Button className="w-full h-11 bg-[#25D366] hover:bg-[#20BD5A] text-white gap-2">
+                        <MessageCircle size={18} />
+                        Enviar comprovante via WhatsApp
+                      </Button>
+                    </a>
                   </div>
-                )}
-                {pixError && (
-                  <p className="text-xs text-red-600 text-center">{pixError}</p>
                 )}
               </div>
             )}
