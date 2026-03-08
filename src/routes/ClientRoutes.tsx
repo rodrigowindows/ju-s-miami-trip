@@ -3,6 +3,7 @@ import { Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/components/client/ClientLayout";
 import { RequireClient } from "@/routes/guards";
 import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 
 const ClientDashboard = lazy(() => import("@/pages/client/ClientDashboard"));
 const ClientCatalog = lazy(() => import("@/pages/client/ClientCatalog"));
@@ -17,7 +18,7 @@ const ClientNotifications = lazy(() => import("@/pages/client/ClientNotification
 const ClientChat = lazy(() => import("@/pages/client/ClientChat"));
 
 function Lazy({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8"><PageSkeleton /></div>}>{children}</Suspense>;
+  return <ErrorBoundary><Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8"><PageSkeleton /></div>}>{children}</Suspense></ErrorBoundary>;
 }
 
 export function clientRoutes() {

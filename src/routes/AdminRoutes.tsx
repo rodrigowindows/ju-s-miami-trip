@@ -3,6 +3,7 @@ import { Route, Navigate } from "react-router-dom";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { RedirectIfAuthed, RequireAdmin } from "@/routes/guards";
 import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 
 const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin"));
 const Dashboard = lazy(() => import("@/pages/admin/Dashboard"));
@@ -24,7 +25,7 @@ const AdminAnalytics = lazy(() => import("@/pages/admin/AdminAnalytics"));
 const AdminChat = lazy(() => import("@/pages/admin/AdminChat"));
 
 function Lazy({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8"><PageSkeleton /></div>}>{children}</Suspense>;
+  return <ErrorBoundary><Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8"><PageSkeleton /></div>}>{children}</Suspense></ErrorBoundary>;
 }
 
 export function adminRoutes() {
