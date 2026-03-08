@@ -176,15 +176,11 @@ function useQuestions(productId: string | null) {
 }
 
 function useExchangeRate() {
-  const [effectiveRate, setEffectiveRate] = useState(5.80 * 1.45);
-  useEffect(() => {
-    async function fetch() {
-      const { data, error } = await supabase.functions.invoke("get-exchange-rate");
-      if (!error && data) setEffectiveRate(data.effective_rate);
-    }
-    fetch();
-  }, []);
-  function convert(usd: number) { return usd * effectiveRate; }
+  const { data: settings } = useSettings();
+  const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
+  const spread = Number(settings?.spread_percent ?? "45");
+  const effectiveRate = exchangeRate * (1 + spread / 100);
+  function convert(usd: number) { return Math.round(usd * effectiveRate * 100) / 100; }
   return { convert, effectiveRate };
 }
 
