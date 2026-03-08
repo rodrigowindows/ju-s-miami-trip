@@ -120,7 +120,7 @@ export type Referral = {
 export type WalletTransaction = {
   id: string;
   client_id: string;
-  type: 'referral_credit' | 'order_debit' | 'admin_adjust' | 'refund';
+  type: 'referral_credit' | 'order_debit' | 'admin_adjust' | 'refund' | 'loyalty_credit';
   amount: number;
   description: string;
   order_id: string | null;

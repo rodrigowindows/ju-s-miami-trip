@@ -3,6 +3,7 @@ import { StarRating } from "./StarRating";
 import { fakeRating } from "./catalog-utils";
 import { getMLComparison } from "@/lib/ml-prices";
 import { ProductImage } from "./ProductImage";
+import { SavingsBadge } from "./SavingsBadge";
 import type { CatalogProduct } from "@/types";
 
 export interface ActiveDeal {
@@ -85,11 +86,7 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
             R$ {finalPrice.toFixed(2).replace(".", ",")}
           </p>
           <p className="text-xs text-emerald-600 font-medium">à vista no PIX</p>
-          {mlComparison && (
-            <p className="text-[11px] text-emerald-600 font-medium mt-0.5">
-              {mlComparison.savingsPercent}% mais barato que ML
-            </p>
-          )}
+          <SavingsBadge brlPrice={finalPrice} brand={product.brand} category={product.category} compact />
         </div>
 
 

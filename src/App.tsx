@@ -26,6 +26,7 @@ import ClientWishlist from "./pages/client/ClientWishlist";
 import ClientCart from "./pages/client/ClientCart";
 import ClientCheckout from "./pages/client/ClientCheckout";
 import ClientNotifications from "./pages/client/ClientNotifications";
+import ClientChat from "./pages/client/ClientChat";
 
 // Admin pages
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -46,6 +47,7 @@ import AdminDeals from "./pages/admin/AdminDeals";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminChat from "./pages/admin/AdminChat";
 
 import { Loader2 } from "lucide-react";
 import CookieBanner from "./components/CookieBanner";
@@ -148,6 +150,7 @@ const App = () => (
               <Route path="checkout" element={<ClientCheckout />} />
               <Route path="profile" element={<ClientProfile />} />
               <Route path="notifications" element={<ClientNotifications />} />
+              <Route path="chat" element={<ClientChat />} />
             </Route>
 
             {/* Admin login */}
@@ -184,6 +187,7 @@ const App = () => (
               <Route path="clients" element={<Clients />} />
               <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="settings" element={<AdminSettings />} />
+              <Route path="chat" element={<AdminChat />} />
               <Route path="alertas-produtos" element={<AdminProductAlerts />} />
               <Route path="orders/:id" element={<AdminOrderDetail />} />
             </Route>

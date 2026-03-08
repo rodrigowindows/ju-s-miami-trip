@@ -98,6 +98,77 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          sender_id: string
+          sender_role: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          sender_id: string
+          sender_role?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          sender_id?: string
+          sender_role?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          message: string
+          order_id: string | null
+          read: boolean
+          title: string
+          type: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          message?: string
+          order_id?: string | null
+          read?: boolean
+          title?: string
+          type?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          order_id?: string | null
+          read?: boolean
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_events: {
         Row: {
           created_at: string

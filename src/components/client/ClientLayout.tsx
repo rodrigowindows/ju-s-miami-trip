@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { ShoppingBag, Package, Heart, Tag, User } from "lucide-react";
+import { ShoppingBag, Package, Heart, MessageCircle, User } from "lucide-react";
 import { CartDrawer } from "@/components/catalog/CartDrawer";
 import PremiumHeader from "@/components/client/PremiumHeader";
 
@@ -7,7 +7,7 @@ const navItems = [
   { to: "/client/catalog", icon: ShoppingBag, label: "Vitrine", end: true },
   { to: "/client/orders", icon: Package, label: "Pedidos" },
   { to: "/client/wishlist", icon: Heart, label: "Desejos" },
-  { to: "/client/promos", icon: Tag, label: "Ofertas" },
+  { to: "/client/chat", icon: MessageCircle, label: "Chat" },
   { to: "/client/profile", icon: User, label: "Perfil" },
 ];
 
