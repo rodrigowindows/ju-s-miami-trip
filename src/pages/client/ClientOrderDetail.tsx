@@ -146,16 +146,22 @@ function ProgressTracker({ currentStatus }: { currentStatus: string }) {
 
 export default function ClientOrderDetail() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const { data: order, isLoading } = useOrder(id ?? "");
   const { data: items } = useOrderItems(id ?? "");
   const { data: events } = useOrderEvents(id ?? "");
   const { data: settings } = useSettings();
+  const { data: reviews } = useClientOrderReviews(user?.id ?? "");
+  const createReview = useCreateOrderReview();
   const whatsappNumber = settings?.whatsapp_number ?? "5561999999999";
   const pixKey = settings?.pix_key || "ajuvaiparamiami@pix.com";
   const pixKeyHolder = settings?.pix_key_holder || "AjuVaiParaMiami";
   const pixQrImage = settings?.pix_qr_image || "";
   const [showPix, setShowPix] = useState(false);
   const [pixCopied, setPixCopied] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewHovered, setReviewHovered] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
 
   if (isLoading || !order) {
     return (
