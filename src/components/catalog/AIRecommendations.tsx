@@ -4,20 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { useSettings } from "@/hooks/useSettings";
-
-type Product = {
-  id: string;
-  name: string;
-  brand: string;
-  category: string;
-  price_usd: number;
-  image_url: string;
-  rating: number;
-  review_count: number;
-  availability_type: string;
-  stock_quantity: number;
-  trending: boolean;
-};
+import type { CatalogProduct } from "@/types";
 
 export default function AIRecommendations({
   currentProductId,
@@ -26,7 +13,7 @@ export default function AIRecommendations({
   currentProductId?: string;
   category?: string;
 }) {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { recentIds } = useRecentlyViewed();
   const { data: settings } = useSettings();
@@ -44,7 +31,6 @@ export default function AIRecommendations({
         });
 
         if (error || !data?.product_ids?.length) {
-          // Fallback: fetch trending
           const { data: fallback } = await supabase
             .from("catalog_products")
             .select("*")
@@ -52,7 +38,7 @@ export default function AIRecommendations({
             .neq("id", currentProductId ?? "")
             .order("sales_count", { ascending: false })
             .limit(6);
-          setProducts((fallback ?? []) as Product[]);
+          setProducts((fallback ?? []) as CatalogProduct[]);
           return;
         }
 
@@ -62,9 +48,8 @@ export default function AIRecommendations({
           .in("id", data.product_ids)
           .eq("active", true);
 
-        setProducts((recommended ?? []) as Product[]);
+        setProducts((recommended ?? []) as CatalogProduct[]);
       } catch {
-        // Silent fallback
         const { data: fallback } = await supabase
           .from("catalog_products")
           .select("*")
@@ -72,7 +57,7 @@ export default function AIRecommendations({
           .neq("id", currentProductId ?? "")
           .order("sales_count", { ascending: false })
           .limit(6);
-        setProducts((fallback ?? []) as Product[]);
+        setProducts((fallback ?? []) as CatalogProduct[]);
       } finally {
         setIsLoading(false);
       }
@@ -100,7 +85,7 @@ export default function AIRecommendations({
         {products.map((p) => (
           <ProductCard
             key={p.id}
-            product={p as any}
+            product={p}
             brl={calculateBRL(p.price_usd)}
             onClick={() => {}}
           />
