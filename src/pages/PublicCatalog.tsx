@@ -279,7 +279,7 @@ export default function PublicCatalog() {
       case "name": return [...list].sort((a, b) => a.name.localeCompare(b.name));
       default: return list;
     }
-  }, [products, activeCategory, searchQuery, availabilityFilter, minPrice, maxPrice, sortBy, convert]);
+  }, [products, activeCategory, searchQuery, availabilityFilter, minPrice, maxPrice, sortBy, convert, aiSearchIds]);
 
   useEffect(() => { if (searchQuery.trim()) trackSearch(searchQuery, filtered.length); }, [searchQuery, filtered.length, trackSearch]);
 
