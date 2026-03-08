@@ -96,7 +96,7 @@ export function useAnalytics() {
         referrer: document.referrer || null,
         user_agent: navigator.userAgent,
         screen_width: window.innerWidth,
-        metadata: payload.metadata || {},
+        metadata: (payload.metadata as Json) || null,
       });
     },
     [userId]
