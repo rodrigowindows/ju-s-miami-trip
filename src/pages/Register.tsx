@@ -36,7 +36,7 @@ export default function Register() {
     setError(null);
     setLoading(true);
 
-    const { error: signUpError } = await signUp(email, password, fullName, phone || undefined);
+    const { error: signUpError } = await signUp(email, password, fullName, phone || undefined, referralCode || undefined);
 
     if (signUpError) {
       setError(signUpError);
