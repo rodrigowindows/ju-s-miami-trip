@@ -8,44 +8,46 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import StarRating from "@/components/shared/StarRating";
-import { useCreateReview } from "@/hooks/useReviews";
-import { toast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Star, Loader2 } from "lucide-react";
+import { useCreateOrderReview } from "@/hooks/useOrderReviews";
+import { toast } from "sonner";
 
 interface ReviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   orderId: string;
   clientId: string;
-  orderNumber: string;
+  orderNumber?: string;
 }
+
+const LABELS = ["", "Ruim 😞", "Regular 😐", "Bom 👍", "Muito bom! 😊", "Excelente! 🎉"];
 
 export default function ReviewDialog({ open, onOpenChange, orderId, clientId, orderNumber }: ReviewDialogProps) {
   const [rating, setRating] = useState(0);
+  const [hovered, setHovered] = useState(0);
   const [comment, setComment] = useState("");
-  const createReview = useCreateReview();
+  const createReview = useCreateOrderReview();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (rating === 0) {
-      toast({ title: "Selecione uma nota", description: "Toque nas estrelas para avaliar.", variant: "destructive" });
+      toast.error("Selecione uma nota");
       return;
     }
 
-    createReview.mutate(
-      { orderId, clientId, rating, comment: comment.trim() || undefined },
-      {
-        onSuccess: () => {
-          toast({ title: "Avaliação enviada!", description: "Obrigado pelo seu feedback." });
-          setRating(0);
-          setComment("");
-          onOpenChange(false);
-        },
-        onError: () => {
-          toast({ title: "Erro ao enviar", description: "Tente novamente.", variant: "destructive" });
-        },
-      }
-    );
+    try {
+      await createReview.mutateAsync({
+        order_id: orderId,
+        client_id: clientId,
+        rating,
+        comment: comment.trim() || undefined,
+      });
+      toast.success("Avaliação enviada! Obrigado pelo feedback!");
+      setRating(0);
+      setComment("");
+      onOpenChange(false);
+    } catch {
+      toast.error("Erro ao enviar avaliação. Tente novamente.");
+    }
   };
 
   return (
@@ -54,22 +56,36 @@ export default function ReviewDialog({ open, onOpenChange, orderId, clientId, or
         <DialogHeader>
           <DialogTitle>Avaliar Pedido</DialogTitle>
           <DialogDescription>
-            Como foi sua experiência com o pedido <span className="font-mono font-semibold">{orderNumber}</span>?
+            Como foi sua experiência{orderNumber ? ` com o pedido ${orderNumber}` : ""}?
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 pt-2">
           <div className="flex flex-col items-center gap-2">
             <p className="text-sm text-muted-foreground">Sua nota</p>
-            <StarRating value={rating} onChange={setRating} size="lg" />
+            <div className="flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setRating(s)}
+                  onMouseEnter={() => setHovered(s)}
+                  onMouseLeave={() => setHovered(0)}
+                  className="p-1 transition-transform hover:scale-110"
+                >
+                  <Star
+                    size={32}
+                    className={
+                      s <= (hovered || rating)
+                        ? "fill-amber-400 text-amber-400"
+                        : "text-gray-300"
+                    }
+                  />
+                </button>
+              ))}
+            </div>
             {rating > 0 && (
-              <p className="text-sm font-medium">
-                {rating === 1 && "Ruim"}
-                {rating === 2 && "Regular"}
-                {rating === 3 && "Bom"}
-                {rating === 4 && "Muito bom"}
-                {rating === 5 && "Excelente!"}
-              </p>
+              <p className="text-sm font-medium">{LABELS[rating]}</p>
             )}
           </div>
 
