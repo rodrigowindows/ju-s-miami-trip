@@ -11,7 +11,7 @@ export function transformProduct(raw: CatalogProduct): CatalogProduct {
   };
 }
 
-/** Filter products that have valid images */
+/** Transform all products for display (branded placeholders handle missing images) */
 export function filterVisibleProducts(products: CatalogProduct[]): CatalogProduct[] {
-  return products.map(transformProduct).filter((p) => p.image_url && p.image_url.trim() !== "");
+  return products.map(transformProduct);
 }
