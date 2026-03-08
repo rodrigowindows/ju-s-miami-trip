@@ -62,11 +62,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, fullName: string, phone?: string): Promise<{ error: string | null }> => {
+  const signUp = useCallback(async (email: string, password: string, fullName: string, phone?: string, referralCode?: string): Promise<{ error: string | null }> => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: { data: { full_name: fullName, referral_code: referralCode || undefined } },
     });
     if (error) return { error: error.message };
     if (data.user) {
