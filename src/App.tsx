@@ -150,6 +150,7 @@ const App = () => (
               <Route path="checkout" element={<ClientCheckout />} />
               <Route path="profile" element={<ClientProfile />} />
               <Route path="notifications" element={<ClientNotifications />} />
+              <Route path="chat" element={<ClientChat />} />
             </Route>
 
             {/* Admin login */}
