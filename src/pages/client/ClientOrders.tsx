@@ -83,15 +83,23 @@ function getEstimate(order: Order) {
   return { minDate, maxDate };
 }
 
-function InlineReview({ rating }: { rating: number }) {
+function InlineReview({ rating, adminReply }: { rating: number; adminReply?: string | null }) {
   return (
-    <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-50 rounded-md">
-      <span className="text-xs font-medium text-amber-700">Sua avaliação:</span>
-      <div className="flex items-center gap-0.5">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Star key={i} size={12} className={i < rating ? "fill-amber-400 text-amber-400" : "text-gray-300"} />
-        ))}
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-50 rounded-md">
+        <span className="text-xs font-medium text-amber-700">Sua avaliação:</span>
+        <div className="flex items-center gap-0.5">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Star key={i} size={12} className={i < rating ? "fill-amber-400 text-amber-400" : "text-gray-300"} />
+          ))}
+        </div>
       </div>
+      {adminReply && (
+        <div className="ml-3 pl-2 border-l-2 border-primary/30 py-1">
+          <p className="text-[10px] font-semibold text-primary">Resposta da loja:</p>
+          <p className="text-xs text-muted-foreground">{adminReply}</p>
+        </div>
+      )}
     </div>
   );
 }
