@@ -30,7 +30,7 @@ export default function BrandPage() {
   useEffect(() => {
     async function fetchBrand() {
       setBrandLoading(true);
-      const { data } = await (supabase as any).from("brands")
+      const { data } = await supabase.from("brands")
         .select("*")
         .eq("slug", slug)
         .maybeSingle();
