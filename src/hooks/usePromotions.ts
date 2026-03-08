@@ -6,6 +6,7 @@ import { toast } from "sonner";
 export function usePromotions() {
   return useQuery<Promotion[]>({
     queryKey: ["promotions"],
+    staleTime: 3 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase.from("promotions").select("*").order("created_at", { ascending: false });
       if (error) throw error;
