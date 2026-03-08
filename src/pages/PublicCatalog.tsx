@@ -262,6 +262,16 @@ export default function PublicCatalog() {
       list = list.filter((p) => p.availability_type === availabilityFilter);
     }
 
+    // AI smart search filter
+    if (aiSearchIds) {
+      const idSet = new Set(aiSearchIds);
+      list = list.filter((p) => idSet.has(p.id));
+      // Preserve AI relevance order
+      list.sort((a, b) => aiSearchIds.indexOf(a.id) - aiSearchIds.indexOf(b.id));
+    }
+      list = list.filter((p) => p.availability_type === availabilityFilter);
+    }
+
     if (minPrice > 0) list = list.filter((p) => convert(p.price_usd) >= minPrice);
     if (maxPrice > 0) list = list.filter((p) => convert(p.price_usd) <= maxPrice);
     switch (sortBy) {
