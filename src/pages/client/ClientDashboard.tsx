@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatBRL } from "@/lib/format";
 import { useWalletTransactions } from "@/hooks/useWallet";
+import { useClientOrders } from "@/hooks/useOrders";
 import useEmblaCarousel from "embla-carousel-react";
+import WelcomeModal from "@/components/client/WelcomeModal";
 
 const BANNERS = [
   {
