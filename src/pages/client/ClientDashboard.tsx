@@ -1,10 +1,11 @@
-import { useEffect, useCallback, useState } from "react";
-import { ArrowRight, Tag, Package, Wallet, ShoppingBag, Zap, Users, Sparkles } from "lucide-react";
+import { useEffect, useCallback, useState, useMemo } from "react";
+import { ArrowRight, Tag, Package, Wallet, ShoppingBag, Zap, Users, Sparkles, Trophy, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatBRL } from "@/lib/format";
+import { useWalletTransactions } from "@/hooks/useWallet";
 import useEmblaCarousel from "embla-carousel-react";
 
 const BANNERS = [
@@ -57,7 +58,6 @@ function BannerCarousel() {
     onSelect();
   }, [emblaApi, onSelect]);
 
-  // Autoplay
   useEffect(() => {
     if (!emblaApi) return;
     const interval = setInterval(() => {
@@ -92,7 +92,6 @@ function BannerCarousel() {
           ))}
         </div>
       </div>
-      {/* Dots */}
       <div className="flex items-center justify-center gap-1.5 mt-3">
         {BANNERS.map((_, i) => (
           <button
@@ -109,13 +108,21 @@ function BannerCarousel() {
 }
 
 export default function ClientDashboard() {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
+  const { data: transactions } = useWalletTransactions(user?.id ?? "");
+
+  const loyaltyEarned = useMemo(() => {
+    if (!transactions) return 0;
+    return transactions
+      .filter((t) => t.type === "loyalty_credit")
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [transactions]);
 
   const quickLinks = [
     { to: "/client/catalog", icon: ShoppingBag, label: "Vitrine", description: "Produtos disponiveis de Miami", color: "from-miami-sand/30 to-miami-orange/10", iconColor: "text-miami-orange" },
     { to: "/client/orders", icon: Package, label: "Meus Pedidos", description: "Acompanhe seus pedidos", color: "from-secondary/10 to-miami-blue/10", iconColor: "text-secondary" },
+    { to: "/client/chat", icon: MessageCircle, label: "Chat com Suporte", description: "Fale conosco em tempo real", color: "from-blue-50 to-blue-100/50", iconColor: "text-blue-600" },
     { to: "/client/promos", icon: Tag, label: "Ofertas Especiais", description: "Cupons e descontos", color: "from-primary/10 to-miami-orange/10", iconColor: "text-primary" },
-    { to: "/client/profile", icon: Wallet, label: "Minha Wallet", description: `Saldo: ${formatBRL(profile?.wallet_balance ?? 0)}`, color: "from-emerald-50 to-emerald-100/50", iconColor: "text-emerald-600" },
   ];
 
   return (
@@ -125,20 +132,28 @@ export default function ClientDashboard() {
         <p className="text-sm text-muted-foreground mt-1">Bem-vindo(a) à AjuVaiParaMiami. O que deseja fazer?</p>
       </div>
 
-      {/* Banner Carousel */}
       <BannerCarousel />
 
-      <Card className="bg-gradient-to-r from-primary to-miami-orange text-white overflow-hidden">
-        <CardContent className="py-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm opacity-90">Saldo Wallet</p>
-              <p className="text-3xl font-bold mt-1">{formatBRL(profile?.wallet_balance ?? 0)}</p>
+      {/* Wallet + Loyalty */}
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="bg-gradient-to-r from-primary to-miami-orange text-white overflow-hidden">
+          <CardContent className="py-4 px-4">
+            <p className="text-xs opacity-90">Saldo Wallet</p>
+            <p className="text-2xl font-bold mt-1">{formatBRL(profile?.wallet_balance ?? 0)}</p>
+            <Wallet className="h-8 w-8 opacity-20 mt-1" />
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-r from-purple-500 to-purple-700 text-white overflow-hidden">
+          <CardContent className="py-4 px-4">
+            <p className="text-xs opacity-90">Cashback Ganho</p>
+            <p className="text-2xl font-bold mt-1">{formatBRL(loyaltyEarned)}</p>
+            <div className="flex items-center gap-1 mt-1">
+              <Trophy className="h-4 w-4 opacity-70" />
+              <span className="text-[10px] opacity-80">5% de volta em cada compra</span>
             </div>
-            <Wallet className="h-10 w-10 opacity-30" />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="space-y-3">
         {quickLinks.map((link) => (
