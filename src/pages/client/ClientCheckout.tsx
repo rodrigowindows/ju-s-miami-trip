@@ -27,6 +27,7 @@ export default function ClientCheckout() {
   const [couponApplied, setCouponApplied] = useState(false);
   const [doneOrder, setDoneOrder] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [savedTotal, setSavedTotal] = useState<number | null>(null);
   const [address, setAddress] = useState({ cep: "", city: "", state: "", street: "", number: "", complement: "", neighborhood: "", phone: "", email: "" });
   const [addressError, setAddressError] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
