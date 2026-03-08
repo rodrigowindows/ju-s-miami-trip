@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/components/client/ClientLayout";
+import { CartProvider } from "@/contexts/CartContext";
 import { RequireClient } from "@/routes/guards";
 import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
 
@@ -24,7 +25,7 @@ export function clientRoutes() {
   return (
     <Route
       path="/client"
-      element={<RequireClient><ClientLayout /></RequireClient>}
+      element={<RequireClient><CartProvider><ClientLayout /></CartProvider></RequireClient>}
     >
       <Route index element={<Navigate to="dashboard" replace />} />
       <Route path="dashboard" element={<Lazy><ClientDashboard /></Lazy>} />
