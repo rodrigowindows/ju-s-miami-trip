@@ -85,16 +85,17 @@ export function useMarkChatRead() {
   });
 }
 
-/** Admin: get all clients with unread messages */
+/** Admin: get all clients with unread messages (optimized with limit) */
 export function useAdminChatList() {
   return useQuery({
     queryKey: ["chat", "admin-list"],
     queryFn: async () => {
-      // Get latest message per client
+      // Get latest 500 messages (enough for chat list without loading everything)
       const { data, error } = await db
         .from("chat_messages")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(500);
       if (error) throw error;
 
       const messages = (data ?? []) as ChatMessage[];

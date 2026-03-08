@@ -72,7 +72,8 @@ export default function ClientCheckout() {
     return Math.min(matchedPromo.discount_value, totalBRL);
   }, [matchedPromo, totalBRL]);
 
-  const finalTotal = savedTotal ?? (totalBRL - discount);
+  const walletDiscount = useWallet ? Math.min(walletBalance, totalBRL - discount) : 0;
+  const finalTotal = savedTotal ?? (totalBRL - discount - walletDiscount);
 
   // CEP lookup via ViaCEP API
   const lookupCep = useCallback(async (cep: string) => {

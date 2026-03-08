@@ -1,11 +1,31 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 import type { Notification } from "@/types";
 
 const db = supabase as any;
 
 export function useNotifications(clientId: string) {
+  const qc = useQueryClient();
+
+  // Realtime subscription for notifications
+  useEffect(() => {
+    if (!clientId) return;
+    const channel = supabase
+      .channel(`notifications-${clientId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications", filter: `client_id=eq.${clientId}` },
+        () => {
+          qc.invalidateQueries({ queryKey: ["notifications", clientId] });
+          qc.invalidateQueries({ queryKey: ["notifications", "unread_count", clientId] });
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [clientId, qc]);
+
   return useQuery({
     queryKey: ["notifications", clientId],
     queryFn: async (): Promise<Notification[]> => {
