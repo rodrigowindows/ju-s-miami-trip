@@ -1,25 +1,8 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/components/client/ClientLayout";
 import { RequireClient } from "@/routes/guards";
-import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
-import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
-
-const ClientDashboard = lazy(() => import("@/pages/client/ClientDashboard"));
-const ClientCatalog = lazy(() => import("@/pages/client/ClientCatalog"));
-const ClientOrders = lazy(() => import("@/pages/client/ClientOrders"));
-const ClientOrderDetail = lazy(() => import("@/pages/client/ClientOrderDetail"));
-const ClientPromotions = lazy(() => import("@/pages/client/ClientPromotions"));
-const ClientProfile = lazy(() => import("@/pages/client/ClientProfile"));
-const ClientWishlist = lazy(() => import("@/pages/client/ClientWishlist"));
-const ClientCart = lazy(() => import("@/pages/client/ClientCart"));
-const ClientCheckout = lazy(() => import("@/pages/client/ClientCheckout"));
-const ClientNotifications = lazy(() => import("@/pages/client/ClientNotifications"));
-const ClientChat = lazy(() => import("@/pages/client/ClientChat"));
-
-function Lazy({ children }: { children: React.ReactNode }) {
-  return <ErrorBoundary><Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8"><PageSkeleton /></div>}>{children}</Suspense></ErrorBoundary>;
-}
+import { Lazy } from "@/routes/LazyRoute";
 
 export function clientRoutes() {
   return (
