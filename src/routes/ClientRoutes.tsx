@@ -4,6 +4,18 @@ import ClientLayout from "@/components/client/ClientLayout";
 import { RequireClient } from "@/routes/guards";
 import { Lazy } from "@/routes/LazyRoute";
 
+const ClientDashboard = lazy(() => import("@/pages/client/ClientDashboard"));
+const ClientCatalog = lazy(() => import("@/pages/client/ClientCatalog"));
+const ClientOrders = lazy(() => import("@/pages/client/ClientOrders"));
+const ClientOrderDetail = lazy(() => import("@/pages/client/ClientOrderDetail"));
+const ClientPromotions = lazy(() => import("@/pages/client/ClientPromotions"));
+const ClientProfile = lazy(() => import("@/pages/client/ClientProfile"));
+const ClientWishlist = lazy(() => import("@/pages/client/ClientWishlist"));
+const ClientCart = lazy(() => import("@/pages/client/ClientCart"));
+const ClientCheckout = lazy(() => import("@/pages/client/ClientCheckout"));
+const ClientNotifications = lazy(() => import("@/pages/client/ClientNotifications"));
+const ClientChat = lazy(() => import("@/pages/client/ClientChat"));
+
 export function clientRoutes() {
   return (
     <Route
