@@ -16,6 +16,7 @@ import StickyBuyBar from "@/components/catalog/StickyBuyBar";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { ProductImage } from "@/components/catalog/ProductImage";
 import { useBuyAction } from "@/hooks/useBuyAction";
+import AIRecommendations from "@/components/catalog/AIRecommendations";
 
 function slugify(text: string) {
   return text
