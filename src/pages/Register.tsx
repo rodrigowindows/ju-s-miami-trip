@@ -14,6 +14,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ export default function Register() {
     setError(null);
     setLoading(true);
 
-    const { error: signUpError } = await signUp(email, password, fullName, phone || undefined);
+    const { error: signUpError } = await signUp(email, password, fullName, phone || undefined, referralCode || undefined);
 
     if (signUpError) {
       setError(signUpError);
@@ -105,6 +106,16 @@ export default function Register() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="referralCode">Código de indicação (opcional)</Label>
+              <Input
+                id="referralCode"
+                placeholder="Ex: MARIA-MALA-AB12"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+              />
+              <p className="text-xs text-muted-foreground">Se alguém te indicou, cole o código aqui.</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="reg-password">Senha</Label>

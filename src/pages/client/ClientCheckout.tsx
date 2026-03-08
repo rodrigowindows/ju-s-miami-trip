@@ -2,6 +2,7 @@ import { useMemo, useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
@@ -12,7 +13,7 @@ import { useActivePromotions } from "@/hooks/usePromotions";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
-import { ChevronLeft, CheckCircle2, Loader2, MapPin, ClipboardList, PartyPopper, Copy, QrCode, Shield, Phone, Mail, MessageCircle } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Loader2, MapPin, ClipboardList, PartyPopper, Copy, QrCode, Shield, Phone, Mail, MessageCircle, Wallet } from "lucide-react";
 import { ProductImage } from "@/components/catalog/ProductImage";
 
 const steps = [
@@ -52,9 +53,13 @@ export default function ClientCheckout() {
     }
   }, [profile]);
 
+  const [useWallet, setUseWallet] = useState(false);
+
   const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
   const spread = Number(settings?.spread_percent ?? "45");
   const totalBRL = useMemo(() => items.reduce((sum, i) => sum + calculatePriceBRL(i.product.price_usd, exchangeRate, spread) * i.quantity, 0), [items, exchangeRate, spread]);
+
+  const walletBalance = profile?.wallet_balance ?? 0;
 
   const matchedPromo = useMemo(() => {
     if (!coupon.trim() || !couponApplied) return null;
@@ -68,7 +73,8 @@ export default function ClientCheckout() {
     return Math.min(matchedPromo.discount_value, totalBRL);
   }, [matchedPromo, totalBRL]);
 
-  const finalTotal = savedTotal ?? (totalBRL - discount);
+  const walletDiscount = useWallet ? Math.min(walletBalance, totalBRL - discount) : 0;
+  const finalTotal = savedTotal ?? (totalBRL - discount - walletDiscount);
 
   // CEP lookup via ViaCEP API
   const lookupCep = useCallback(async (cep: string) => {
@@ -186,7 +192,7 @@ export default function ClientCheckout() {
         total_brl: finalTotal,
         total_amount: finalTotal,
         deposit_amount: depositAmount,
-        notes: `Pagamento: PIX. Endereço: ${address.street}, ${address.number}${address.neighborhood ? ` - ${address.neighborhood}` : ""}${address.complement ? ` (${address.complement})` : ""} - ${address.city}/${address.state} - CEP: ${address.cep}. Tel: ${address.phone}. Email: ${address.email}${matchedPromo ? `. Cupom: ${matchedPromo.coupon_code}` : ""}`,
+        notes: `Pagamento: PIX. Endereço: ${address.street}, ${address.number}${address.neighborhood ? ` - ${address.neighborhood}` : ""}${address.complement ? ` (${address.complement})` : ""} - ${address.city}/${address.state} - CEP: ${address.cep}. Tel: ${address.phone}. Email: ${address.email}${matchedPromo ? `. Cupom: ${matchedPromo.coupon_code}` : ""}${walletDiscount > 0 ? `. Wallet: -${formatBRL(walletDiscount)}` : ""}`,
       });
       for (const item of items) {
         await createOrderItem.mutateAsync({
@@ -197,6 +203,20 @@ export default function ClientCheckout() {
           price_usd: item.product.price_usd * item.quantity,
           price_brl: calculatePriceBRL(item.product.price_usd, exchangeRate, spread) * item.quantity,
         });
+      }
+
+      // Debit wallet if used
+      if (walletDiscount > 0) {
+        await supabase.from("wallet_transactions").insert({
+          client_id: user.id,
+          type: "order_debit",
+          amount: -walletDiscount,
+          description: `Pagamento parcial - Pedido ${order.order_number}`,
+          order_id: order.id,
+        });
+        await supabase.from("profiles").update({
+          wallet_balance: walletBalance - walletDiscount,
+        }).eq("id", user.id);
       }
 
       setSavedTotal(finalTotal);
@@ -370,9 +390,27 @@ export default function ClientCheckout() {
               )}
             </div>
 
+            {/* Wallet section */}
+            {walletBalance > 0 && (
+              <div className="flex items-center justify-between bg-purple-50 border border-purple-200 rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <Wallet size={16} className="text-purple-600" />
+                  <div>
+                    <p className="text-sm font-medium text-purple-800">Usar saldo da wallet</p>
+                    <p className="text-xs text-purple-600">Disponível: {formatBRL(walletBalance)}</p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked={useWallet} onChange={(e) => setUseWallet(e.target.checked)} className="sr-only peer" />
+                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-purple-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+                </label>
+              </div>
+            )}
+
             <div className="space-y-2 text-sm border-t pt-3">
               <div className="flex justify-between"><span className="text-gray-600">Subtotal</span><span>{formatBRL(totalBRL)}</span></div>
               {discount > 0 && <div className="flex justify-between text-emerald-600"><span>Desconto ({matchedPromo?.coupon_code})</span><span>-{formatBRL(discount)}</span></div>}
+              {walletDiscount > 0 && <div className="flex justify-between text-purple-600"><span>Saldo wallet</span><span>-{formatBRL(walletDiscount)}</span></div>}
               <div className="flex justify-between font-bold text-lg pt-2 border-t"><span>Total</span><span>{formatBRL(finalTotal)}</span></div>
               <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 rounded-lg p-2">
                 <QrCode size={14} />
