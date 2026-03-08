@@ -3,10 +3,13 @@ import { ArrowRight, Tag, Package, Wallet, ShoppingBag, Zap, Users, Sparkles, Tr
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatBRL } from "@/lib/format";
 import { useWalletTransactions } from "@/hooks/useWallet";
+import { useClientOrders } from "@/hooks/useOrders";
 import useEmblaCarousel from "embla-carousel-react";
+import WelcomeModal from "@/components/client/WelcomeModal";
 
 const BANNERS = [
   {
@@ -110,6 +113,7 @@ function BannerCarousel() {
 export default function ClientDashboard() {
   const { profile, user } = useAuth();
   const { data: transactions } = useWalletTransactions(user?.id ?? "");
+  const { data: orders } = useClientOrders(user?.id ?? "");
 
   const loyaltyEarned = useMemo(() => {
     if (!transactions) return 0;
@@ -125,14 +129,54 @@ export default function ClientDashboard() {
     { to: "/client/promos", icon: Tag, label: "Ofertas Especiais", description: "Cupons e descontos", color: "from-primary/10 to-miami-orange/10", iconColor: "text-primary" },
   ];
 
+  // Active orders summary
+  const activeOrders = useMemo(() => {
+    if (!orders) return [];
+    return orders.filter((o) => !["entregue", "cancelado"].includes(o.status)).slice(0, 3);
+  }, [orders]);
+
   return (
     <div className="space-y-6">
+      <WelcomeModal />
       <div className="pt-2">
         <h1 className="font-display text-2xl font-bold">Olá, {profile?.full_name?.split(" ")[0] ?? "Cliente"}!</h1>
         <p className="text-sm text-muted-foreground mt-1">Bem-vindo(a) à AjuVaiParaMiami. O que deseja fazer?</p>
       </div>
 
       <BannerCarousel />
+
+      {/* Active orders preview */}
+      {activeOrders.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-sm flex items-center gap-2">
+              <Package size={16} className="text-muted-foreground" /> Pedidos em andamento
+            </h2>
+            <Link to="/client/orders" className="text-xs text-primary font-medium">Ver todos →</Link>
+          </div>
+          {activeOrders.map((order) => (
+            <Link key={order.id} to={`/client/orders/${order.id}`}>
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="py-3 flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">{order.order_number}</p>
+                    <p className="text-xs text-muted-foreground truncate">{order.items}</p>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] shrink-0">
+                    {order.status === "novo" ? "Recebido" :
+                     order.status === "orcamento" ? "Orçamento" :
+                     order.status === "comprando" ? "Comprando" :
+                     order.status === "em_transito" ? "Em trânsito" :
+                     order.status}
+                  </Badge>
+                  <ArrowRight size={14} className="text-muted-foreground shrink-0" />
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* Wallet + Loyalty */}
       <div className="grid grid-cols-2 gap-3">

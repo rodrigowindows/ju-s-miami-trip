@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useOrders } from "@/hooks/useOrders";
 import { usePayments } from "@/hooks/usePayments";
+import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag, DollarSign, Plane, Clock, TrendingUp, Users } from "lucide-react";
 import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 import type { OrderWithClient } from "@/types";
@@ -156,10 +157,40 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 md:p-8 max-w-full mx-auto space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">Visão geral do AjuVaiParaMiami</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1">Visão geral do AjuVaiParaMiami</p>
+        </div>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => navigate("/admin/orders")}>
+            <ShoppingBag size={14} className="mr-1" /> Pedidos
+          </Button>
+          <Button size="sm" onClick={() => navigate("/admin/catalog")}>
+            <TrendingUp size={14} className="mr-1" /> Catálogo
+          </Button>
+        </div>
       </div>
+
+      {/* Ticket Médio */}
+      {stats.total > 0 && (
+        <Card className="bg-gradient-to-r from-violet-50 to-indigo-50 border-violet-200">
+          <CardContent className="py-3 px-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-violet-600 font-medium">Ticket Médio</p>
+              <p className="text-lg font-bold text-violet-800">{formatBRL(stats.revenue / (stats.total - (orders?.filter(o => o.status === "cancelado").length ?? 0) || 1))}</p>
+            </div>
+            <div>
+              <p className="text-xs text-violet-600 font-medium">Taxa de Conversão</p>
+              <p className="text-lg font-bold text-violet-800">{stats.total > 0 ? Math.round((stats.delivered / stats.total) * 100) : 0}%</p>
+            </div>
+            <div>
+              <p className="text-xs text-violet-600 font-medium">Pedidos Pendentes</p>
+              <p className="text-lg font-bold text-amber-600">{stats.pending}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
