@@ -151,7 +151,7 @@ function OrderCard({
             </div>
           )}
 
-          {review && <InlineReview rating={review.rating} />}
+          {review && <InlineReview rating={review.rating} adminReply={(review as any).admin_reply} />}
 
           <p className="text-sm text-gray-700 line-clamp-2">{order.items}</p>
 
