@@ -35,6 +35,7 @@ export const WALLET_TYPE_CONFIG: Record<
   order_debit: { label: 'Débito Pedido', color: 'bg-red-100 text-red-800' },
   admin_adjust: { label: 'Ajuste Admin', color: 'bg-blue-100 text-blue-800' },
   refund: { label: 'Reembolso', color: 'bg-yellow-100 text-yellow-800' },
+  loyalty_credit: { label: 'Cashback Fidelidade', color: 'bg-purple-100 text-purple-800' },
 } as const;
 
 // ── Derived label/color maps ─────────────────
