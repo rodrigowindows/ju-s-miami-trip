@@ -37,7 +37,7 @@ import {
   fillTemplate,
   TEMPLATE_STATUS_MAP,
 } from "@/hooks/useMessages";
-import type { OrderWithClient as MsgOrderWithClient } from "@/hooks/useMessages";
+import type { OrderWithClientMessage as MsgOrderWithClient } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { formatBRL, formatDate, formatDateTime } from "@/lib/format";
 import { calculateTotalPaid } from "@/lib/calculations";
