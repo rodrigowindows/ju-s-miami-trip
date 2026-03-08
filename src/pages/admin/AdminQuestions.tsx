@@ -14,6 +14,7 @@ import {
   User,
   Package,
 } from "lucide-react";
+import { ProductImage } from "@/components/catalog/ProductImage";
 
 type QuestionWithProduct = ProductQuestion & {
   catalog_products: { name: string; brand: string; image_url: string } | null;
