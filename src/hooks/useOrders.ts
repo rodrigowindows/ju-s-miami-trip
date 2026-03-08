@@ -1,11 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchProfileMapFull } from "@/lib/profileMap";
-import type { Order, TablesInsert } from "@/types";
-
-export type OrderWithClient = Order & {
-  client: { full_name: string | null; phone: string | null; email: string } | null;
-};
+import type { Order, OrderWithClient, TablesInsert } from "@/types";
 
 export type OrderItem = {
   id: string;
