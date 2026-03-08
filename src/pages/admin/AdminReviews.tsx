@@ -159,7 +159,7 @@ export default function AdminReviews() {
       ) : (
         <>
           {/* Summary cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card>
               <CardContent className="pt-4 text-center">
                 <p className="text-3xl font-bold">{avgRating.toFixed(1)}</p>
@@ -181,6 +181,7 @@ export default function AdminReviews() {
                 <RatingDistribution reviews={reviews} />
               </CardContent>
             </Card>
+            <AISentimentCard />
           </div>
 
           {/* Review list */}
