@@ -191,7 +191,7 @@ export default function ClientCheckout() {
         total_brl: finalTotal,
         total_amount: finalTotal,
         deposit_amount: depositAmount,
-        notes: `Pagamento: PIX. Endereço: ${address.street}, ${address.number}${address.neighborhood ? ` - ${address.neighborhood}` : ""}${address.complement ? ` (${address.complement})` : ""} - ${address.city}/${address.state} - CEP: ${address.cep}. Tel: ${address.phone}. Email: ${address.email}${matchedPromo ? `. Cupom: ${matchedPromo.coupon_code}` : ""}`,
+        notes: `Pagamento: PIX. Endereço: ${address.street}, ${address.number}${address.neighborhood ? ` - ${address.neighborhood}` : ""}${address.complement ? ` (${address.complement})` : ""} - ${address.city}/${address.state} - CEP: ${address.cep}. Tel: ${address.phone}. Email: ${address.email}${matchedPromo ? `. Cupom: ${matchedPromo.coupon_code}` : ""}${walletDiscount > 0 ? `. Wallet: -${formatBRL(walletDiscount)}` : ""}`,
       });
       for (const item of items) {
         await createOrderItem.mutateAsync({
@@ -202,6 +202,20 @@ export default function ClientCheckout() {
           price_usd: item.product.price_usd * item.quantity,
           price_brl: calculatePriceBRL(item.product.price_usd, exchangeRate, spread) * item.quantity,
         });
+      }
+
+      // Debit wallet if used
+      if (walletDiscount > 0) {
+        await supabase.from("wallet_transactions").insert({
+          client_id: user.id,
+          type: "order_debit",
+          amount: -walletDiscount,
+          description: `Pagamento parcial - Pedido ${order.order_number}`,
+          order_id: order.id,
+        });
+        await supabase.from("profiles").update({
+          wallet_balance: walletBalance - walletDiscount,
+        }).eq("id", user.id);
       }
 
       setSavedTotal(finalTotal);
