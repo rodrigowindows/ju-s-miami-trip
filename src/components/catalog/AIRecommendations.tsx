@@ -4,20 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { useSettings } from "@/hooks/useSettings";
-
-type Product = {
-  id: string;
-  name: string;
-  brand: string;
-  category: string;
-  price_usd: number;
-  image_url: string;
-  rating: number;
-  review_count: number;
-  availability_type: string;
-  stock_quantity: number;
-  trending: boolean;
-};
+import type { CatalogProduct } from "@/types";
 
 export default function AIRecommendations({
   currentProductId,
