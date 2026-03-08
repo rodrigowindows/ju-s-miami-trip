@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Truck, MessageSquare, Copy } from "lucide-react";
+import { ArrowLeft, Plus, Truck, MessageSquare, Copy, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useOrder, useOrderItems, useOrderEvents, useUpdateOrderStatus } from "@/hooks/useOrders";
+import { supabase } from "@/integrations/supabase/client";
 import { useOrderPayments, useCreatePayment } from "@/hooks/usePayments";
 import { useTrips, useAllocateOrder } from "@/hooks/useTrips";
 import {
@@ -71,6 +72,7 @@ const OrderDetail = () => {
   const [suggestedPhone, setSuggestedPhone] = useState("");
   const [suggestedTitle, setSuggestedTitle] = useState("");
   const [suggestedIcon, setSuggestedIcon] = useState("");
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
   const [newStatus, setNewStatus] = useState("");
   const [paymentForm, setPaymentForm] = useState({
     type: "deposit" as "deposit" | "balance" | "refund",
@@ -154,6 +156,27 @@ const OrderDetail = () => {
     }
   };
 
+  const handleAiOrderSummary = async () => {
+    setAiSummaryLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-order-summary", {
+        body: { order_id: order.id },
+      });
+      if (error) throw error;
+      if (data?.message) {
+        setSuggestedMessage(data.message);
+        setSuggestedPhone((data.phone ?? "").replace(/\D/g, ""));
+        setSuggestedTitle("Resumo IA do Pedido");
+        setSuggestedIcon("✨");
+        setWhatsappOpen(true);
+      }
+    } catch (e: any) {
+      toast({ title: "Erro ao gerar resumo IA", description: e.message, variant: "destructive" });
+    } finally {
+      setAiSummaryLoading(false);
+    }
+  };
+
   const handleSendSuggestedWhatsApp = () => {
     if (!suggestedPhone) {
       toast({ title: "Cliente sem telefone cadastrado", variant: "destructive" });
@@ -216,6 +239,10 @@ const OrderDetail = () => {
                   <Truck size={14} /> Atribuir Viagem
                 </Button>
               )}
+              <Button size="sm" variant="outline" className="gap-1" onClick={handleAiOrderSummary} disabled={aiSummaryLoading}>
+                {aiSummaryLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                Resumo IA
+              </Button>
             </div>
           </div>
         </CardHeader>

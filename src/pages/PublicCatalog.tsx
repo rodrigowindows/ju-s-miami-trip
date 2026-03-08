@@ -43,6 +43,7 @@ import TripCountdown from "@/components/catalog/TripCountdown";
 import TrendingSection from "@/components/catalog/TrendingSection";
 import { ProductGridSkeleton } from "@/components/catalog/ProductCardSkeleton";
 import ReviewDistribution from "@/components/catalog/ReviewDistribution";
+import AISmartSearch from "@/components/catalog/AISmartSearch";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
@@ -212,6 +213,7 @@ export default function PublicCatalog() {
   const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "pronta_entrega" | "sob_encomenda">("all");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
+  const [aiSearchIds, setAiSearchIds] = useState<string[] | null>(null);
 
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { reviews: productReviews, loading: reviewsLoading } = useProductReviewsLocal(selectedProduct?.id ?? null);
@@ -260,6 +262,15 @@ export default function PublicCatalog() {
       list = list.filter((p) => p.availability_type === availabilityFilter);
     }
 
+    // AI smart search filter
+    if (aiSearchIds) {
+      const idSet = new Set(aiSearchIds);
+      list = list.filter((p) => idSet.has(p.id));
+      // Preserve AI relevance order
+      list.sort((a, b) => aiSearchIds.indexOf(a.id) - aiSearchIds.indexOf(b.id));
+    }
+
+
     if (minPrice > 0) list = list.filter((p) => convert(p.price_usd) >= minPrice);
     if (maxPrice > 0) list = list.filter((p) => convert(p.price_usd) <= maxPrice);
     switch (sortBy) {
@@ -268,7 +279,7 @@ export default function PublicCatalog() {
       case "name": return [...list].sort((a, b) => a.name.localeCompare(b.name));
       default: return list;
     }
-  }, [products, activeCategory, searchQuery, availabilityFilter, minPrice, maxPrice, sortBy, convert]);
+  }, [products, activeCategory, searchQuery, availabilityFilter, minPrice, maxPrice, sortBy, convert, aiSearchIds]);
 
   useEffect(() => { if (searchQuery.trim()) trackSearch(searchQuery, filtered.length); }, [searchQuery, filtered.length, trackSearch]);
 
@@ -321,6 +332,11 @@ export default function PublicCatalog() {
 
       {/* Hero Banner Carousel */}
       <HeroBannerCarousel />
+
+      {/* AI Smart Search */}
+      <div className="max-w-6xl mx-auto px-4 pt-4">
+        <AISmartSearch onResults={(ids) => setAiSearchIds(ids)} onClear={() => setAiSearchIds(null)} />
+      </div>
 
       {/* Compact results + filters bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-1.5 flex items-center justify-between max-w-6xl mx-auto">

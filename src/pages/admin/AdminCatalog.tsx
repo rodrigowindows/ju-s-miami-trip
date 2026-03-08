@@ -23,12 +23,47 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Loader2, Store, Pencil, Trash2, Download } from "lucide-react";
+import { Plus, Loader2, Store, Pencil, Trash2, Download, Sparkles } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { ProductImage } from "@/components/catalog/ProductImage";
 
 import { slugify } from "@/lib/slugify";
+function AIDescriptionButton({ name, brand, category, priceUsd, onGenerated }: {
+  name: string; brand: string; category: string; priceUsd: string;
+  onGenerated: (desc: string) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
+  async function generate() {
+    if (!name || !brand) {
+      toast({ title: "Preencha nome e marca primeiro", variant: "destructive" });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-product-description", {
+        body: { product_name: name, brand, category, price_usd: priceUsd },
+      });
+      if (error) throw error;
+      if (data?.description) {
+        onGenerated(data.description);
+        toast({ title: "Descrição gerada com IA! ✨" });
+      }
+    } catch (e: any) {
+      toast({ title: "Erro ao gerar descrição", description: e.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <Button type="button" variant="ghost" size="sm" onClick={generate} disabled={loading} className="gap-1 text-xs h-7 text-primary">
+      {loading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+      {loading ? "Gerando..." : "Gerar com IA"}
+    </Button>
+  );
+}
 
 export default function AdminCatalog() {
   const { toast } = useToast();
@@ -326,7 +361,16 @@ export default function AdminCatalog() {
               ) : <div />}
             </div>
             <div>
-              <Label>Descrição</Label>
+              <div className="flex items-center justify-between mb-1">
+                <Label>Descrição</Label>
+                <AIDescriptionButton
+                  name={form.name}
+                  brand={form.brand}
+                  category={form.category}
+                  priceUsd={form.price_usd}
+                  onGenerated={(desc) => setForm({ ...form, description: desc })}
+                />
+              </div>
               <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
             </div>
           </div>
