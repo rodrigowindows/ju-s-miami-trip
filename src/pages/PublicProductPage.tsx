@@ -139,7 +139,7 @@ export default function PublicProductPage() {
                   }`}
                   onClick={() => setSelectedImage(i)}
                 >
-                  <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <ProductImage src={img} alt={`${product.name} ${i + 1}`} brand={product.brand} category={product.category} className="w-full h-full object-cover" loading="eager" />
                 </button>
               ))}
             </div>

@@ -26,6 +26,7 @@ import {
   Percent,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ProductImage } from "@/components/catalog/ProductImage";
 
 type Deal = {
   id: string;
@@ -235,7 +236,7 @@ export default function AdminDeals() {
                 <CardContent className="pt-3 space-y-3">
                   {p && (
                     <div className="flex items-center gap-3">
-                      <img src={p.image_url} alt={p.name} className="w-12 h-12 rounded-lg object-contain bg-gray-50" />
+                      <ProductImage src={p.image_url} alt={p.name} brand={p.brand} category={p.category} className="w-12 h-12 rounded-lg object-contain bg-gray-50" loading="eager" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium leading-tight line-clamp-1">{p.name}</p>
                         <p className="text-[11px] text-muted-foreground">{p.brand} - US$ {p.price_usd.toFixed(2)}</p>
