@@ -43,6 +43,7 @@ import TripCountdown from "@/components/catalog/TripCountdown";
 import TrendingSection from "@/components/catalog/TrendingSection";
 import { ProductGridSkeleton } from "@/components/catalog/ProductCardSkeleton";
 import ReviewDistribution from "@/components/catalog/ReviewDistribution";
+import AISmartSearch from "@/components/catalog/AISmartSearch";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
