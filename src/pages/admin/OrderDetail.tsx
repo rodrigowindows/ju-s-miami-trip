@@ -30,6 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useOrder, useOrderItems, useOrderEvents, useUpdateOrderStatus } from "@/hooks/useOrders";
+import { supabase } from "@/integrations/supabase/client";
 import { useOrderPayments, useCreatePayment } from "@/hooks/usePayments";
 import { useTrips, useAllocateOrder } from "@/hooks/useTrips";
 import {
