@@ -1,32 +1,8 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { Route, Navigate } from "react-router-dom";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { RedirectIfAuthed, RequireAdmin } from "@/routes/guards";
-import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
-import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
-
-const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin"));
-const Dashboard = lazy(() => import("@/pages/admin/Dashboard"));
-const OrdersList = lazy(() => import("@/pages/admin/OrdersList"));
-const Trips = lazy(() => import("@/pages/admin/Trips"));
-const TripDetail = lazy(() => import("@/pages/admin/TripDetail"));
-const AdminCatalog = lazy(() => import("@/pages/admin/AdminCatalog"));
-const Messages = lazy(() => import("@/pages/admin/Messages"));
-const Payments = lazy(() => import("@/pages/admin/Payments"));
-const AdminPromos = lazy(() => import("@/pages/admin/AdminPromos"));
-const Clients = lazy(() => import("@/pages/admin/Clients"));
-const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings"));
-const AdminProductAlerts = lazy(() => import("@/pages/admin/AdminProductAlerts"));
-const AdminQuestions = lazy(() => import("@/pages/admin/AdminQuestions"));
-const AdminDeals = lazy(() => import("@/pages/admin/AdminDeals"));
-const AdminReviews = lazy(() => import("@/pages/admin/AdminReviews"));
-const AdminOrderDetail = lazy(() => import("@/pages/admin/OrderDetail"));
-const AdminAnalytics = lazy(() => import("@/pages/admin/AdminAnalytics"));
-const AdminChat = lazy(() => import("@/pages/admin/AdminChat"));
-
-function Lazy({ children }: { children: React.ReactNode }) {
-  return <ErrorBoundary><Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8"><PageSkeleton /></div>}>{children}</Suspense></ErrorBoundary>;
-}
+import { Lazy } from "@/routes/LazyRoute";
 
 export function adminRoutes() {
   return (
