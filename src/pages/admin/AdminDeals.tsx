@@ -26,6 +26,7 @@ import {
   Percent,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ProductImage } from "@/components/catalog/ProductImage";
 
 type Deal = {
   id: string;
