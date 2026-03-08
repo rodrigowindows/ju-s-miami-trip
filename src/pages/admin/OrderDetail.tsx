@@ -72,6 +72,7 @@ const OrderDetail = () => {
   const [suggestedPhone, setSuggestedPhone] = useState("");
   const [suggestedTitle, setSuggestedTitle] = useState("");
   const [suggestedIcon, setSuggestedIcon] = useState("");
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
   const [newStatus, setNewStatus] = useState("");
   const [paymentForm, setPaymentForm] = useState({
     type: "deposit" as "deposit" | "balance" | "refund",
