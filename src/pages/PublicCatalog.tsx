@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { fixImageUrl } from "@/lib/fix-image-urls";
+import { useCatalogProducts } from "@/hooks/useCatalog";
 import { ProductImage } from "@/components/catalog/ProductImage";
 import type { CatalogProduct, ProductQuestion, ProductReview } from "@/types";
 import type { Tables } from "@/integrations/supabase/types";
