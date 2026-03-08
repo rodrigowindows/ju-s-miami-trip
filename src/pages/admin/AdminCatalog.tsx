@@ -27,9 +27,8 @@ import { Plus, Loader2, Store, Pencil, Trash2, Download } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { ProductImage } from "@/components/catalog/ProductImage";
 
-function slugify(text: string) {
-  return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
+import { slugify } from "@/lib/slugify";
+
 
 export default function AdminCatalog() {
   const { toast } = useToast();

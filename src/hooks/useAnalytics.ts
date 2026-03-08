@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import type { Json } from "@/integrations/supabase/types";
 
 // ── Event types ──────────────────────────────────────────
 export type EventType =
@@ -38,11 +39,27 @@ function getVisitorId(): string {
 }
 
 // ── Batched event queue (fire-and-forget, debounced) ─────
-let eventQueue: Parameters<typeof supabase.from>[] = [];
+interface SiteEventRow {
+  event_type: string;
+  visitor_id: string;
+  user_id: string | null;
+  product_id: string | null;
+  product_name: string | null;
+  product_brand: string | null;
+  product_category: string | null;
+  product_price_brl: number | null;
+  page_path: string;
+  referrer: string | null;
+  user_agent: string;
+  screen_width: number;
+  metadata: Json | null;
+}
+
+let eventQueue: SiteEventRow[] = [];
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
 
-function enqueueEvent(row: Record<string, unknown>) {
-  eventQueue.push(row as any);
+function enqueueEvent(row: SiteEventRow) {
+  eventQueue.push(row);
   if (!flushTimer) {
     flushTimer = setTimeout(flushEvents, 2000);
   }
@@ -55,7 +72,7 @@ function flushEvents() {
   eventQueue = [];
   supabase
     .from("site_events")
-    .insert(batch as any)
+    .insert(batch)
     .then(() => {});
 }
 
@@ -79,7 +96,7 @@ export function useAnalytics() {
         referrer: document.referrer || null,
         user_agent: navigator.userAgent,
         screen_width: window.innerWidth,
-        metadata: payload.metadata || {},
+        metadata: (payload.metadata as Json) || null,
       });
     },
     [userId]

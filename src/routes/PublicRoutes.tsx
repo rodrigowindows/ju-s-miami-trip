@@ -1,8 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { Route } from "react-router-dom";
 import { RedirectIfAuthed } from "@/routes/guards";
-import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
-import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { Lazy } from "@/routes/LazyRoute";
 
 const PublicCatalog = lazy(() => import("@/pages/PublicCatalog"));
 const PublicProductPage = lazy(() => import("@/pages/PublicProductPage"));
@@ -12,10 +11,6 @@ const Rastreio = lazy(() => import("@/pages/Rastreio"));
 const Login = lazy(() => import("@/pages/Login"));
 const Register = lazy(() => import("@/pages/Register"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
-
-function Lazy({ children }: { children: React.ReactNode }) {
-  return <ErrorBoundary><Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8"><PageSkeleton /></div>}>{children}</Suspense></ErrorBoundary>;
-}
 
 export function publicRoutes() {
   return (
