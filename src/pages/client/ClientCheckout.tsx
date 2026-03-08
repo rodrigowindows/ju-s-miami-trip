@@ -52,9 +52,13 @@ export default function ClientCheckout() {
     }
   }, [profile]);
 
+  const [useWallet, setUseWallet] = useState(false);
+
   const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
   const spread = Number(settings?.spread_percent ?? "45");
   const totalBRL = useMemo(() => items.reduce((sum, i) => sum + calculatePriceBRL(i.product.price_usd, exchangeRate, spread) * i.quantity, 0), [items, exchangeRate, spread]);
+
+  const walletBalance = profile?.wallet_balance ?? 0;
 
   const matchedPromo = useMemo(() => {
     if (!coupon.trim() || !couponApplied) return null;
