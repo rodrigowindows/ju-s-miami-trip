@@ -187,6 +187,7 @@ const App = () => (
               <Route path="clients" element={<Clients />} />
               <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="settings" element={<AdminSettings />} />
+              <Route path="chat" element={<AdminChat />} />
               <Route path="alertas-produtos" element={<AdminProductAlerts />} />
               <Route path="orders/:id" element={<AdminOrderDetail />} />
             </Route>
