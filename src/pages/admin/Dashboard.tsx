@@ -190,7 +190,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-      )
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
