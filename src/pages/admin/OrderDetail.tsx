@@ -239,6 +239,10 @@ const OrderDetail = () => {
                   <Truck size={14} /> Atribuir Viagem
                 </Button>
               )}
+              <Button size="sm" variant="outline" className="gap-1" onClick={handleAiOrderSummary} disabled={aiSummaryLoading}>
+                {aiSummaryLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                Resumo IA
+              </Button>
             </div>
           </div>
         </CardHeader>
