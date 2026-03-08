@@ -333,6 +333,11 @@ export default function PublicCatalog() {
       {/* Hero Banner Carousel */}
       <HeroBannerCarousel />
 
+      {/* AI Smart Search */}
+      <div className="max-w-6xl mx-auto px-4 pt-4">
+        <AISmartSearch onResults={(ids) => setAiSearchIds(ids)} onClear={() => setAiSearchIds(null)} />
+      </div>
+
       {/* Compact results + filters bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-1.5 flex items-center justify-between max-w-6xl mx-auto">
         <p className="text-xs sm:text-sm text-gray-700">
