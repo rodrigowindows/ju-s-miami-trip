@@ -41,7 +41,7 @@ export default function NotifyMeButton({ productId, productName, defaultEmail }:
   async function submit() {
     if (!validate()) return;
     setSaving(true);
-    const { error } = await (supabase as any).from("product_alerts").insert({
+    const { error } = await supabase.from("product_alerts").insert({
       user_email: email.trim(),
       whatsapp: whatsapp.trim() || null,
       product_id: productId,

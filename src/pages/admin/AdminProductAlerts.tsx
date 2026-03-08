@@ -29,7 +29,7 @@ export default function AdminProductAlerts() {
   }
 
   async function markNotified(id: string) {
-    await (supabase as any).from("product_alerts").update({ notified_at: new Date().toISOString() }).eq("id", id);
+    await supabase.from("product_alerts").update({ notified_at: new Date().toISOString() }).eq("id", id);
     load();
   }
 
