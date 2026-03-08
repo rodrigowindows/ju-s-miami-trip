@@ -25,8 +25,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useOrder, useOrderItems, useOrderEvents } from "@/hooks/useOrders";
 import { useSettings } from "@/hooks/useSettings";
+import { useAuth } from "@/contexts/AuthContext";
+import { useClientOrderReviews, useCreateOrderReview } from "@/hooks/useOrderReviews";
 import { formatBRL, formatDate, formatDateTime, formatRelativeTime } from "@/lib/format";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 import type { OrderStatus } from "@/types";
 
 // ── Status flow (ordered) ─────────────────────
