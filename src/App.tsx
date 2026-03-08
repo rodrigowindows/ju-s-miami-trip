@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { CartProvider } from "@/contexts/CartContext";
 import CookieBanner from "./components/CookieBanner";
 import WhatsAppButton from "./components/WhatsAppButton";
 import AIChatWidget from "./components/AIChatWidget";
@@ -15,10 +14,10 @@ import { adminRoutes } from "@/routes/AdminRoutes";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 2 * 60 * 1000,      // 2 min — avoid refetching on every mount
-      gcTime: 10 * 60 * 1000,         // 10 min garbage collection
-      retry: 1,                        // single retry on failure
-      refetchOnWindowFocus: false,     // prevent unnecessary refetches
+      staleTime: 2 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      retry: 1,
+      refetchOnWindowFocus: false,
     },
     mutations: {
       retry: 0,
@@ -32,18 +31,16 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <CookieBanner />
-        <WhatsAppButton />
-        <AIChatWidget />
-        <CartProvider>
-          <BrowserRouter>
-            <Routes>
-              {publicRoutes()}
-              {clientRoutes()}
-              {adminRoutes()}
-            </Routes>
-          </BrowserRouter>
-        </CartProvider>
+        <BrowserRouter>
+          <CookieBanner />
+          <WhatsAppButton />
+          <AIChatWidget />
+          <Routes>
+            {publicRoutes()}
+            {clientRoutes()}
+            {adminRoutes()}
+          </Routes>
+        </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
