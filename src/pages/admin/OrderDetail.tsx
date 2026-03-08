@@ -156,6 +156,27 @@ const OrderDetail = () => {
     }
   };
 
+  const handleAiOrderSummary = async () => {
+    setAiSummaryLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-order-summary", {
+        body: { order_id: order.id },
+      });
+      if (error) throw error;
+      if (data?.message) {
+        setSuggestedMessage(data.message);
+        setSuggestedPhone((data.phone ?? "").replace(/\D/g, ""));
+        setSuggestedTitle("Resumo IA do Pedido");
+        setSuggestedIcon("✨");
+        setWhatsappOpen(true);
+      }
+    } catch (e: any) {
+      toast({ title: "Erro ao gerar resumo IA", description: e.message, variant: "destructive" });
+    } finally {
+      setAiSummaryLoading(false);
+    }
+  };
+
   const handleSendSuggestedWhatsApp = () => {
     if (!suggestedPhone) {
       toast({ title: "Cliente sem telefone cadastrado", variant: "destructive" });
