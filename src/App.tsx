@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import CookieBanner from "./components/CookieBanner";
 import WhatsAppButton from "./components/WhatsAppButton";
+import AIChatWidget from "./components/AIChatWidget";
 import { publicRoutes } from "@/routes/PublicRoutes";
 import { clientRoutes } from "@/routes/ClientRoutes";
 import { adminRoutes } from "@/routes/AdminRoutes";
