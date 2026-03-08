@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
-import ProductCard from "@/components/catalog/ProductCard";
+import { ProductCard } from "@/components/catalog/ProductCard";
 import { useSettings } from "@/hooks/useSettings";
 
 type Product = {
