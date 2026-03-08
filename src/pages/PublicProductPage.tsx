@@ -17,15 +17,8 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { ProductImage } from "@/components/catalog/ProductImage";
 import { useBuyAction } from "@/hooks/useBuyAction";
 import AIRecommendations from "@/components/catalog/AIRecommendations";
+import { slugify } from "@/lib/slugify";
 
-function slugify(text: string) {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
 
 export default function PublicProductPage() {
   const { slug } = useParams();

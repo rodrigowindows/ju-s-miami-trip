@@ -7,15 +7,8 @@ import { ProductCard } from "@/components/catalog/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Package, ChevronRight } from "lucide-react";
+import { slugify } from "@/lib/slugify";
 
-function slugify(text: string) {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
 
 interface BrandInfo {
   name: string;

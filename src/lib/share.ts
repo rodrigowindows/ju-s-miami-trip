@@ -1,13 +1,6 @@
 import type { CatalogProduct } from "@/types";
+import { slugify } from "@/lib/slugify";
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
 
 export function shareProductWhatsApp(product: CatalogProduct, priceBRL: number) {
   const priceFormatted = priceBRL.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
