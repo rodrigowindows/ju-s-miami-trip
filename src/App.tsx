@@ -26,6 +26,7 @@ import ClientWishlist from "./pages/client/ClientWishlist";
 import ClientCart from "./pages/client/ClientCart";
 import ClientCheckout from "./pages/client/ClientCheckout";
 import ClientNotifications from "./pages/client/ClientNotifications";
+import ClientChat from "./pages/client/ClientChat";
 
 // Admin pages
 import AdminLogin from "./pages/admin/AdminLogin";
