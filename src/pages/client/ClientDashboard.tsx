@@ -110,6 +110,7 @@ function BannerCarousel() {
 export default function ClientDashboard() {
   const { profile, user } = useAuth();
   const { data: transactions } = useWalletTransactions(user?.id ?? "");
+  const { data: orders } = useClientOrders(user?.id ?? "");
 
   const loyaltyEarned = useMemo(() => {
     if (!transactions) return 0;
