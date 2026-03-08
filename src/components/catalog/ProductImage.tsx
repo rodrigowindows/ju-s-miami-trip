@@ -37,6 +37,7 @@ export function ProductImage({ src, alt, brand = "", category = "", className = 
       alt={alt}
       className={className}
       loading={loading}
+      style={{ minWidth: 40, minHeight: 40 }}
       onError={() => {
         if (failCount === 0) {
           setImgSrc(brandedPlaceholder);
