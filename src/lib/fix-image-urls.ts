@@ -14,6 +14,29 @@ const BLOCKED_DOMAINS = [
 
 const FALLBACK = "/images/product-placeholder.jpg";
 
+/**
+ * Amazon image IDs that consistently return 404 in runtime logs.
+ */
+const BROKEN_AMAZON_IMAGE_IDS = [
+  "51kz4YS0YTL",
+  "71pS9HxGRcL",
+  "71f5VHnVW6L",
+  "51vqzQPZ5cL",
+  "71fqJpCxXzL",
+  "71xj-TCDTPL",
+  "71VPNszcg5L",
+  "71TLCZkfWGL",
+  "71pzKsBx7kL",
+  "51gKC3jIURL",
+  "61mOVWVcYqL",
+  "71SLhR8mekL",
+  "61wHdPGb3gL",
+  "61mVEzHgPWL",
+  "61RYVcxKvJL",
+  "71PKSNGfXHL",
+  "61nWNqEOmSL",
+];
+
 export function fixImageUrl(url: string | null | undefined): string {
   if (!url || !url.trim()) return "";
 
@@ -21,6 +44,10 @@ export function fixImageUrl(url: string | null | undefined): string {
     if (url.includes(domain)) {
       return "";
     }
+  }
+
+  if (url.includes("m.media-amazon.com") && BROKEN_AMAZON_IMAGE_IDS.some((id) => url.includes(id))) {
+    return "";
   }
 
   return url;
