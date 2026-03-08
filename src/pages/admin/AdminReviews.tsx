@@ -20,6 +20,7 @@ import { CardSkeleton } from "@/components/shared/LoadingSkeleton";
 import EmptyState from "@/components/shared/EmptyState";
 import { useToast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/format";
+import AISentimentCard from "@/components/admin/AISentimentCard";
 
 function Stars({ rating }: { rating: number }) {
   return (
