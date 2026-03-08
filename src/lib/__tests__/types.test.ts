@@ -38,7 +38,7 @@ describe("Type definitions", () => {
   });
 
   it("KANBAN_COLUMNS has expected structure", () => {
-    const { KANBAN_COLUMNS } = require("@/types");
+    const { KANBAN_COLUMNS } = await import("@/types");
     expect(KANBAN_COLUMNS).toHaveLength(5);
     expect(KANBAN_COLUMNS[0].id).toBe("novo_orcar");
     expect(KANBAN_COLUMNS[0].statuses).toContain("novo");
