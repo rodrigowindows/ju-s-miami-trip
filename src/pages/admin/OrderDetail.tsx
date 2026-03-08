@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Truck, MessageSquare, Copy } from "lucide-react";
+import { ArrowLeft, Plus, Truck, MessageSquare, Copy, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
