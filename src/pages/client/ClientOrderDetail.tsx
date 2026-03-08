@@ -459,6 +459,96 @@ export default function ClientOrderDetail() {
         </Card>
       )}
 
+      {/* ── Review Section ────────────────────────── */}
+      {order.status === "entregue" && user && (() => {
+        const existingReview = reviews?.find((r) => r.order_id === order.id);
+        if (existingReview) {
+          return (
+            <Card className="border-amber-200 bg-amber-50/50">
+              <CardContent className="pt-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Star size={16} className="fill-amber-400 text-amber-400" />
+                  <h3 className="font-semibold text-sm">Sua Avaliação</h3>
+                </div>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={16} className={i < existingReview.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"} />
+                  ))}
+                  <span className="text-sm font-medium ml-1">
+                    {existingReview.rating === 5 ? "Excelente!" : existingReview.rating === 4 ? "Muito bom" : existingReview.rating === 3 ? "Bom" : existingReview.rating === 2 ? "Regular" : "Ruim"}
+                  </span>
+                </div>
+                {existingReview.comment && <p className="text-sm text-muted-foreground">"{existingReview.comment}"</p>}
+                {existingReview.admin_reply && (
+                  <div className="ml-3 pl-2 border-l-2 border-primary/30 py-1 mt-2">
+                    <p className="text-[10px] font-semibold text-primary">Resposta da loja:</p>
+                    <p className="text-xs text-muted-foreground">{existingReview.admin_reply}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        }
+        return (
+          <Card className="border-primary/20">
+            <CardContent className="pt-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Star size={16} className="text-primary" />
+                <h3 className="font-semibold text-sm">Avalie seu pedido</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">Como foi sua experiência com este pedido?</p>
+              <div className="flex justify-center gap-2 py-1">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setReviewRating(s)}
+                    onMouseEnter={() => setReviewHovered(s)}
+                    onMouseLeave={() => setReviewHovered(0)}
+                    className="p-0.5 transition-transform hover:scale-110"
+                  >
+                    <Star size={28} className={s <= (reviewHovered || reviewRating) ? "fill-amber-400 text-amber-400" : "text-gray-300"} />
+                  </button>
+                ))}
+              </div>
+              {reviewRating > 0 && (
+                <p className="text-center text-sm font-medium">
+                  {reviewRating === 5 ? "Excelente! 🎉" : reviewRating === 4 ? "Muito bom! 😊" : reviewRating === 3 ? "Bom 👍" : reviewRating === 2 ? "Regular 😐" : "Ruim 😞"}
+                </p>
+              )}
+              <Textarea
+                placeholder="Conte como foi sua experiência... (opcional)"
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                rows={2}
+                maxLength={500}
+              />
+              <Button
+                className="w-full"
+                disabled={reviewRating === 0 || createReview.isPending}
+                onClick={async () => {
+                  try {
+                    await createReview.mutateAsync({
+                      order_id: order.id,
+                      client_id: user.id,
+                      rating: reviewRating,
+                      comment: reviewComment.trim() || undefined,
+                    });
+                    toast.success("Avaliação enviada! Obrigado pelo feedback!");
+                    setReviewRating(0);
+                    setReviewComment("");
+                  } catch {
+                    toast.error("Erro ao enviar avaliação.");
+                  }
+                }}
+              >
+                {createReview.isPending ? "Enviando..." : "Enviar Avaliação"}
+              </Button>
+            </CardContent>
+          </Card>
+        );
+      })()}
+
       {/* ── Actions ──────────────────────────────── */}
       <div className="flex gap-2">
         <a
