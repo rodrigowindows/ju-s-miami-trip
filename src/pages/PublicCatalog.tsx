@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { fixImageUrl } from "@/lib/fix-image-urls";
+import { useCatalogProducts } from "@/hooks/useCatalog";
 import { ProductImage } from "@/components/catalog/ProductImage";
 import type { CatalogProduct, ProductQuestion, ProductReview } from "@/types";
 import type { Tables } from "@/integrations/supabase/types";
@@ -55,29 +56,9 @@ function slugify(text: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-function useCatalog() {
-  const [products, setProducts] = useState<CatalogProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetch() {
-      const { data } = await supabase
-        .from("catalog_products")
-        .select("*")
-        .eq("active", true)
-        .order("created_at", { ascending: false });
-      setProducts(((data as CatalogProduct[]) ?? []).map((p) => ({
-        ...p,
-        image_url: fixImageUrl(p.image_url),
-        availability_type: (!p.availability_type || p.availability_type === "esgotado") ? "pronta_entrega" : p.availability_type,
-        stock_quantity: (!p.stock_quantity || p.stock_quantity <= 0) ? 2 : p.stock_quantity,
-      })).filter((p) => p.image_url && p.image_url.trim() !== ""));
-      setLoading(false);
-    }
-    fetch();
-  }, []);
-
-  return { products, loading };
+function useCatalogLocal() {
+  const { data, isLoading } = useCatalogProducts();
+  return { products: data ?? [], loading: isLoading };
 }
 
 function useDeals() {
@@ -195,15 +176,11 @@ function useQuestions(productId: string | null) {
 }
 
 function useExchangeRate() {
-  const [effectiveRate, setEffectiveRate] = useState(5.80 * 1.45);
-  useEffect(() => {
-    async function fetch() {
-      const { data, error } = await supabase.functions.invoke("get-exchange-rate");
-      if (!error && data) setEffectiveRate(data.effective_rate);
-    }
-    fetch();
-  }, []);
-  function convert(usd: number) { return usd * effectiveRate; }
+  const { data: settings } = useSettings();
+  const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
+  const spread = Number(settings?.spread_percent ?? "45");
+  const effectiveRate = exchangeRate * (1 + spread / 100);
+  function convert(usd: number) { return Math.round(usd * effectiveRate * 100) / 100; }
   return { convert, effectiveRate };
 }
 
@@ -226,7 +203,7 @@ function useProductReviewsLocal(productId: string | null) {
 export default function PublicCatalog() {
   usePageView("Catálogo");
   const { track } = useAnalytics();
-  const { products, loading } = useCatalog();
+  const { products, loading } = useCatalogLocal();
   const navigate = useNavigate();
   const { convert } = useExchangeRate();
   const { data: settings } = useSettings();

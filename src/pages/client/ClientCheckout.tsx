@@ -27,6 +27,7 @@ export default function ClientCheckout() {
   const [couponApplied, setCouponApplied] = useState(false);
   const [doneOrder, setDoneOrder] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [savedTotal, setSavedTotal] = useState<number | null>(null);
   const [address, setAddress] = useState({ cep: "", city: "", state: "", street: "", number: "", complement: "", neighborhood: "", phone: "", email: "" });
   const [addressError, setAddressError] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
@@ -67,7 +68,7 @@ export default function ClientCheckout() {
     return Math.min(matchedPromo.discount_value, totalBRL);
   }, [matchedPromo, totalBRL]);
 
-  const finalTotal = totalBRL - discount;
+  const finalTotal = savedTotal ?? (totalBRL - discount);
 
   // CEP lookup via ViaCEP API
   const lookupCep = useCallback(async (cep: string) => {
@@ -198,6 +199,7 @@ export default function ClientCheckout() {
         });
       }
 
+      setSavedTotal(finalTotal);
       clearCart();
       setDoneOrder(order.order_number);
       setStep(2);
