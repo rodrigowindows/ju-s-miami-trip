@@ -52,7 +52,7 @@ interface SiteEventRow {
   referrer: string | null;
   user_agent: string;
   screen_width: number;
-  metadata: Record<string, unknown> | null;
+  metadata: Json | null;
 }
 
 let eventQueue: SiteEventRow[] = [];
