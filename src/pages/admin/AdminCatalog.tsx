@@ -326,7 +326,16 @@ export default function AdminCatalog() {
               ) : <div />}
             </div>
             <div>
-              <Label>Descrição</Label>
+              <div className="flex items-center justify-between mb-1">
+                <Label>Descrição</Label>
+                <AIDescriptionButton
+                  name={form.name}
+                  brand={form.brand}
+                  category={form.category}
+                  priceUsd={form.price_usd}
+                  onGenerated={(desc) => setForm({ ...form, description: desc })}
+                />
+              </div>
               <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
             </div>
           </div>
