@@ -14,6 +14,29 @@ const BLOCKED_DOMAINS = [
 
 const FALLBACK = "/images/product-placeholder.jpg";
 
+/**
+ * Amazon image IDs that consistently return 404 in runtime logs.
+ */
+const BROKEN_AMAZON_IMAGE_IDS = [
+  "51kz4YS0YTL",
+  "71pS9HxGRcL",
+  "71f5VHnVW6L",
+  "51vqzQPZ5cL",
+  "71fqJpCxXzL",
+  "71xj-TCDTPL",
+  "71VPNszcg5L",
+  "71TLCZkfWGL",
+  "71pzKsBx7kL",
+  "51gKC3jIURL",
+  "61mOVWVcYqL",
+  "71SLhR8mekL",
+  "61wHdPGb3gL",
+  "61mVEzHgPWL",
+  "61RYVcxKvJL",
+  "71PKSNGfXHL",
+  "61nWNqEOmSL",
+];
+
 export function fixImageUrl(url: string | null | undefined): string {
   if (!url || !url.trim()) return "";
 
@@ -23,27 +46,30 @@ export function fixImageUrl(url: string | null | undefined): string {
     }
   }
 
+  if (url.includes("m.media-amazon.com") && BROKEN_AMAZON_IMAGE_IDS.some((id) => url.includes(id))) {
+    return "";
+  }
+
   return url;
 }
 
 /**
- * Generate a branded placeholder image URL for a product.
- * Used as onError fallback when the actual image_url fails to load.
+ * Generate a resilient fallback image URL for a product.
+ * Prefer local category images to avoid remote placeholder failures.
  */
-export function getBrandedPlaceholder(brand: string, category: string): string {
-  const categoryColors: Record<string, { bg: string; fg: string }> = {
-    tech: { bg: "333333", fg: "ffffff" },
-    perfumes: { bg: "8b5cf6", fg: "ffffff" },
-    beauty: { bg: "ec4899", fg: "ffffff" },
-    fashion: { bg: "1e3a5f", fg: "ffffff" },
-    supplements: { bg: "16a34a", fg: "ffffff" },
-    kids: { bg: "f59e0b", fg: "ffffff" },
-    lifestyle: { bg: "0ea5e9", fg: "ffffff" },
+export function getBrandedPlaceholder(_brand: string, category: string): string {
+  const categoryFallbacks: Record<string, string> = {
+    fashion: "/images/products/fashion/nike-air-force-1-07.jpg",
+    kids: "/images/products/kids/barbie-dreamhouse.jpg",
+    lifestyle: "/images/products/lifestyle/stanley-quencher.jpg",
+    health: "/images/products/health/kirkland-fish-oil.jpg",
+    supplements: "/images/products/health/kirkland-fish-oil.jpg",
+    perfumes: "/images/products/perfumes/dior-sauvage-edt.jpg",
+    tech: "/images/product-placeholder.jpg",
+    beauty: "/images/product-placeholder.jpg",
+    "victoria's secret": "/images/products/vs/vs-bombshell-mist.jpg",
   };
 
-  const cat = category?.toLowerCase() ?? "";
-  const colors = categoryColors[cat] ?? { bg: "f43f5e", fg: "ffffff" };
-  const label = encodeURIComponent(brand || "Produto");
-
-  return `https://placehold.co/400x400/${colors.bg}/${colors.fg}?text=${label}&font=poppins`;
+  const cat = (category || "").toLowerCase();
+  return categoryFallbacks[cat] ?? FALLBACK;
 }
