@@ -47,6 +47,7 @@ import AdminDeals from "./pages/admin/AdminDeals";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminChat from "./pages/admin/AdminChat";
 
 import { Loader2 } from "lucide-react";
 import CookieBanner from "./components/CookieBanner";
