@@ -6,6 +6,7 @@ import { toast } from "sonner";
 export function useSettings() {
   return useQuery<AppSettings>({
     queryKey: ["settings"],
+    staleTime: 10 * 60 * 1000, // settings rarely change — cache 10 min
     queryFn: async () => {
       const { data, error } = await supabase.from("settings").select("*");
       if (error) throw error;
@@ -28,12 +29,17 @@ export function useSaveSettings() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (settings: Partial<AppSettings>) => {
-      for (const [key, value] of Object.entries(settings)) {
-        const { error } = await supabase
-          .from("settings")
-          .upsert({ key, value: String(value), updated_at: new Date().toISOString() }, { onConflict: "key" });
-        if (error) throw error;
-      }
+      const entries = Object.entries(settings);
+      // Batch upserts in parallel
+      const results = await Promise.all(
+        entries.map(([key, value]) =>
+          supabase
+            .from("settings")
+            .upsert({ key, value: String(value), updated_at: new Date().toISOString() }, { onConflict: "key" })
+        )
+      );
+      const failed = results.find((r) => r.error);
+      if (failed?.error) throw failed.error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["settings"] }); toast.success("Configurações salvas!"); },
     onError: () => toast.error("Erro ao salvar configurações."),
