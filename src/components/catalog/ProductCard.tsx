@@ -1,7 +1,7 @@
 import { Heart, ShoppingBag } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating } from "./catalog-utils";
-import { getMLComparison as _getMLComparison } from "@/lib/ml-prices";
+import { getMLComparison } from "@/lib/ml-prices";
 import { ProductImage } from "./ProductImage";
 import { SavingsBadge } from "./SavingsBadge";
 import type { CatalogProduct } from "@/types";
