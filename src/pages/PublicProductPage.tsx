@@ -9,6 +9,7 @@ import { StarRating } from "@/components/catalog/StarRating";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { useToast } from "@/hooks/use-toast";
 import NotifyMeButton from "@/components/catalog/NotifyMeButton";
+import AIPriceEstimate from "@/components/catalog/AIPriceEstimate";
 import { ChevronRight, Shield, Truck, RotateCcw, MessageCircle, Share2, Heart, ShoppingBag, Minus, Plus, ZoomIn, TrendingDown } from "lucide-react";
 import { getMLComparison } from "@/lib/ml-prices";
 import StickyBuyBar from "@/components/catalog/StickyBuyBar";
