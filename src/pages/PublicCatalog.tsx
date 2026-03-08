@@ -203,7 +203,7 @@ function useProductReviewsLocal(productId: string | null) {
 export default function PublicCatalog() {
   usePageView("Catálogo");
   const { track } = useAnalytics();
-  const { products, loading } = useCatalog();
+  const { products, loading } = useCatalogLocal();
   const navigate = useNavigate();
   const { convert } = useExchangeRate();
   const { data: settings } = useSettings();

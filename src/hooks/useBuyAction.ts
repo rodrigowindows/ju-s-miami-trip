@@ -40,9 +40,7 @@ export function useBuyAction() {
         return false;
       }
       const qty = opts?.quantity ?? 1;
-      for (let i = 0; i < qty; i++) {
-        addItem(product);
-      }
+      addItem(product, qty);
       nav("/client/checkout");
       return true;
     },
