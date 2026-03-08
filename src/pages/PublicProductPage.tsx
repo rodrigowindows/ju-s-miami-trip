@@ -9,12 +9,14 @@ import { StarRating } from "@/components/catalog/StarRating";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { useToast } from "@/hooks/use-toast";
 import NotifyMeButton from "@/components/catalog/NotifyMeButton";
+import AIPriceEstimate from "@/components/catalog/AIPriceEstimate";
 import { ChevronRight, Shield, Truck, RotateCcw, MessageCircle, Share2, Heart, ShoppingBag, Minus, Plus, ZoomIn, TrendingDown } from "lucide-react";
 import { getMLComparison } from "@/lib/ml-prices";
 import StickyBuyBar from "@/components/catalog/StickyBuyBar";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { ProductImage } from "@/components/catalog/ProductImage";
 import { useBuyAction } from "@/hooks/useBuyAction";
+import AIRecommendations from "@/components/catalog/AIRecommendations";
 
 function slugify(text: string) {
   return text
@@ -184,6 +186,13 @@ export default function PublicProductPage() {
               <p className="text-xs text-gray-500 mt-1">
                 Preço nos EUA: US$ {product.price_usd.toFixed(2)}
               </p>
+              <div className="mt-2">
+                <AIPriceEstimate
+                  productName={product.name}
+                  priceUsd={product.price_usd}
+                  category={product.category}
+                />
+              </div>
             </div>
 
             {/* ML Price Comparison */}
@@ -387,24 +396,12 @@ export default function PublicProductPage() {
         </div>
       )}
 
-      {/* You may also like */}
-      {more.length > 0 && (
-        <div className="bg-gray-50 border-t pb-20 md:pb-0">
-          <div className="max-w-6xl mx-auto px-4 py-8">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Você também pode gostar</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {more.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  brl={calculatePriceBRL(p.price_usd, exchangeRate, spread)}
-                  onClick={() => nav(`/produto/${slugify(p.name)}`)}
-                />
-              ))}
-            </div>
-          </div>
+      {/* AI Recommendations */}
+      <div className="bg-gray-50 border-t pb-20 md:pb-0">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <AIRecommendations currentProductId={product.id} category={product.category} />
         </div>
-      )}
+      </div>
 
       {/* Mobile Sticky Buy Bar */}
       <StickyBuyBar productName={product.name} priceBrl={brl} isSoldOut={isSoldOut} />

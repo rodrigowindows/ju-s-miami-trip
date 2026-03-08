@@ -6,6 +6,7 @@ import { useOrders } from "@/hooks/useOrders";
 import { usePayments } from "@/hooks/usePayments";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag, DollarSign, Plane, Clock, TrendingUp, Users } from "lucide-react";
+import AdminAISummary from "@/components/admin/AdminAISummary";
 import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 import type { OrderWithClient } from "@/types";
 import { KANBAN_COLUMNS } from "@/types";
@@ -157,6 +158,8 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 md:p-8 max-w-full mx-auto space-y-6">
+      {/* AI Summary */}
+      <AdminAISummary />
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold">Dashboard</h1>
