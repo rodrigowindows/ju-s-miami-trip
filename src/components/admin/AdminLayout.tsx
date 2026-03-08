@@ -34,6 +34,7 @@ const navItems = [
   { to: "/admin/promos", label: "Promoções", icon: Tag },
   { to: "/admin/ofertas", label: "Ofertas do Dia", icon: Flame },
   { to: "/admin/clients", label: "Clientes", icon: Users },
+  { to: "/admin/chat", label: "Chat ao Vivo", icon: MessageCircle },
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/admin/settings", label: "Config", icon: Settings },
 ];
