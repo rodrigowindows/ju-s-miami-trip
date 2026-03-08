@@ -44,7 +44,8 @@ export type WalletTransactionType =
   | 'referral_credit'
   | 'order_debit'
   | 'admin_adjust'
-  | 'refund';
+  | 'refund'
+  | 'loyalty_credit';
 
 // ── Trip Status ──────────────────────────────
 export type TripStatus = 'planejada' | 'em_andamento' | 'concluida';
