@@ -68,7 +68,7 @@ export default function ClientCheckout() {
     return Math.min(matchedPromo.discount_value, totalBRL);
   }, [matchedPromo, totalBRL]);
 
-  const finalTotal = totalBRL - discount;
+  const finalTotal = savedTotal ?? (totalBRL - discount);
 
   // CEP lookup via ViaCEP API
   const lookupCep = useCallback(async (cep: string) => {
