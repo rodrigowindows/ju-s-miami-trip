@@ -165,10 +165,13 @@ export default function AdminQuestions() {
               {/* Product info */}
               {q.catalog_products && (
                 <div className="flex items-center gap-2 pb-2 border-b">
-                  <img
+                  <ProductImage
                     src={q.catalog_products.image_url}
                     alt={q.catalog_products.name}
+                    brand={q.catalog_products.brand}
+                    category=""
                     className="w-8 h-8 rounded-lg object-cover"
+                    loading="eager"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold truncate">{q.catalog_products.name}</p>

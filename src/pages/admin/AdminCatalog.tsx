@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Loader2, Store, Pencil, Trash2, Download } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
+import { ProductImage } from "@/components/catalog/ProductImage";
 
 function slugify(text: string) {
   return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -227,7 +228,7 @@ export default function AdminCatalog() {
           {products.map((product) => (
             <Card key={product.id} className="overflow-hidden">
               <div className="aspect-video bg-muted/50 relative">
-                <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                <ProductImage src={product.image_url} alt={product.name} brand={product.brand} category={product.category} className="w-full h-full object-cover" loading="eager" />
                 {!product.active && (
                   <Badge className="absolute top-2 right-2 bg-red-100 text-red-700 border-0">
                     Inativo
