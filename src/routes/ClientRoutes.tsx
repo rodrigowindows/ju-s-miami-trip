@@ -1,17 +1,24 @@
+import { lazy, Suspense } from "react";
 import { Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/components/client/ClientLayout";
-import ClientDashboard from "@/pages/client/ClientDashboard";
-import ClientCatalog from "@/pages/client/ClientCatalog";
-import ClientOrders from "@/pages/client/ClientOrders";
-import ClientOrderDetail from "@/pages/client/ClientOrderDetail";
-import ClientPromotions from "@/pages/client/ClientPromotions";
-import ClientProfile from "@/pages/client/ClientProfile";
-import ClientWishlist from "@/pages/client/ClientWishlist";
-import ClientCart from "@/pages/client/ClientCart";
-import ClientCheckout from "@/pages/client/ClientCheckout";
-import ClientNotifications from "@/pages/client/ClientNotifications";
-import ClientChat from "@/pages/client/ClientChat";
 import { RequireClient } from "@/routes/guards";
+import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
+
+const ClientDashboard = lazy(() => import("@/pages/client/ClientDashboard"));
+const ClientCatalog = lazy(() => import("@/pages/client/ClientCatalog"));
+const ClientOrders = lazy(() => import("@/pages/client/ClientOrders"));
+const ClientOrderDetail = lazy(() => import("@/pages/client/ClientOrderDetail"));
+const ClientPromotions = lazy(() => import("@/pages/client/ClientPromotions"));
+const ClientProfile = lazy(() => import("@/pages/client/ClientProfile"));
+const ClientWishlist = lazy(() => import("@/pages/client/ClientWishlist"));
+const ClientCart = lazy(() => import("@/pages/client/ClientCart"));
+const ClientCheckout = lazy(() => import("@/pages/client/ClientCheckout"));
+const ClientNotifications = lazy(() => import("@/pages/client/ClientNotifications"));
+const ClientChat = lazy(() => import("@/pages/client/ClientChat"));
+
+function Lazy({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8"><PageSkeleton /></div>}>{children}</Suspense>;
+}
 
 export function clientRoutes() {
   return (
@@ -20,17 +27,17 @@ export function clientRoutes() {
       element={<RequireClient><ClientLayout /></RequireClient>}
     >
       <Route index element={<Navigate to="dashboard" replace />} />
-      <Route path="dashboard" element={<ClientDashboard />} />
-      <Route path="catalog" element={<ClientCatalog />} />
-      <Route path="orders" element={<ClientOrders />} />
-      <Route path="orders/:id" element={<ClientOrderDetail />} />
-      <Route path="wishlist" element={<ClientWishlist />} />
-      <Route path="promos" element={<ClientPromotions />} />
-      <Route path="cart" element={<ClientCart />} />
-      <Route path="checkout" element={<ClientCheckout />} />
-      <Route path="profile" element={<ClientProfile />} />
-      <Route path="notifications" element={<ClientNotifications />} />
-      <Route path="chat" element={<ClientChat />} />
+      <Route path="dashboard" element={<Lazy><ClientDashboard /></Lazy>} />
+      <Route path="catalog" element={<Lazy><ClientCatalog /></Lazy>} />
+      <Route path="orders" element={<Lazy><ClientOrders /></Lazy>} />
+      <Route path="orders/:id" element={<Lazy><ClientOrderDetail /></Lazy>} />
+      <Route path="wishlist" element={<Lazy><ClientWishlist /></Lazy>} />
+      <Route path="promos" element={<Lazy><ClientPromotions /></Lazy>} />
+      <Route path="cart" element={<Lazy><ClientCart /></Lazy>} />
+      <Route path="checkout" element={<Lazy><ClientCheckout /></Lazy>} />
+      <Route path="profile" element={<Lazy><ClientProfile /></Lazy>} />
+      <Route path="notifications" element={<Lazy><ClientNotifications /></Lazy>} />
+      <Route path="chat" element={<Lazy><ClientChat /></Lazy>} />
     </Route>
   );
 }
