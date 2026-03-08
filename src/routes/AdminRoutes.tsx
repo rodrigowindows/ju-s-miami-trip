@@ -3,6 +3,7 @@ import { Route, Navigate } from "react-router-dom";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { RedirectIfAuthed, RequireAdmin } from "@/routes/guards";
 import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 
 const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin"));
 const Dashboard = lazy(() => import("@/pages/admin/Dashboard"));
