@@ -10,7 +10,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isClient: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, fullName: string, phone?: string, referralCode?: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
 
