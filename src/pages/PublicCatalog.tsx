@@ -55,29 +55,9 @@ function slugify(text: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-function useCatalog() {
-  const [products, setProducts] = useState<CatalogProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetch() {
-      const { data } = await supabase
-        .from("catalog_products")
-        .select("*")
-        .eq("active", true)
-        .order("created_at", { ascending: false });
-      setProducts(((data as CatalogProduct[]) ?? []).map((p) => ({
-        ...p,
-        image_url: fixImageUrl(p.image_url),
-        availability_type: (!p.availability_type || p.availability_type === "esgotado") ? "pronta_entrega" : p.availability_type,
-        stock_quantity: (!p.stock_quantity || p.stock_quantity <= 0) ? 2 : p.stock_quantity,
-      })).filter((p) => p.image_url && p.image_url.trim() !== ""));
-      setLoading(false);
-    }
-    fetch();
-  }, []);
-
-  return { products, loading };
+function useCatalogLocal() {
+  const { data, isLoading } = useCatalogProducts();
+  return { products: data ?? [], loading: isLoading };
 }
 
 function useDeals() {
