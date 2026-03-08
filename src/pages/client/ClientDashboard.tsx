@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useState, useMemo } from "react";
 import { ArrowRight, Tag, Package, Wallet, ShoppingBag, Zap, Users, Sparkles, Trophy, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
