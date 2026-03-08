@@ -2,19 +2,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBRL } from "@/lib/format";
 import { fetchProfileMapFull } from "@/lib/profileMap";
-import type { WhatsAppTemplate, Order } from "@/types";
-
-export type OrderWithClient = Order & {
-  client: { full_name: string | null; phone: string | null; email: string } | null;
-  trip_code: string;
-  items_summary: string;
-};
+import type { WhatsAppTemplate, Order, OrderWithClientMessage } from "@/types";
 
 // ── Queries ────────────────────────────────────
 
 export function useWhatsAppTemplates() {
   return useQuery({
     queryKey: ["whatsapp_templates"],
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("whatsapp_templates")
@@ -94,7 +89,7 @@ export function useOrdersForMessages(statusFilter?: string) {
         client: profileMap.get(o.client_id) ?? null,
         trip_code: o.trip_id ? tripMap.get(o.trip_id) ?? "" : "",
         items_summary: itemsMap.get(o.id) ?? o.items ?? "",
-      })) as OrderWithClient[];
+      })) as OrderWithClientMessage[];
     },
   });
 }
@@ -185,7 +180,7 @@ export const TEMPLATE_STATUS_MAP: Record<string, string> = {
 
 export function fillTemplate(
   template: string,
-  order: OrderWithClient
+  order: OrderWithClientMessage
 ): string {
   const clientName = order.client?.full_name ?? "Cliente";
   const itemsSummary = order.items_summary ?? order.items ?? "";

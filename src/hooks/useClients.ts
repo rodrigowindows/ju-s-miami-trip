@@ -10,6 +10,7 @@ export interface ClientWithStats extends Profile {
 export function useClients(search?: string) {
   return useQuery<ClientWithStats[]>({
     queryKey: ["clients", search],
+    staleTime: 2 * 60 * 1000,
     queryFn: async () => {
       let query = supabase.from("profiles").select("*").eq("role", "cliente").order("created_at", { ascending: false });
       if (search) query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%`);

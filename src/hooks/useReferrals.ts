@@ -5,6 +5,7 @@ import type { Referral } from "@/types";
 export function useReferrals() {
   return useQuery<Referral[]>({
     queryKey: ["referrals"],
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase.from("referrals").select("*").order("created_at", { ascending: false });
       if (error) throw error;
