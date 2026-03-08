@@ -7,6 +7,8 @@ export type OrderReview = {
   client_id: string;
   rating: number;
   comment: string | null;
+  admin_reply: string | null;
+  admin_reply_at: string | null;
   created_at: string;
 };
 
@@ -43,7 +45,6 @@ export function useAllOrderReviews() {
         .order("created_at", { ascending: false });
       if (error) throw error;
 
-      // Fetch order details
       const orderIds = [...new Set((reviews ?? []).map((r: OrderReview) => r.order_id))];
       const { data: orders } = await supabase
         .from("orders")
@@ -82,7 +83,27 @@ export function useCreateOrderReview() {
       if (error) throw error;
       return data as OrderReview;
     },
-    onSuccess: (_, vars) => {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order_reviews"] });
+    },
+  });
+}
+
+/** Admin reply to a review */
+export function useReplyToReview() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ reviewId, reply }: { reviewId: string; reply: string }) => {
+      const { error } = await supabase
+        .from("order_reviews")
+        .update({
+          admin_reply: reply.trim(),
+          admin_reply_at: new Date().toISOString(),
+        } as Record<string, unknown>)
+        .eq("id", reviewId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order_reviews"] });
     },
   });
