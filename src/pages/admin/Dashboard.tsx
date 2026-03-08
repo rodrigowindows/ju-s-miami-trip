@@ -6,6 +6,7 @@ import { useOrders } from "@/hooks/useOrders";
 import { usePayments } from "@/hooks/usePayments";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag, DollarSign, Plane, Clock, TrendingUp, Users } from "lucide-react";
+import AdminAISummary from "@/components/admin/AdminAISummary";
 import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 import type { OrderWithClient } from "@/types";
 import { KANBAN_COLUMNS } from "@/types";
