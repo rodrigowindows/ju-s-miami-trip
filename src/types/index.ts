@@ -95,9 +95,21 @@ export type ProductReview = import('@/integrations/supabase/types').Tables<'prod
 // ── Product Question (Q&A) ─────────────────
 export type ProductQuestion = import('@/integrations/supabase/types').Tables<'product_questions'>;
 
+// ── Order Item (from DB) ───────────────────
+export type OrderItem = import('@/integrations/supabase/types').Tables<'order_items'>;
+
+// ── Order Event (from DB) ──────────────────
+export type OrderEvent = import('@/integrations/supabase/types').Tables<'order_events'>;
+
 // ── Order with Client (joined) ─────────────
 export type OrderWithClient = Order & {
   client: { full_name: string | null; phone: string | null; email: string } | null;
+};
+
+// ── Message-specific OrderWithClient (extended) ──
+export type OrderWithClientMessage = OrderWithClient & {
+  trip_code: string;
+  items_summary: string;
 };
 
 // ── Settings alias (plural) ────────────────
