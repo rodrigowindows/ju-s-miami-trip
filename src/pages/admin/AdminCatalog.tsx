@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Loader2, Store, Pencil, Trash2, Download } from "lucide-react";
+import { Plus, Loader2, Store, Pencil, Trash2, Download, Sparkles } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { ProductImage } from "@/components/catalog/ProductImage";
 
