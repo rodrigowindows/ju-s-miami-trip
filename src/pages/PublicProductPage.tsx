@@ -54,16 +54,7 @@ export default function PublicProductPage() {
     return products.filter((p) => p.id !== product.id && p.category !== product.category).slice(0, 4);
   }, [products, product]);
 
-  if (!product) return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-center">
-        <p className="text-lg font-semibold text-gray-700">Produto não encontrado</p>
-        <Link to="/" className="text-sm text-rose-600 hover:underline mt-2 inline-block">Voltar ao catálogo</Link>
-      </div>
-    </div>
-  );
-
-  // Track product view (once per product)
+  // Track product view (once per product) — must be before early return
   useEffect(() => {
     if (product && trackedRef.current !== product.id) {
       trackedRef.current = product.id;
@@ -78,6 +69,16 @@ export default function PublicProductPage() {
 
   const exchangeRate = Number(settings?.exchange_rate ?? "5.80");
   const spread = Number(settings?.spread_percent ?? "45");
+
+  if (!product) return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-lg font-semibold text-gray-700">Produto não encontrado</p>
+        <Link to="/" className="text-sm text-rose-600 hover:underline mt-2 inline-block">Voltar ao catálogo</Link>
+      </div>
+    </div>
+  );
+
   const brl = calculatePriceBRL(product.price_usd, exchangeRate, spread);
 
   // Simulate multiple images (in production, product would have image_urls array)
