@@ -1,7 +1,9 @@
-import { Star, Trash2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { Star, Trash2, MessageSquare, Send } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useAllOrderReviews, useDeleteOrderReview } from "@/hooks/useOrderReviews";
+import { useAllOrderReviews, useDeleteOrderReview, useReplyToReview } from "@/hooks/useOrderReviews";
 import { CardSkeleton } from "@/components/shared/LoadingSkeleton";
 import EmptyState from "@/components/shared/EmptyState";
 import { useToast } from "@/hooks/use-toast";
@@ -59,15 +61,79 @@ function RatingDistribution({ reviews }: { reviews: { rating: number }[] }) {
   );
 }
 
+function ReplyForm({ reviewId, existingReply }: { reviewId: string; existingReply: string | null }) {
+  const [reply, setReply] = useState(existingReply ?? "");
+  const [editing, setEditing] = useState(!existingReply);
+  const replyMutation = useReplyToReview();
+  const { toast } = useToast();
+
+  const handleSubmit = async () => {
+    if (!reply.trim()) return;
+    try {
+      await replyMutation.mutateAsync({ reviewId, reply });
+      toast({ title: "Resposta enviada!" });
+      setEditing(false);
+    } catch {
+      toast({ title: "Erro ao responder", variant: "destructive" });
+    }
+  };
+
+  if (existingReply && !editing) {
+    return (
+      <div className="mt-3 ml-4 pl-3 border-l-2 border-primary/30 space-y-1">
+        <p className="text-xs font-semibold text-primary">Sua resposta:</p>
+        <p className="text-sm text-muted-foreground">{existingReply}</p>
+        <button onClick={() => setEditing(true)} className="text-xs text-primary hover:underline">
+          Editar
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3 space-y-2">
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <MessageSquare size={12} />
+        <span>{existingReply ? "Editar resposta" : "Responder ao cliente"}</span>
+      </div>
+      <Textarea
+        placeholder="Escreva sua resposta..."
+        value={reply}
+        onChange={(e) => setReply(e.target.value)}
+        rows={2}
+        maxLength={500}
+      />
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          onClick={handleSubmit}
+          disabled={!reply.trim() || replyMutation.isPending}
+          className="gap-1.5"
+        >
+          <Send size={12} /> {replyMutation.isPending ? "Enviando..." : "Enviar"}
+        </Button>
+        {existingReply && (
+          <Button size="sm" variant="ghost" onClick={() => { setEditing(false); setReply(existingReply); }}>
+            Cancelar
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminReviews() {
   const { data: reviews, isLoading } = useAllOrderReviews();
   const deleteReview = useDeleteOrderReview();
   const { toast } = useToast();
+  const [replyingId, setReplyingId] = useState<string | null>(null);
 
   const avgRating =
     reviews && reviews.length > 0
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : 0;
+
+  const pendingReplies = reviews?.filter((r) => !r.admin_reply).length ?? 0;
 
   const handleDelete = async (id: string) => {
     try {
@@ -100,7 +166,16 @@ export default function AdminReviews() {
                 <p className="text-xs text-muted-foreground mt-1">{reviews.length} avaliações</p>
               </CardContent>
             </Card>
-            <Card className="sm:col-span-2">
+            <Card>
+              <CardContent className="pt-4 text-center">
+                <p className="text-3xl font-bold">{pendingReplies}</p>
+                <p className="text-xs text-muted-foreground mt-1">Sem resposta</p>
+                {pendingReplies > 0 && (
+                  <Badge className="mt-2 bg-amber-50 text-amber-700 border-amber-200">Pendentes</Badge>
+                )}
+              </CardContent>
+            </Card>
+            <Card>
               <CardContent className="pt-4">
                 <RatingDistribution reviews={reviews} />
               </CardContent>
@@ -110,40 +185,58 @@ export default function AdminReviews() {
           {/* Review list */}
           <div className="space-y-3">
             {reviews.map((review) => (
-              <Card key={review.id}>
+              <Card key={review.id} className={!review.admin_reply ? "border-l-2 border-l-amber-400" : ""}>
                 <CardContent className="pt-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="space-y-1 flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-medium text-sm">{review.customer_name}</span>
                         <Badge variant="outline" className="text-[10px]">{review.order_number}</Badge>
+                        {!review.admin_reply && (
+                          <Badge className="text-[10px] bg-amber-50 text-amber-600 border-amber-200">Sem resposta</Badge>
+                        )}
                       </div>
                       <Stars rating={review.rating} />
                       {review.comment && (
-                        <p className="text-sm text-muted-foreground mt-1">{review.comment}</p>
+                        <p className="text-sm text-muted-foreground mt-1">"{review.comment}"</p>
                       )}
                       <p className="text-[11px] text-muted-foreground">{formatDate(review.created_at)}</p>
                     </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50 shrink-0">
-                          <Trash2 size={16} />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Excluir avaliação?</AlertDialogTitle>
-                          <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(review.id)} className="bg-red-600 hover:bg-red-700">
-                            Excluir
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="flex gap-1 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-primary hover:bg-primary/10"
+                        onClick={() => setReplyingId(replyingId === review.id ? null : review.id)}
+                      >
+                        <MessageSquare size={16} />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                            <Trash2 size={16} />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir avaliação?</AlertDialogTitle>
+                            <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(review.id)} className="bg-red-600 hover:bg-red-700">
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
+
+                  {/* Admin reply section */}
+                  {(review.admin_reply || replyingId === review.id) && (
+                    <ReplyForm reviewId={review.id} existingReply={review.admin_reply} />
+                  )}
                 </CardContent>
               </Card>
             ))}
