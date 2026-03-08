@@ -165,11 +165,7 @@ export default function ClientDashboard() {
                     <p className="text-xs text-muted-foreground truncate">{order.items}</p>
                   </div>
                   <Badge variant="outline" className="text-[10px] shrink-0">
-                    {order.status === "novo" ? "Recebido" :
-                     order.status === "orcamento" ? "Orçamento" :
-                     order.status === "comprando" ? "Comprando" :
-                     order.status === "em_transito" ? "Em trânsito" :
-                     order.status}
+                    {ORDER_STATUS_CONFIG[order.status as keyof typeof ORDER_STATUS_CONFIG]?.label ?? order.status}
                   </Badge>
                   <ArrowRight size={14} className="text-muted-foreground shrink-0" />
                 </CardContent>
