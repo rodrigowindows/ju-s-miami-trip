@@ -19,10 +19,10 @@ const AnnouncementBar = () => {
   }, []);
 
   return (
-    <div className="bg-[#131921] overflow-hidden h-[35px] flex items-center relative">
+    <div className="bg-secondary overflow-hidden h-[35px] flex items-center relative">
       <button
         onClick={() => setCurrent((prev) => (prev - 1 + MESSAGES.length) % MESSAGES.length)}
-        className="absolute left-2 z-10 text-white/60 hover:text-white transition-colors hidden sm:block"
+        className="absolute left-2 z-10 text-secondary-foreground/60 hover:text-secondary-foreground transition-colors hidden sm:block"
         aria-label="Mensagem anterior"
       >
         <ChevronLeft size={16} />
@@ -31,7 +31,7 @@ const AnnouncementBar = () => {
       <div className="flex-1 text-center">
         <span
           key={current}
-          className="inline-block text-white font-body text-[11px] md:text-[13px] font-medium animate-fade-in px-8"
+          className="inline-block text-secondary-foreground font-body text-[11px] md:text-[13px] font-medium animate-fade-in px-8"
         >
           {MESSAGES[current]}
         </span>
@@ -39,7 +39,7 @@ const AnnouncementBar = () => {
 
       <button
         onClick={() => setCurrent((prev) => (prev + 1) % MESSAGES.length)}
-        className="absolute right-2 z-10 text-white/60 hover:text-white transition-colors hidden sm:block"
+        className="absolute right-2 z-10 text-secondary-foreground/60 hover:text-secondary-foreground transition-colors hidden sm:block"
         aria-label="Próxima mensagem"
       >
         <ChevronRight size={16} />
@@ -51,7 +51,7 @@ const AnnouncementBar = () => {
           <span
             key={i}
             className={`w-1 h-1 rounded-full transition-colors ${
-              i === current ? "bg-white" : "bg-white/30"
+              i === current ? "bg-secondary-foreground" : "bg-secondary-foreground/30"
             }`}
           />
         ))}
