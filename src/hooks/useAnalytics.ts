@@ -37,31 +37,25 @@ function getVisitorId(): string {
   return vid;
 }
 
-// ── Fire-and-forget event sender ─────────────────────────
-function sendEvent(
-  eventType: EventType,
-  userId: string | undefined,
-  payload: EventPayload = {}
-) {
-  const visitorId = getVisitorId();
+// ── Batched event queue (fire-and-forget, debounced) ─────
+let eventQueue: Parameters<typeof supabase.from>[] = [];
+let flushTimer: ReturnType<typeof setTimeout> | null = null;
 
-  (supabase as any)
+function enqueueEvent(row: Record<string, unknown>) {
+  eventQueue.push(row as any);
+  if (!flushTimer) {
+    flushTimer = setTimeout(flushEvents, 2000);
+  }
+}
+
+function flushEvents() {
+  flushTimer = null;
+  if (eventQueue.length === 0) return;
+  const batch = [...eventQueue];
+  eventQueue = [];
+  supabase
     .from("site_events")
-    .insert({
-      event_type: eventType,
-      visitor_id: visitorId,
-      user_id: userId || null,
-      product_id: payload.product_id || null,
-      product_name: payload.product_name || null,
-      product_brand: payload.product_brand || null,
-      product_category: payload.product_category || null,
-      product_price_brl: payload.product_price_brl || null,
-      page_path: payload.page_path || window.location.pathname,
-      referrer: document.referrer || null,
-      user_agent: navigator.userAgent,
-      screen_width: window.innerWidth,
-      metadata: payload.metadata || {},
-    })
+    .insert(batch as any)
     .then(() => {});
 }
 
@@ -72,7 +66,21 @@ export function useAnalytics() {
 
   const track = useCallback(
     (eventType: EventType, payload: EventPayload = {}) => {
-      sendEvent(eventType, userId, payload);
+      enqueueEvent({
+        event_type: eventType,
+        visitor_id: getVisitorId(),
+        user_id: userId || null,
+        product_id: payload.product_id || null,
+        product_name: payload.product_name || null,
+        product_brand: payload.product_brand || null,
+        product_category: payload.product_category || null,
+        product_price_brl: payload.product_price_brl || null,
+        page_path: payload.page_path || window.location.pathname,
+        referrer: document.referrer || null,
+        user_agent: navigator.userAgent,
+        screen_width: window.innerWidth,
+        metadata: payload.metadata || {},
+      });
     },
     [userId]
   );

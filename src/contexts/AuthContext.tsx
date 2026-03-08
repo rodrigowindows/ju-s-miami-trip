@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useMemo, useCallback, type ReactNode } from 'react';
 import { supabase } from "@/integrations/supabase/client";
-import type { User } from '@supabase/supabase-js';
+import type { User, AuthError } from '@supabase/supabase-js';
 import type { Profile } from '@/types';
 
 interface AuthContextType {
@@ -16,12 +16,23 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Translate common Supabase auth errors to Portuguese
+function translateAuthError(error: AuthError): string {
+  const msg = error.message.toLowerCase();
+  if (msg.includes('invalid login credentials')) return 'Email ou senha incorretos.';
+  if (msg.includes('email not confirmed')) return 'Confirme seu email antes de entrar.';
+  if (msg.includes('user already registered')) return 'Este email já está cadastrado.';
+  if (msg.includes('password should be at least')) return 'A senha deve ter pelo menos 6 caracteres.';
+  if (msg.includes('rate limit')) return 'Muitas tentativas. Aguarde um momento.';
+  return error.message;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
@@ -32,50 +43,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
     setProfile(data as Profile);
-  };
+  }, []);
 
   useEffect(() => {
+    let mounted = true;
+
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
       setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
       else setProfile(null);
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const generateReferralCode = (name: string) => {
-    const first = name.split(' ')[0].toUpperCase();
-    const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `${first}-MALA-${rand}`;
-  };
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [fetchProfile]);
 
   const signIn = useCallback(async (email: string, password: string): Promise<{ error: string | null }> => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error?.message ?? null };
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    return { error: error ? translateAuthError(error) : null };
   }, []);
 
   const signUp = useCallback(async (email: string, password: string, fullName: string, phone?: string, referralCode?: string): Promise<{ error: string | null }> => {
+    const trimmedEmail = email.trim();
+    const trimmedName = fullName.trim();
+
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: trimmedEmail,
       password,
-      options: { data: { full_name: fullName, referral_code: referralCode || undefined } },
+      options: { data: { full_name: trimmedName, referral_code: referralCode || undefined } },
     });
-    if (error) return { error: error.message };
+    if (error) return { error: translateAuthError(error) };
+
     if (data.user) {
-      const code = generateReferralCode(fullName);
+      const code = `${trimmedName.split(' ')[0].toUpperCase()}-MALA-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
       const { error: profileError } = await supabase.from('profiles').upsert({
         id: data.user.id,
-        email,
-        full_name: fullName,
-        phone: phone ?? null,
+        email: trimmedEmail,
+        full_name: trimmedName,
+        phone: phone?.trim() ?? null,
         role: "cliente",
         referral_code: code,
         wallet_balance: 0,

@@ -30,8 +30,8 @@ export function useNotifications(clientId: string) {
         .from("notifications")
         .select("*")
         .eq("client_id", clientId)
-        .order("created_at", { ascending: false });
-
+        .order("created_at", { ascending: false })
+        .limit(50); // Limit to most recent 50
       if (error) throw error;
       return (data ?? []) as Notification[];
     },
@@ -51,7 +51,6 @@ export function useUnreadCount() {
         .select("*", { count: "exact", head: true })
         .eq("client_id", clientId!)
         .eq("read", false);
-
       if (error) throw error;
       return count ?? 0;
     },
@@ -62,14 +61,12 @@ export function useUnreadCount() {
 
 export function useMarkAsRead() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (notificationId: string) => {
       const { error } = await supabase
         .from("notifications")
         .update({ read: true })
         .eq("id", notificationId);
-
       if (error) throw error;
     },
     onSuccess: () => {
@@ -90,7 +87,6 @@ export function useMarkAllAsRead() {
         .update({ read: true })
         .eq("client_id", user.id)
         .eq("read", false);
-
       if (error) throw error;
     },
     onSuccess: () => {
