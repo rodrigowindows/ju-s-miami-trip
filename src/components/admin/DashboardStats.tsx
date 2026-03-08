@@ -12,14 +12,14 @@ export interface DashboardStatsData {
   cancelledCount: number;
 }
 
-const STAT_ITEMS = [
-  { key: "total" as const, icon: ShoppingBag, label: "Total pedidos", bg: "bg-blue-50", iconColor: "text-blue-600" },
-  { key: "active" as const, icon: Clock, label: "Ativos", bg: "bg-amber-50", iconColor: "text-amber-600" },
-  { key: "revenue" as const, icon: DollarSign, label: "Receita", bg: "bg-green-50", iconColor: "text-green-600", isCurrency: true },
-  { key: "pending" as const, icon: Plane, label: "Para orçar", bg: "bg-orange-50", iconColor: "text-orange-600" },
-  { key: "delivered" as const, icon: TrendingUp, label: "Entregues", bg: "bg-violet-50", iconColor: "text-violet-600" },
-  { key: "clients" as const, icon: Users, label: "Clientes", bg: "bg-sky-50", iconColor: "text-sky-600" },
-] as const;
+const STAT_ITEMS: { key: keyof Omit<DashboardStatsData, 'cancelledCount'>; icon: typeof ShoppingBag; label: string; bg: string; iconColor: string; isCurrency?: boolean }[] = [
+  { key: "total", icon: ShoppingBag, label: "Total pedidos", bg: "bg-blue-50", iconColor: "text-blue-600" },
+  { key: "active", icon: Clock, label: "Ativos", bg: "bg-amber-50", iconColor: "text-amber-600" },
+  { key: "revenue", icon: DollarSign, label: "Receita", bg: "bg-green-50", iconColor: "text-green-600", isCurrency: true },
+  { key: "pending", icon: Plane, label: "Para orçar", bg: "bg-orange-50", iconColor: "text-orange-600" },
+  { key: "delivered", icon: TrendingUp, label: "Entregues", bg: "bg-violet-50", iconColor: "text-violet-600" },
+  { key: "clients", icon: Users, label: "Clientes", bg: "bg-sky-50", iconColor: "text-sky-600" },
+];
 
 export default function DashboardStats({ stats }: { stats: DashboardStatsData }) {
   const avgTicket = stats.revenue / ((stats.total - stats.cancelledCount) || 1);
