@@ -2,8 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 
-const db = supabase as any;
-
 export type ChatMessage = {
   id: string;
   client_id: string;
@@ -20,7 +18,7 @@ export function useChatMessages(clientId: string) {
   const query = useQuery({
     queryKey: ["chat", clientId],
     queryFn: async (): Promise<ChatMessage[]> => {
-      const { data, error } = await db
+      const { data, error } = await supabase
         .from("chat_messages")
         .select("*")
         .eq("client_id", clientId)
@@ -31,7 +29,6 @@ export function useChatMessages(clientId: string) {
     enabled: !!clientId,
   });
 
-  // Realtime subscription
   useEffect(() => {
     if (!clientId) return;
     const channel = supabase
@@ -55,7 +52,7 @@ export function useSendMessage() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: { client_id: string; sender_role: "client" | "admin"; sender_id: string; message: string }) => {
-      const { error } = await db.from("chat_messages").insert(input);
+      const { error } = await supabase.from("chat_messages").insert(input);
       if (error) throw error;
     },
     onSuccess: (_, vars) => {
@@ -70,7 +67,7 @@ export function useMarkChatRead() {
   return useMutation({
     mutationFn: async ({ clientId, role }: { clientId: string; role: "client" | "admin" }) => {
       const oppositeRole = role === "client" ? "admin" : "client";
-      const { error } = await db
+      const { error } = await supabase
         .from("chat_messages")
         .update({ read: true })
         .eq("client_id", clientId)
@@ -90,8 +87,7 @@ export function useAdminChatList() {
   return useQuery({
     queryKey: ["chat", "admin-list"],
     queryFn: async () => {
-      // Get latest 500 messages (enough for chat list without loading everything)
-      const { data, error } = await db
+      const { data, error } = await supabase
         .from("chat_messages")
         .select("*")
         .order("created_at", { ascending: false })
@@ -115,9 +111,9 @@ export function useAdminChatList() {
         }
       }
 
-      return Array.from(clientMap.entries()).map(([clientId, data]) => ({
+      return Array.from(clientMap.entries()).map(([clientId, d]) => ({
         clientId,
-        ...data,
+        ...d,
       }));
     },
   });
@@ -127,7 +123,7 @@ export function useClientUnreadChat(clientId: string) {
   return useQuery({
     queryKey: ["chat", "unread", clientId],
     queryFn: async (): Promise<number> => {
-      const { count, error } = await db
+      const { count, error } = await supabase
         .from("chat_messages")
         .select("*", { count: "exact", head: true })
         .eq("client_id", clientId)
