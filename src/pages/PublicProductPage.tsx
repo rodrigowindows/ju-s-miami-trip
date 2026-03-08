@@ -185,6 +185,13 @@ export default function PublicProductPage() {
               <p className="text-xs text-gray-500 mt-1">
                 Preço nos EUA: US$ {product.price_usd.toFixed(2)}
               </p>
+              <div className="mt-2">
+                <AIPriceEstimate
+                  productName={product.name}
+                  priceUsd={product.price_usd}
+                  category={product.category}
+                />
+              </div>
             </div>
 
             {/* ML Price Comparison */}
