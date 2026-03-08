@@ -3,6 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import {
   Plane,
   MessageSquare,
+  MessageCircle,
   DollarSign,
   LayoutDashboard,
   ShoppingBag,
