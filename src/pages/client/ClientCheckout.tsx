@@ -12,7 +12,7 @@ import { useActivePromotions } from "@/hooks/usePromotions";
 import { calculatePriceBRL } from "@/lib/calculations";
 import { formatBRL } from "@/lib/format";
 import { toast } from "sonner";
-import { ChevronLeft, CheckCircle2, Loader2, MapPin, ClipboardList, PartyPopper, Copy, QrCode, Shield, Phone, Mail, MessageCircle } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Loader2, MapPin, ClipboardList, PartyPopper, Copy, QrCode, Shield, Phone, Mail, MessageCircle, Wallet } from "lucide-react";
 import { ProductImage } from "@/components/catalog/ProductImage";
 
 const steps = [
