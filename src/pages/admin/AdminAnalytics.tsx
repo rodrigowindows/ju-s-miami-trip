@@ -92,7 +92,7 @@ export default function AdminAnalytics() {
   const { data: events, isLoading: eventsLoading } = useQuery({
     queryKey: ["site-events", period],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("site_events")
         .select("*")
         .gte("created_at", since)
