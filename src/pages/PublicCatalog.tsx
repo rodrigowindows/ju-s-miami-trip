@@ -47,14 +47,8 @@ import ReviewDistribution from "@/components/catalog/ReviewDistribution";
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
 
-function slugify(text: string) {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
+import { slugify } from "@/lib/slugify";
+
 
 function useCatalogLocal() {
   const { data, isLoading } = useCatalogProducts();
