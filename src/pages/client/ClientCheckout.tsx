@@ -375,9 +375,27 @@ export default function ClientCheckout() {
               )}
             </div>
 
+            {/* Wallet section */}
+            {walletBalance > 0 && (
+              <div className="flex items-center justify-between bg-purple-50 border border-purple-200 rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <Wallet size={16} className="text-purple-600" />
+                  <div>
+                    <p className="text-sm font-medium text-purple-800">Usar saldo da wallet</p>
+                    <p className="text-xs text-purple-600">Disponível: {formatBRL(walletBalance)}</p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked={useWallet} onChange={(e) => setUseWallet(e.target.checked)} className="sr-only peer" />
+                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-purple-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+                </label>
+              </div>
+            )}
+
             <div className="space-y-2 text-sm border-t pt-3">
               <div className="flex justify-between"><span className="text-gray-600">Subtotal</span><span>{formatBRL(totalBRL)}</span></div>
               {discount > 0 && <div className="flex justify-between text-emerald-600"><span>Desconto ({matchedPromo?.coupon_code})</span><span>-{formatBRL(discount)}</span></div>}
+              {walletDiscount > 0 && <div className="flex justify-between text-purple-600"><span>Saldo wallet</span><span>-{formatBRL(walletDiscount)}</span></div>}
               <div className="flex justify-between font-bold text-lg pt-2 border-t"><span>Total</span><span>{formatBRL(finalTotal)}</span></div>
               <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 rounded-lg p-2">
                 <QrCode size={14} />
