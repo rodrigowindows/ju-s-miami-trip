@@ -396,24 +396,12 @@ export default function PublicProductPage() {
         </div>
       )}
 
-      {/* You may also like */}
-      {more.length > 0 && (
-        <div className="bg-gray-50 border-t pb-20 md:pb-0">
-          <div className="max-w-6xl mx-auto px-4 py-8">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Você também pode gostar</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {more.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  brl={calculatePriceBRL(p.price_usd, exchangeRate, spread)}
-                  onClick={() => nav(`/produto/${slugify(p.name)}`)}
-                />
-              ))}
-            </div>
-          </div>
+      {/* AI Recommendations */}
+      <div className="bg-gray-50 border-t pb-20 md:pb-0">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <AIRecommendations currentProductId={product.id} category={product.category} />
         </div>
-      )}
+      </div>
 
       {/* Mobile Sticky Buy Bar */}
       <StickyBuyBar productName={product.name} priceBrl={brl} isSoldOut={isSoldOut} />
