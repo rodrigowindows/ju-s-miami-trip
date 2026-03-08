@@ -4,6 +4,25 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { RedirectIfAuthed, RequireAdmin } from "@/routes/guards";
 import { Lazy } from "@/routes/LazyRoute";
 
+const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin"));
+const Dashboard = lazy(() => import("@/pages/admin/Dashboard"));
+const OrdersList = lazy(() => import("@/pages/admin/OrdersList"));
+const Trips = lazy(() => import("@/pages/admin/Trips"));
+const TripDetail = lazy(() => import("@/pages/admin/TripDetail"));
+const AdminCatalog = lazy(() => import("@/pages/admin/AdminCatalog"));
+const Messages = lazy(() => import("@/pages/admin/Messages"));
+const Payments = lazy(() => import("@/pages/admin/Payments"));
+const AdminPromos = lazy(() => import("@/pages/admin/AdminPromos"));
+const Clients = lazy(() => import("@/pages/admin/Clients"));
+const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings"));
+const AdminProductAlerts = lazy(() => import("@/pages/admin/AdminProductAlerts"));
+const AdminQuestions = lazy(() => import("@/pages/admin/AdminQuestions"));
+const AdminDeals = lazy(() => import("@/pages/admin/AdminDeals"));
+const AdminReviews = lazy(() => import("@/pages/admin/AdminReviews"));
+const AdminOrderDetail = lazy(() => import("@/pages/admin/OrderDetail"));
+const AdminAnalytics = lazy(() => import("@/pages/admin/AdminAnalytics"));
+const AdminChat = lazy(() => import("@/pages/admin/AdminChat"));
+
 export function adminRoutes() {
   return (
     <>

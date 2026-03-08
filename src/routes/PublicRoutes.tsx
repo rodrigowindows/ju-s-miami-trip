@@ -3,6 +3,15 @@ import { Route } from "react-router-dom";
 import { RedirectIfAuthed } from "@/routes/guards";
 import { Lazy } from "@/routes/LazyRoute";
 
+const PublicCatalog = lazy(() => import("@/pages/PublicCatalog"));
+const PublicProductPage = lazy(() => import("@/pages/PublicProductPage"));
+const BrandPage = lazy(() => import("@/pages/BrandPage"));
+const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
+const Rastreio = lazy(() => import("@/pages/Rastreio"));
+const Login = lazy(() => import("@/pages/Login"));
+const Register = lazy(() => import("@/pages/Register"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+
 export function publicRoutes() {
   return (
     <>
