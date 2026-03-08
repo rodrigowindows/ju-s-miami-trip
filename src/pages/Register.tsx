@@ -108,6 +108,16 @@ export default function Register() {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="referralCode">Código de indicação (opcional)</Label>
+              <Input
+                id="referralCode"
+                placeholder="Ex: MARIA-MALA-AB12"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+              />
+              <p className="text-xs text-muted-foreground">Se alguém te indicou, cole o código aqui.</p>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="reg-password">Senha</Label>
               <Input
                 id="reg-password"
