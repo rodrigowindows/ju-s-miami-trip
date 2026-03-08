@@ -17,11 +17,11 @@ export default function AdminProductAlerts() {
   const [alerts, setAlerts] = useState<AlertRow[]>([]);
 
   async function load() {
-    const { data } = await (supabase as any).from("product_alerts")
+    const { data } = await supabase.from("product_alerts")
       .select("*, catalog_products(name)")
       .order("created_at", { ascending: false });
 
-    const mapped = ((data as any[]) ?? []).map((a) => ({
+    const mapped = (data ?? []).map((a: any) => ({
       ...a,
       product_name: a.catalog_products?.name ?? a.product_id,
     }));
