@@ -28,8 +28,6 @@ import { useSettings } from "@/hooks/useSettings";
 import { ProductImage } from "@/components/catalog/ProductImage";
 
 import { slugify } from "@/lib/slugify";
-import { supabase } from "@/integrations/supabase/client";
-
 function AIDescriptionButton({ name, brand, category, priceUsd, onGenerated }: {
   name: string; brand: string; category: string; priceUsd: string;
   onGenerated: (desc: string) => void;
