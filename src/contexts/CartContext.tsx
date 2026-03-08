@@ -40,10 +40,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const addItem = useCallback((product: CatalogProduct) => {
-    // Track add_to_cart event
+  const addItem = useCallback((product: CatalogProduct, qty: number = 1) => {
+    // Track add_to_cart event (once per call, not per unit)
     const vid = localStorage.getItem("ajuvaiparamiami_vid") || "unknown";
-    (supabase as any).from("site_events").insert({
+    supabase.from("site_events").insert({
       event_type: "add_to_cart",
       visitor_id: vid,
       product_id: product.id,
@@ -53,17 +53,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       page_path: window.location.pathname,
       user_agent: navigator.userAgent,
       screen_width: window.innerWidth,
-      metadata: {},
+      metadata: { quantity: qty },
     }).then(() => {});
 
     setItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) {
         return prev.map((i) =>
-          i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.product.id === product.id ? { ...i, quantity: i.quantity + qty } : i
         );
       }
-      return [...prev, { product, quantity: 1 }];
+      return [...prev, { product, quantity: qty }];
     });
   }, []);
 
