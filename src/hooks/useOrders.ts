@@ -1,28 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchProfileMapFull } from "@/lib/profileMap";
-import type { Order, OrderWithClient, TablesInsert } from "@/types";
-
-export type OrderItem = {
-  id: string;
-  order_id: string;
-  product_name: string;
-  product_url: string | null;
-  product_image_url: string | null;
-  quantity: number;
-  price_usd: number | null;
-  price_brl: number | null;
-  created_at: string;
-};
-
-export type OrderEvent = {
-  id: string;
-  order_id: string;
-  status: string;
-  title: string;
-  description: string | null;
-  created_at: string;
-};
+import type { Order, OrderWithClient, OrderItem, OrderEvent, TablesInsert } from "@/types";
 
 export function useOrders() {
   return useQuery({

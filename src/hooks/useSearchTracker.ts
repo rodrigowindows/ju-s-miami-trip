@@ -4,6 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 const DEBOUNCE_MS = 1500;
 const MIN_QUERY_LENGTH = 2;
 
+/**
+ * Tracks search queries as site_events with type "search".
+ * Uses debounce to avoid flooding the database.
+ */
 export function useSearchTracker(source: "public" | "client", userId?: string) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedRef = useRef("");
@@ -19,12 +23,17 @@ export function useSearchTracker(source: "public" | "client", userId?: string) {
         if (trimmed === lastSavedRef.current) return;
         lastSavedRef.current = trimmed;
 
-        (supabase as any).from("search_queries")
+        const vid = localStorage.getItem("ajuvaiparamiami_vid") || "unknown";
+        supabase
+          .from("site_events")
           .insert({
-            query: trimmed,
-            source,
+            event_type: "search",
+            visitor_id: vid,
             user_id: userId || null,
-            results_count: resultsCount,
+            page_path: window.location.pathname,
+            user_agent: navigator.userAgent,
+            screen_width: window.innerWidth,
+            metadata: { query: trimmed, source, results_count: resultsCount },
           })
           .then(() => {});
       }, DEBOUNCE_MS);
