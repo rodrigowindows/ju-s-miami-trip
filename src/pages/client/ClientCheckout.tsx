@@ -199,6 +199,7 @@ export default function ClientCheckout() {
         });
       }
 
+      setSavedTotal(finalTotal);
       clearCart();
       setDoneOrder(order.order_number);
       setStep(2);
