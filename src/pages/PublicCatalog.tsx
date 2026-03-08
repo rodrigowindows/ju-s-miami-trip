@@ -213,6 +213,7 @@ export default function PublicCatalog() {
   const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "pronta_entrega" | "sob_encomenda">("all");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
+  const [aiSearchIds, setAiSearchIds] = useState<string[] | null>(null);
 
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { reviews: productReviews, loading: reviewsLoading } = useProductReviewsLocal(selectedProduct?.id ?? null);
