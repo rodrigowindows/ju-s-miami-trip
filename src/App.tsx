@@ -11,7 +11,19 @@ import { publicRoutes } from "@/routes/PublicRoutes";
 import { clientRoutes } from "@/routes/ClientRoutes";
 import { adminRoutes } from "@/routes/AdminRoutes";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 2 * 60 * 1000,      // 2 min — avoid refetching on every mount
+      gcTime: 10 * 60 * 1000,         // 10 min garbage collection
+      retry: 1,                        // single retry on failure
+      refetchOnWindowFocus: false,     // prevent unnecessary refetches
+    },
+    mutations: {
+      retry: 0,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
