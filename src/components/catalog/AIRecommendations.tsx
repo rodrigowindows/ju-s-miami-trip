@@ -84,7 +84,11 @@ export default function AIRecommendations({
   if (isLoading || products.length === 0) return null;
 
   const exchangeRate = Number(settings?.exchange_rate) || 5.8;
-  const spreadPct = Number(settings?.spread_pct) || 5;
+  const spreadPct = Number(settings?.spread_percent) || 5;
+
+  const calculateBRL = (priceUsd: number) => {
+    return Math.round(priceUsd * exchangeRate * (1 + spreadPct / 100) * 100) / 100;
+  };
 
   return (
     <div className="space-y-3">
@@ -96,9 +100,9 @@ export default function AIRecommendations({
         {products.map((p) => (
           <ProductCard
             key={p.id}
-            product={p}
-            exchangeRate={exchangeRate}
-            spreadPct={spreadPct}
+            product={p as any}
+            brl={calculateBRL(p.price_usd)}
+            onClick={() => {}}
           />
         ))}
       </div>
