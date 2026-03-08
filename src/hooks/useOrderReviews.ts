@@ -1,16 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-
-export type OrderReview = {
-  id: string;
-  order_id: string;
-  client_id: string;
-  rating: number;
-  comment: string | null;
-  admin_reply: string | null;
-  admin_reply_at: string | null;
-  created_at: string;
-};
+import type { OrderReview } from "@/types";
 
 export type OrderReviewWithDetails = OrderReview & {
   order_number?: string;
@@ -34,7 +24,7 @@ export function useClientOrderReviews(clientId: string) {
   });
 }
 
-/** Fetch all reviews (admin) */
+/** Fetch all reviews (admin) with order number and customer name */
 export function useAllOrderReviews() {
   return useQuery({
     queryKey: ["order_reviews", "all"],
@@ -45,7 +35,7 @@ export function useAllOrderReviews() {
         .order("created_at", { ascending: false });
       if (error) throw error;
 
-      const orderIds = [...new Set((reviews ?? []).map((r: OrderReview) => r.order_id))];
+      const orderIds = [...new Set((reviews ?? []).map((r) => r.order_id))];
       const { data: orders } = await supabase
         .from("orders")
         .select("id, order_number, customer_name")
@@ -53,13 +43,13 @@ export function useAllOrderReviews() {
 
       const orderMap = new Map((orders ?? []).map((o) => [o.id, o]));
 
-      return (reviews ?? []).map((r: OrderReview) => {
+      return (reviews ?? []).map((r) => {
         const order = orderMap.get(r.order_id);
         return {
           ...r,
           order_number: order?.order_number ?? "—",
           customer_name: order?.customer_name ?? "—",
-        };
+        } as OrderReviewWithDetails;
       });
     },
   });
@@ -83,7 +73,7 @@ export function useCreateOrderReview() {
       if (error) throw error;
       return data as OrderReview;
     },
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ["order_reviews"] });
     },
   });
@@ -99,7 +89,7 @@ export function useReplyToReview() {
         .update({
           admin_reply: reply.trim(),
           admin_reply_at: new Date().toISOString(),
-        } as Record<string, unknown>)
+        })
         .eq("id", reviewId);
       if (error) throw error;
     },
