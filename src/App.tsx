@@ -34,6 +34,7 @@ const App = () => (
         <Sonner />
         <CookieBanner />
         <WhatsAppButton />
+        <AIChatWidget />
         <CartProvider>
           <BrowserRouter>
             <Routes>
