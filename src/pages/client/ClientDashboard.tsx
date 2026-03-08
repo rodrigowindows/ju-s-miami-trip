@@ -3,6 +3,7 @@ import { ArrowRight, Tag, Package, Wallet, ShoppingBag, Zap, Users, Sparkles, Tr
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatBRL } from "@/lib/format";
 import { useWalletTransactions } from "@/hooks/useWallet";
