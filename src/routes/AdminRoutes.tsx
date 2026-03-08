@@ -1,54 +1,61 @@
+import { lazy, Suspense } from "react";
 import { Route, Navigate } from "react-router-dom";
-import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminLayout from "@/components/admin/AdminLayout";
-import Dashboard from "@/pages/admin/Dashboard";
-import OrdersList from "@/pages/admin/OrdersList";
-import Trips from "@/pages/admin/Trips";
-import TripDetail from "@/pages/admin/TripDetail";
-import AdminCatalog from "@/pages/admin/AdminCatalog";
-import Messages from "@/pages/admin/Messages";
-import Payments from "@/pages/admin/Payments";
-import AdminPromos from "@/pages/admin/AdminPromos";
-import Clients from "@/pages/admin/Clients";
-import AdminSettings from "@/pages/admin/AdminSettings";
-import AdminProductAlerts from "@/pages/admin/AdminProductAlerts";
-import AdminQuestions from "@/pages/admin/AdminQuestions";
-import AdminDeals from "@/pages/admin/AdminDeals";
-import AdminReviews from "@/pages/admin/AdminReviews";
-import AdminOrderDetail from "@/pages/admin/OrderDetail";
-import AdminAnalytics from "@/pages/admin/AdminAnalytics";
-import AdminChat from "@/pages/admin/AdminChat";
 import { RedirectIfAuthed, RequireAdmin } from "@/routes/guards";
+import { PageSkeleton } from "@/components/shared/LoadingSkeleton";
+
+const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin"));
+const Dashboard = lazy(() => import("@/pages/admin/Dashboard"));
+const OrdersList = lazy(() => import("@/pages/admin/OrdersList"));
+const Trips = lazy(() => import("@/pages/admin/Trips"));
+const TripDetail = lazy(() => import("@/pages/admin/TripDetail"));
+const AdminCatalog = lazy(() => import("@/pages/admin/AdminCatalog"));
+const Messages = lazy(() => import("@/pages/admin/Messages"));
+const Payments = lazy(() => import("@/pages/admin/Payments"));
+const AdminPromos = lazy(() => import("@/pages/admin/AdminPromos"));
+const Clients = lazy(() => import("@/pages/admin/Clients"));
+const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings"));
+const AdminProductAlerts = lazy(() => import("@/pages/admin/AdminProductAlerts"));
+const AdminQuestions = lazy(() => import("@/pages/admin/AdminQuestions"));
+const AdminDeals = lazy(() => import("@/pages/admin/AdminDeals"));
+const AdminReviews = lazy(() => import("@/pages/admin/AdminReviews"));
+const AdminOrderDetail = lazy(() => import("@/pages/admin/OrderDetail"));
+const AdminAnalytics = lazy(() => import("@/pages/admin/AdminAnalytics"));
+const AdminChat = lazy(() => import("@/pages/admin/AdminChat"));
+
+function Lazy({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8"><PageSkeleton /></div>}>{children}</Suspense>;
+}
 
 export function adminRoutes() {
   return (
     <>
       <Route
         path="/admin/login"
-        element={<RedirectIfAuthed><AdminLogin /></RedirectIfAuthed>}
+        element={<RedirectIfAuthed><Lazy><AdminLogin /></Lazy></RedirectIfAuthed>}
       />
       <Route
         path="/admin"
         element={<RequireAdmin><AdminLayout /></RequireAdmin>}
       >
         <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="pedidos" element={<OrdersList />} />
-        <Route path="trips" element={<Trips />} />
-        <Route path="trips/:id" element={<TripDetail />} />
-        <Route path="catalogo" element={<AdminCatalog />} />
-        <Route path="messages" element={<Messages />} />
-        <Route path="payments" element={<Payments />} />
-        <Route path="perguntas" element={<AdminQuestions />} />
-        <Route path="avaliacoes" element={<AdminReviews />} />
-        <Route path="promos" element={<AdminPromos />} />
-        <Route path="ofertas" element={<AdminDeals />} />
-        <Route path="clients" element={<Clients />} />
-        <Route path="analytics" element={<AdminAnalytics />} />
-        <Route path="settings" element={<AdminSettings />} />
-        <Route path="chat" element={<AdminChat />} />
-        <Route path="alertas-produtos" element={<AdminProductAlerts />} />
-        <Route path="orders/:id" element={<AdminOrderDetail />} />
+        <Route path="dashboard" element={<Lazy><Dashboard /></Lazy>} />
+        <Route path="pedidos" element={<Lazy><OrdersList /></Lazy>} />
+        <Route path="trips" element={<Lazy><Trips /></Lazy>} />
+        <Route path="trips/:id" element={<Lazy><TripDetail /></Lazy>} />
+        <Route path="catalogo" element={<Lazy><AdminCatalog /></Lazy>} />
+        <Route path="messages" element={<Lazy><Messages /></Lazy>} />
+        <Route path="payments" element={<Lazy><Payments /></Lazy>} />
+        <Route path="perguntas" element={<Lazy><AdminQuestions /></Lazy>} />
+        <Route path="avaliacoes" element={<Lazy><AdminReviews /></Lazy>} />
+        <Route path="promos" element={<Lazy><AdminPromos /></Lazy>} />
+        <Route path="ofertas" element={<Lazy><AdminDeals /></Lazy>} />
+        <Route path="clients" element={<Lazy><Clients /></Lazy>} />
+        <Route path="analytics" element={<Lazy><AdminAnalytics /></Lazy>} />
+        <Route path="settings" element={<Lazy><AdminSettings /></Lazy>} />
+        <Route path="chat" element={<Lazy><AdminChat /></Lazy>} />
+        <Route path="alertas-produtos" element={<Lazy><AdminProductAlerts /></Lazy>} />
+        <Route path="orders/:id" element={<Lazy><AdminOrderDetail /></Lazy>} />
       </Route>
     </>
   );
