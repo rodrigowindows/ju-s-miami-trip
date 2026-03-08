@@ -3,6 +3,7 @@ import { StarRating } from "./StarRating";
 import { fakeRating } from "./catalog-utils";
 import { getMLComparison } from "@/lib/ml-prices";
 import { ProductImage } from "./ProductImage";
+import { SavingsBadge } from "./SavingsBadge";
 import type { CatalogProduct } from "@/types";
 
 export interface ActiveDeal {
