@@ -36,6 +36,7 @@ const App = () => (
           <BrowserRouter>
             <CookieBanner />
             <FloatingActionHub />
+            <ScrollToTop />
             <Routes>
               {publicRoutes()}
               {clientRoutes()}
