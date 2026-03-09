@@ -123,21 +123,14 @@ export default function AIChatWidget({ onClose }: { onClose?: () => void }) {
     });
   };
 
-  return (
-    <>
-      {/* Floating button */}
-      {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center group"
-          aria-label="Abrir assistente IA"
-        >
-          <Sparkles size={24} className="group-hover:animate-pulse" />
-        </button>
-      )}
+  const handleClose = () => {
+    setOpen(false);
+    onClose?.();
+  };
 
-      {/* Chat panel */}
-      {open && (
+  if (!open) return null;
+
+  return (
         <div className="fixed bottom-4 right-4 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-6rem)] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
