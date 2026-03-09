@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import CookieBanner from "./components/CookieBanner";
 import FloatingActionHub from "./components/FloatingActionHub";
+import ScrollToTop from "./components/ScrollToTop";
 import { publicRoutes } from "@/routes/PublicRoutes";
 import { clientRoutes } from "@/routes/ClientRoutes";
 import { adminRoutes } from "@/routes/AdminRoutes";
@@ -35,6 +36,7 @@ const App = () => (
           <BrowserRouter>
             <CookieBanner />
             <FloatingActionHub />
+            <ScrollToTop />
             <Routes>
               {publicRoutes()}
               {clientRoutes()}
