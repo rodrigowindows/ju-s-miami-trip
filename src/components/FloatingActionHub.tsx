@@ -65,7 +65,7 @@ export default function FloatingActionHub() {
         className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 ${
           menuOpen
             ? "bg-muted text-muted-foreground rotate-45"
-            : "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground"
+            : "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground animate-subtle-bounce"
         }`}
         aria-label={menuOpen ? "Fechar menu" : "Abrir menu de ajuda"}
       >
