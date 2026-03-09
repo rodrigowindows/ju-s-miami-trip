@@ -131,9 +131,9 @@ export default function AIChatWidget({ onClose }: { onClose?: () => void }) {
   if (!open) return null;
 
   return (
-        <div className="fixed bottom-4 right-4 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-6rem)] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-4 right-4 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-6rem)] bg-background/70 backdrop-blur-xl backdrop-saturate-150 border border-border/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
+          <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary/90 to-primary/70 backdrop-blur-md text-primary-foreground">
             <div className="flex items-center gap-2">
               <Bot size={20} />
               <div>
@@ -199,7 +199,7 @@ export default function AIChatWidget({ onClose }: { onClose?: () => void }) {
           </div>
 
           {/* Input */}
-          <div className="border-t p-3 flex gap-2">
+          <div className="border-t border-border/50 bg-background/50 backdrop-blur-md p-3 flex gap-2">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
