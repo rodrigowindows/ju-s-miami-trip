@@ -379,7 +379,12 @@ export default function AdminCatalog() {
                   brand={form.brand}
                   category={form.category}
                   priceUsd={form.price_usd}
-                  onGenerated={(desc) => setForm({ ...form, description: desc })}
+                  description={form.description}
+                  onGenerated={(desc, translatedName) => setForm(prev => ({ 
+                    ...prev, 
+                    description: desc,
+                    ...(translatedName ? { name: translatedName } : {}) 
+                  }))}
                 />
               </div>
               <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
