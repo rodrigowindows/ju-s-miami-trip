@@ -5,9 +5,11 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { useUnreadCount } from "@/hooks/useNotifications";
 import { useClientUnreadChat } from "@/hooks/useChat";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNotificationSound } from "@/hooks/useNotificationSound";
 import AIChatWidget from "./AIChatWidget";
 
 export default function FloatingActionHub() {
+  useNotificationSound();
   const [menuOpen, setMenuOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const { data: settings } = useSettings();
