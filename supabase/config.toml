@@ -3,3 +3,11 @@ project_id = "aleenmfaugxymtxqlyyz"
 [functions]
   [functions.auth-email-hook]
     verify_jwt = false
+  [functions.ai-translate-product]
+    verify_jwt = false
+  [functions.ai-chat-order-context]
+    verify_jwt = false
+  [functions.ai-compare-products]
+    verify_jwt = false
+  [functions.ai-weekly-digest]
+    verify_jwt = false
