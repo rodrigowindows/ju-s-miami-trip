@@ -141,7 +141,7 @@ export default function AIChatWidget({ onClose }: { onClose?: () => void }) {
                 <p className="text-[10px] opacity-80">Tira-dúvidas 24h</p>
               </div>
             </div>
-            <button onClick={() => setOpen(false)} className="hover:bg-white/20 rounded-full p-1 transition-colors">
+            <button onClick={handleClose} className="hover:bg-white/20 rounded-full p-1 transition-colors">
               <X size={18} />
             </button>
           </div>
@@ -213,7 +213,5 @@ export default function AIChatWidget({ onClose }: { onClose?: () => void }) {
             </Button>
           </div>
         </div>
-      )}
-    </>
   );
 }
