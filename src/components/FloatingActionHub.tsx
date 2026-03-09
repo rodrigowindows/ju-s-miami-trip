@@ -2,6 +2,9 @@ import { useState } from "react";
 import { MessageCircle, X, Sparkles } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { useUnreadCount } from "@/hooks/useNotifications";
+import { useClientUnreadChat } from "@/hooks/useChat";
+import { useAuth } from "@/contexts/AuthContext";
 import AIChatWidget from "./AIChatWidget";
 
 export default function FloatingActionHub() {
@@ -9,6 +12,12 @@ export default function FloatingActionHub() {
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const { data: settings } = useSettings();
   const { track } = useAnalytics();
+  const { user } = useAuth();
+
+  const { data: unreadNotifications = 0 } = useUnreadCount();
+  const { data: unreadChat = 0 } = useClientUnreadChat(user?.id ?? "");
+
+  const totalUnread = unreadNotifications + unreadChat;
 
   // Hide on admin pages
   if (typeof window !== "undefined" && window.location.pathname.startsWith("/admin")) return null;
@@ -62,7 +71,7 @@ export default function FloatingActionHub() {
       {/* Main FAB button */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
-        className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 ${
+        className={`relative w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 ${
           menuOpen
             ? "bg-muted text-muted-foreground rotate-45"
             : "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground animate-subtle-bounce"
@@ -70,6 +79,13 @@ export default function FloatingActionHub() {
         aria-label={menuOpen ? "Fechar menu" : "Abrir menu de ajuda"}
       >
         {menuOpen ? <X size={24} /> : <MessageCircle size={24} />}
+
+        {/* Unread badge */}
+        {totalUnread > 0 && !menuOpen && (
+          <span className="absolute -top-1 -right-1 min-w-5 h-5 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs font-bold px-1 shadow-md animate-in zoom-in-50 duration-200">
+            {totalUnread > 99 ? "99+" : totalUnread}
+          </span>
+        )}
       </button>
     </div>
   );
