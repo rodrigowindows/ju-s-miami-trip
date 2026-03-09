@@ -199,7 +199,7 @@ export default function AIChatWidget({ onClose }: { onClose?: () => void }) {
           </div>
 
           {/* Input */}
-          <div className="border-t p-3 flex gap-2">
+          <div className="border-t border-border/50 bg-background/50 backdrop-blur-md p-3 flex gap-2">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
