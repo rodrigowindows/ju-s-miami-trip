@@ -75,8 +75,8 @@ async function streamChat({
 
 const ORDER_CONTEXT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat-order-context`;
 
-export default function AIChatWidget() {
-  const [open, setOpen] = useState(false);
+export default function AIChatWidget({ onClose }: { onClose?: () => void }) {
+  const [open, setOpen] = useState(true);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
