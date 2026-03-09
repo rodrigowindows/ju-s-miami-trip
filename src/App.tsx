@@ -34,8 +34,7 @@ const App = () => (
         <CartProvider>
           <BrowserRouter>
             <CookieBanner />
-            <WhatsAppButton />
-            <AIChatWidget />
+            <FloatingActionHub />
             <Routes>
               {publicRoutes()}
               {clientRoutes()}
