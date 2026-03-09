@@ -28,40 +28,51 @@ import { useSettings } from "@/hooks/useSettings";
 import { ProductImage } from "@/components/catalog/ProductImage";
 
 import { slugify } from "@/lib/slugify";
-function AIDescriptionButton({ name, brand, category, priceUsd, onGenerated }: {
-  name: string; brand: string; category: string; priceUsd: string;
-  onGenerated: (desc: string) => void;
+function AIDescriptionButton({ name, brand, category, priceUsd, description, onGenerated }: {
+  name: string; brand: string; category: string; priceUsd: string; description?: string;
+  onGenerated: (desc: string, translatedName?: string) => void;
 }) {
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<"desc" | "trans">("desc");
   const { toast } = useToast();
 
-  async function generate() {
-    if (!name || !brand) {
-      toast({ title: "Preencha nome e marca primeiro", variant: "destructive" });
-      return;
-    }
-    setLoading(true);
+  async function generateDesc() {
+    if (!name || !brand) { toast({ title: "Preencha nome e marca primeiro", variant: "destructive" }); return; }
+    setMode("desc"); setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("ai-product-description", {
         body: { product_name: name, brand, category, price_usd: priceUsd },
       });
       if (error) throw error;
-      if (data?.description) {
-        onGenerated(data.description);
-        toast({ title: "Descrição gerada com IA! ✨" });
-      }
-    } catch (e: any) {
-      toast({ title: "Erro ao gerar descrição", description: e.message, variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
+      if (data?.description) { onGenerated(data.description); toast({ title: "Descrição gerada com IA! ✨" }); }
+    } catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+    finally { setLoading(false); }
+  }
+
+  async function translateProd() {
+    if (!name || !brand) { toast({ title: "Preencha nome e marca", variant: "destructive" }); return; }
+    setMode("trans"); setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-translate-product", {
+        body: { product_name: name, brand, category, description },
+      });
+      if (error) throw error;
+      if (data?.translated_name) { onGenerated(data.translated_description, data.translated_name); toast({ title: "Traduzido! ✨" }); }
+    } catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+    finally { setLoading(false); }
   }
 
   return (
-    <Button type="button" variant="ghost" size="sm" onClick={generate} disabled={loading} className="gap-1 text-xs h-7 text-primary">
-      {loading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-      {loading ? "Gerando..." : "Gerar com IA"}
-    </Button>
+    <div className="flex gap-1">
+      <Button type="button" variant="ghost" size="sm" onClick={generateDesc} disabled={loading} className="gap-1 text-xs h-7 text-primary">
+        {loading && mode === "desc" ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+        Gerar
+      </Button>
+      <Button type="button" variant="ghost" size="sm" onClick={translateProd} disabled={loading} className="gap-1 text-xs h-7">
+        {loading && mode === "trans" ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+        Traduzir
+      </Button>
+    </div>
   );
 }
 
