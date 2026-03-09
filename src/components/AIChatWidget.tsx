@@ -73,6 +73,8 @@ async function streamChat({
   onDone();
 }
 
+const ORDER_CONTEXT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat-order-context`;
+
 export default function AIChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -105,6 +107,10 @@ export default function AIChatWidget() {
         return [...prev, { role: "assistant", content: assistantSoFar }];
       });
     };
+
+    // Use order-context version for richer responses
+    const hasOrderRef = /PED-\d{3,6}/i.test(newMsgs.map(m => m.content).join(" "));
+    const url = hasOrderRef ? ORDER_CONTEXT_URL : CHAT_URL;
 
     await streamChat({
       messages: newMsgs,
