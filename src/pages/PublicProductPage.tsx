@@ -76,8 +76,7 @@ export default function PublicProductPage() {
 
   const brl = calculatePriceBRL(product.price_usd, exchangeRate, spread);
 
-  // Simulate multiple images (in production, product would have image_urls array)
-  const images = [product.image_url, product.image_url, product.image_url];
+  const images = [product.image_url, ...(product.image_url_2 ? [product.image_url_2] : [])];
   const brandSlug = slugify(product.brand || "marca");
   const isSoldOut = product.availability_type === "esgotado";
   const mlComparison = getMLComparison(brl, product.brand, product.category);
