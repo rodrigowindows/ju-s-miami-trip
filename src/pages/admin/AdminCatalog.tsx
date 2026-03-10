@@ -89,6 +89,7 @@ export default function AdminCatalog() {
     category: "Tech",
     price_usd: "",
     image_url: "",
+    image_url_2: "",
     description: "",
     availability_type: "sob_encomenda" as "pronta_entrega" | "sob_encomenda" | "esgotado",
     estimated_days: "",
@@ -111,7 +112,7 @@ export default function AdminCatalog() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ name: "", brand: "", category: "Tech", price_usd: "", image_url: "", description: "", availability_type: "sob_encomenda", estimated_days: "", stock_quantity: "0", active: true });
+    setForm({ name: "", brand: "", category: "Tech", price_usd: "", image_url: "", image_url_2: "", description: "", availability_type: "sob_encomenda", estimated_days: "", stock_quantity: "0", active: true });
     setOpen(true);
   }
 
@@ -123,6 +124,7 @@ export default function AdminCatalog() {
       category: product.category,
       price_usd: String(product.price_usd),
       image_url: product.image_url,
+      image_url_2: product.image_url_2 ?? "",
       description: product.description ?? "",
       availability_type: (product.availability_type as "pronta_entrega" | "sob_encomenda" | "esgotado") ?? "sob_encomenda",
       estimated_days: product.estimated_days ? String(product.estimated_days) : "",
@@ -139,6 +141,7 @@ export default function AdminCatalog() {
       category: form.category,
       price_usd: Number(form.price_usd),
       image_url: form.image_url,
+      image_url_2: form.image_url_2 || "",
       description: form.description || null,
       availability_type: form.availability_type,
       estimated_days: form.availability_type === "sob_encomenda" && form.estimated_days ? Number(form.estimated_days) : null,
@@ -343,9 +346,15 @@ export default function AdminCatalog() {
                 <Input type="number" step="0.01" value={form.price_usd} onChange={(e) => setForm({ ...form, price_usd: e.target.value })} />
               </div>
             </div>
-            <div>
-              <Label>URL da imagem</Label>
-              <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label>Imagem 1 (URL)</Label>
+                <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="URL da imagem principal" />
+              </div>
+              <div>
+                <Label>Imagem 2 (URL)</Label>
+                <Input value={form.image_url_2} onChange={(e) => setForm({ ...form, image_url_2: e.target.value })} placeholder="URL da segunda imagem (opcional)" />
+              </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>

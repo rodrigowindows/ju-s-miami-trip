@@ -6,6 +6,7 @@ export function transformProduct(raw: CatalogProduct): CatalogProduct {
   return {
     ...raw,
     image_url: fixImageUrl(raw.image_url),
+    image_url_2: raw.image_url_2 ? fixImageUrl(raw.image_url_2) : "",
     availability_type: (!raw.availability_type || raw.availability_type === "esgotado") ? "pronta_entrega" : raw.availability_type,
     stock_quantity: (!raw.stock_quantity || raw.stock_quantity <= 0) ? 2 : raw.stock_quantity,
   };
