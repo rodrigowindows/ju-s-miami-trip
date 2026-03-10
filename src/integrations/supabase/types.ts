@@ -52,7 +52,6 @@ export type Database = {
           estimated_days: number | null
           id: string
           image_url: string
-          image_url_2: string
           name: string
           price_usd: number
           rating: number
@@ -71,7 +70,6 @@ export type Database = {
           estimated_days?: number | null
           id?: string
           image_url?: string
-          image_url_2?: string
           name: string
           price_usd?: number
           rating?: number
@@ -90,7 +88,6 @@ export type Database = {
           estimated_days?: number | null
           id?: string
           image_url?: string
-          image_url_2?: string
           name?: string
           price_usd?: number
           rating?: number
