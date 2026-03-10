@@ -1,4 +1,4 @@
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag, Images } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating } from "./catalog-utils";
 import { getMLComparison } from "@/lib/ml-prices";
@@ -64,6 +64,13 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
           >
             <Heart size={16} className={wishlisted ? "fill-[#F43F5E] text-[#F43F5E]" : "text-gray-400"} />
           </button>
+        )}
+
+        {product.image_url_2 && (
+          <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full flex items-center gap-1">
+            <Images size={10} />
+            +fotos
+          </span>
         )}
 
         {isSoldOut && (

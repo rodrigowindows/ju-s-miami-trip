@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Images } from "lucide-react";
 import { ProductImage } from "./ProductImage";
 import { StarRating } from "./StarRating";
 import { fakeRating, type ProductGroup } from "./catalog-utils";
@@ -43,6 +43,13 @@ export function GroupedProductCard({ group, convert, onClick, activeDealMap }: G
         <span className="absolute top-2 left-2 bg-white/95 text-gray-700 text-[10px] font-semibold px-2 py-1 rounded-full shadow-sm">
           {group.variants.length} fragrâncias
         </span>
+
+        {product.image_url_2 && (
+          <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full flex items-center gap-1">
+            <Images size={10} />
+            +fotos
+          </span>
+        )}
       </div>
 
       <div className="p-3 flex flex-col gap-1 flex-1">
