@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Heart, ShoppingBag } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating } from "./catalog-utils";
@@ -40,16 +41,22 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
   const finalPrice = activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl;
   const isSoldOut = product.availability_type === "esgotado" && product.stock_quantity != null && product.stock_quantity <= 0;
   const mlComparison = getMLComparison(finalPrice, product.brand, product.category);
+  const hasSecondImage = !!product.image_url_2 && product.image_url_2 !== "";
+  const [hovered, setHovered] = useState(false);
 
   return (
     <div onClick={onClick} className="bg-white rounded-xl overflow-hidden text-left group flex flex-col cursor-pointer border border-gray-100 hover:shadow-md transition-shadow">
-      <div className="aspect-square relative overflow-hidden bg-white">
+      <div
+        className="aspect-square relative overflow-hidden bg-white"
+        onMouseEnter={() => hasSecondImage && setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         <ProductImage
-          src={product.image_url}
+          src={hovered ? product.image_url_2 : product.image_url}
           alt={product.name}
           brand={product.brand}
           category={product.category}
-          className="w-full h-full object-cover rounded-t-xl"
+          className="w-full h-full object-cover rounded-t-xl transition-opacity duration-300"
         />
 
         <AvailabilityBadge product={product} />
