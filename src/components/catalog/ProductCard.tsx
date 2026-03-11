@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Heart, ShoppingBag } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { fakeRating } from "./catalog-utils";
