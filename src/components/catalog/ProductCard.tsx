@@ -41,7 +41,7 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
   const finalPrice = activeDeal ? brl * (1 - activeDeal.discount_percent / 100) : brl;
   const isSoldOut = product.availability_type === "esgotado" && product.stock_quantity != null && product.stock_quantity <= 0;
   const mlComparison = getMLComparison(finalPrice, product.brand, product.category);
-  const hasSecondImage = !!(product as any).image_url_2 && (product as any).image_url_2 !== "";
+  const hasSecondImage = !!product.image_url_2 && product.image_url_2 !== "";
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -52,7 +52,7 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
         onMouseLeave={() => setHovered(false)}
       >
         <ProductImage
-          src={hovered ? (product as any).image_url_2 : product.image_url}
+          src={hovered ? product.image_url_2 : product.image_url}
           alt={product.name}
           brand={product.brand}
           category={product.category}
