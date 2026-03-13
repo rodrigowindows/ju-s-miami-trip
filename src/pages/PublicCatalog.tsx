@@ -462,7 +462,20 @@ export default function PublicCatalog() {
             return (
               <>
                 <div className="bg-white relative">
-                  <div className="aspect-square bg-white p-6 flex items-center justify-center"><ProductImage src={selectedProduct.image_url} alt={selectedProduct.name} brand={selectedProduct.brand} category={selectedProduct.category} className="max-w-full max-h-full object-contain" loading="eager" /></div>
+                  {selectedProduct.image_url_2 ? (
+                    <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+                      <div className="aspect-square bg-white p-6 flex items-center justify-center min-w-full snap-center"><ProductImage src={selectedProduct.image_url} alt={selectedProduct.name} brand={selectedProduct.brand} category={selectedProduct.category} className="max-w-full max-h-full object-contain" loading="eager" /></div>
+                      <div className="aspect-square bg-white p-6 flex items-center justify-center min-w-full snap-center"><ProductImage src={selectedProduct.image_url_2} alt={`${selectedProduct.name} - foto 2`} brand={selectedProduct.brand} category={selectedProduct.category} className="max-w-full max-h-full object-contain" loading="eager" /></div>
+                    </div>
+                  ) : (
+                    <div className="aspect-square bg-white p-6 flex items-center justify-center"><ProductImage src={selectedProduct.image_url} alt={selectedProduct.name} brand={selectedProduct.brand} category={selectedProduct.category} className="max-w-full max-h-full object-contain" loading="eager" /></div>
+                  )}
+                  {selectedProduct.image_url_2 && (
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-800"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                    </div>
+                  )}
                   <button onClick={() => setSelectedProduct(null)} className="absolute top-3 right-3 bg-white/90 text-gray-600 rounded-full p-1.5 shadow-md hover:bg-white"><X size={16} /></button>
                   {bestSeller && (<div className="absolute top-3 left-3"><span className="bg-[#E47911] text-white text-xs font-bold px-2 py-1 rounded">Mais vendido</span></div>)}
                 </div>

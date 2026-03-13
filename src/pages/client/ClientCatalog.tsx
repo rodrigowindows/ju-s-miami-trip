@@ -244,16 +244,26 @@ export default function ClientCatalog() {
             return (
               <>
                 <div className="bg-white relative">
-                  <div className="aspect-square bg-white p-6 flex items-center justify-center">
-                    <ProductImage
-                      src={selected.image_url}
-                      alt={selected.name}
-                      brand={selected.brand}
-                      category={selected.category}
-                      className="max-w-full max-h-full object-contain"
-                      loading="eager"
-                    />
-                  </div>
+                  {selected.image_url_2 ? (
+                    <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide">
+                      <div className="aspect-square bg-white p-6 flex items-center justify-center min-w-full snap-center">
+                        <ProductImage src={selected.image_url} alt={selected.name} brand={selected.brand} category={selected.category} className="max-w-full max-h-full object-contain" loading="eager" />
+                      </div>
+                      <div className="aspect-square bg-white p-6 flex items-center justify-center min-w-full snap-center">
+                        <ProductImage src={selected.image_url_2} alt={`${selected.name} - foto 2`} brand={selected.brand} category={selected.category} className="max-w-full max-h-full object-contain" loading="eager" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="aspect-square bg-white p-6 flex items-center justify-center">
+                      <ProductImage src={selected.image_url} alt={selected.name} brand={selected.brand} category={selected.category} className="max-w-full max-h-full object-contain" loading="eager" />
+                    </div>
+                  )}
+                  {selected.image_url_2 && (
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-800"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                    </div>
+                  )}
                   {bestSeller && (
                     <div className="absolute top-3 left-3">
                       <span className="bg-[#E47911] text-white text-xs font-bold px-2 py-1 rounded">
