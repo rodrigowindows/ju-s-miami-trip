@@ -9,6 +9,7 @@ const makeProduct = (name: string, brand = "TestBrand", priceUsd = 10): CatalogP
   category: "Beauty",
   price_usd: priceUsd,
   image_url: "/img.jpg",
+  image_url_2: "",
   active: true,
   availability_type: "pronta_entrega",
   stock_quantity: 5,

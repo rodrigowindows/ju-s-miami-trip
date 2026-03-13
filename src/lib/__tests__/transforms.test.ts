@@ -9,6 +9,7 @@ const makeProduct = (overrides: Partial<CatalogProduct> = {}): CatalogProduct =>
   category: "Beauty",
   price_usd: 10,
   image_url: "/images/test.jpg",
+  image_url_2: "",
   active: true,
   availability_type: "pronta_entrega",
   stock_quantity: 5,

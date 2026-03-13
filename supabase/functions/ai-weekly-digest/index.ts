@@ -77,7 +77,7 @@ Responda em JSON: {"whatsapp_message":"...","email_subject":"...","email_body":"
     const parsed = JSON.parse(cleaned);
 
     return new Response(JSON.stringify(parsed), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  } catch (e: unknown) {
+    return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
