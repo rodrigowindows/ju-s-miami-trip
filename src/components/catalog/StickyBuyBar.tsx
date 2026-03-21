@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
-import { ShoppingBag, LogIn } from "lucide-react";
-import { useBuyAction } from "@/hooks/useBuyAction";
+import { MessageCircle, ShoppingBag } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
+import { useWhatsAppCheckout } from "@/hooks/useWhatsAppCheckout";
+import { useNavigate } from "react-router-dom";
 import type { CatalogProduct } from "@/types";
 
 interface StickyBuyBarProps {
@@ -12,7 +15,10 @@ interface StickyBuyBarProps {
 
 export default function StickyBuyBar({ productName, priceBrl, isSoldOut, product }: StickyBuyBarProps) {
   const [visible, setVisible] = useState(false);
-  const { isLoggedIn, handleAddToCart, goToLogin } = useBuyAction();
+  const { user } = useAuth();
+  const { addItem } = useCart();
+  const { buyNowViaWhatsApp } = useWhatsAppCheckout();
+  const nav = useNavigate();
 
   useEffect(() => {
     function onScroll() {
@@ -25,10 +31,9 @@ export default function StickyBuyBar({ productName, priceBrl, isSoldOut, product
   if (!visible) return null;
 
   const handleClick = () => {
-    if (product && isLoggedIn) {
-      handleAddToCart(product);
-    } else {
-      goToLogin();
+    if (!user) { nav("/login"); return; }
+    if (product) {
+      buyNowViaWhatsApp(product, 1);
     }
   };
 
@@ -46,8 +51,8 @@ export default function StickyBuyBar({ productName, priceBrl, isSoldOut, product
           disabled={isSoldOut}
           className="shrink-0 bg-[#F43F5E] text-white rounded-lg font-semibold text-sm flex items-center gap-2 px-5 py-3 hover:opacity-90 transition-colors disabled:opacity-50"
         >
-          {isSoldOut ? <ShoppingBag size={16} /> : isLoggedIn ? <ShoppingBag size={16} /> : <LogIn size={16} />}
-          {isSoldOut ? "Esgotado" : isLoggedIn ? "Comprar" : "Login"}
+          <MessageCircle size={16} />
+          {isSoldOut ? "Esgotado" : user ? "Comprar" : "Login"}
         </button>
       </div>
     </div>
