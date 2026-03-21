@@ -99,6 +99,7 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
           <p className="text-lg font-bold text-black" style={{ fontFamily: "Poppins, sans-serif" }}>
             R$ {finalPrice.toFixed(2).replace(".", ",")}
           </p>
+          <p className="text-[10px] text-gray-400">Preço estimado com taxas</p>
           <p className="text-xs text-emerald-600 font-medium">à vista no PIX</p>
           <SavingsBadge brlPrice={finalPrice} brand={product.brand} category={product.category} compact />
         </div>
