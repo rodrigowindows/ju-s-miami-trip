@@ -198,6 +198,23 @@ const Trips = () => {
                     />
                   </div>
                 </div>
+
+                {/* Shopping progress */}
+                {shoppingProgress?.[trip.id] && shoppingProgress[trip.id].total > 0 && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <ShoppingCart className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <Badge variant="outline" className="text-xs px-1.5 py-0 gap-1">
+                        <CheckCircle2 className="h-3 w-3 text-green-500" />
+                        {shoppingProgress[trip.id].purchased}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs px-1.5 py-0 gap-1">
+                        <Clock className="h-3 w-3 text-amber-500" />
+                        {shoppingProgress[trip.id].total - shoppingProgress[trip.id].purchased}
+                      </Badge>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
