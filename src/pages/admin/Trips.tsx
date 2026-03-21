@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Plane } from "lucide-react";
+import { Plus, Plane, CheckCircle2, Clock, ShoppingCart } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,9 +21,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useTrips, useCreateTrip } from "@/hooks/useTrips";
 import { useToast } from "@/hooks/use-toast";
 import { getWeightStatus } from "@/lib/calculations";
+import { supabase } from "@/integrations/supabase/client";
+import type { PurchasePhoto } from "@/hooks/usePurchasePhotos";
 
 const Trips = () => {
   const navigate = useNavigate();
@@ -30,6 +34,44 @@ const Trips = () => {
   const { data: trips, isLoading } = useTrips();
   const createTrip = useCreateTrip();
   const [open, setOpen] = useState(false);
+
+  // Fetch shopping progress per trip
+  const { data: shoppingProgress } = useQuery({
+    queryKey: ["trips_shopping_progress"],
+    queryFn: async () => {
+      const tripIds = trips?.map((t) => t.id) ?? [];
+      if (!tripIds.length) return {};
+
+      const { data: orders } = await supabase
+        .from("orders")
+        .select("id, trip_id")
+        .in("trip_id", tripIds)
+        .in("status", ["aprovado", "comprando", "comprado"]);
+
+      if (!orders?.length) return {};
+
+      const orderIds = orders.map((o) => o.id);
+      const [{ data: items }, { data: photos }] = await Promise.all([
+        supabase.from("order_items").select("id, order_id").in("order_id", orderIds),
+        supabase.from("purchase_photos" as any).select("order_item_id, order_id").in("order_id", orderIds),
+      ]);
+
+      const result: Record<string, { total: number; purchased: number }> = {};
+      for (const tripId of tripIds) {
+        const tripOrderIds = orders.filter((o) => o.trip_id === tripId).map((o) => o.id);
+        const tripItems = (items ?? []).filter((i) => tripOrderIds.includes(i.order_id));
+        const photoItemIds = new Set(
+          ((photos ?? []) as unknown as PurchasePhoto[])
+            .filter((p) => tripOrderIds.includes(p.order_id) && p.order_item_id)
+            .map((p) => p.order_item_id)
+        );
+        result[tripId] = { total: tripItems.length, purchased: photoItemIds.size };
+      }
+      return result;
+    },
+    enabled: !!trips?.length,
+  });
+
   const [form, setForm] = useState({
     code: "",
     traveler_name: "",
@@ -156,6 +198,23 @@ const Trips = () => {
                     />
                   </div>
                 </div>
+
+                {/* Shopping progress */}
+                {shoppingProgress?.[trip.id] && shoppingProgress[trip.id].total > 0 && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <ShoppingCart className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <Badge variant="outline" className="text-xs px-1.5 py-0 gap-1">
+                        <CheckCircle2 className="h-3 w-3 text-green-500" />
+                        {shoppingProgress[trip.id].purchased}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs px-1.5 py-0 gap-1">
+                        <Clock className="h-3 w-3 text-amber-500" />
+                        {shoppingProgress[trip.id].total - shoppingProgress[trip.id].purchased}
+                      </Badge>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
