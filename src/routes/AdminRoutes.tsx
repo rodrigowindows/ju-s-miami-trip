@@ -22,6 +22,7 @@ const AdminReviews = lazy(() => import("@/pages/admin/AdminReviews"));
 const AdminOrderDetail = lazy(() => import("@/pages/admin/OrderDetail"));
 const AdminAnalytics = lazy(() => import("@/pages/admin/AdminAnalytics"));
 const AdminChat = lazy(() => import("@/pages/admin/AdminChat"));
+const AdminShoppingList = lazy(() => import("@/pages/admin/AdminShoppingList"));
 
 export function adminRoutes() {
   return (
