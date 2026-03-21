@@ -218,7 +218,9 @@ export default function PublicCatalog() {
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { reviews: productReviews, loading: reviewsLoading } = useProductReviewsLocal(selectedProduct?.id ?? null);
   const { toast } = useToast();
-  const { isLoggedIn, handleAddToCart } = useBuyAction();
+  const { user } = useAuth();
+  const { addItem: handleAddToCart } = useCart();
+  const isLoggedIn = !!user;
   const trackSearch = useSearchTracker("public");
 
   const [askName, setAskName] = useState("");
