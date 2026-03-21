@@ -24,9 +24,13 @@ interface Props {
 export function PublicHeader({ products, searchQuery, onSearchChange, activeCategory, onCategoryChange, onResetHome, topBrands }: Props) {
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
-  const { totalItems } = useCart();
+  const { totalItems, isOpen: cartCtxOpen, closeCart } = useCart();
   const [searchFocused, setSearchFocused] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  
+  // Sync with CartContext openCart() calls (e.g. from product page addItem)
+  const effectiveCartOpen = cartOpen || cartCtxOpen;
+  const handleCloseCart = () => { setCartOpen(false); closeCart(); };
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const isAdmin = profile?.role === "admin";
