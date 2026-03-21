@@ -93,6 +93,17 @@ export default function PublicProductPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AnnouncementBar />
+      <PublicHeader
+        products={products}
+        searchQuery=""
+        onSearchChange={() => {}}
+        activeCategory="Todos"
+        onCategoryChange={() => {}}
+        onResetHome={() => nav("/")}
+        topBrands={[]}
+      />
+      <PublicCartDrawer />
       {/* Breadcrumbs */}
       <div className="bg-white border-b">
         <div className="max-w-6xl mx-auto px-4 py-3 text-sm text-gray-500 flex items-center gap-1 flex-wrap">
