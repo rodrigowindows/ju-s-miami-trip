@@ -262,9 +262,9 @@ export default function PublicProductPage() {
                     variant="outline"
                     className="gap-2 h-12"
                     onClick={() => {
-                      if (!isLoggedIn) { nav("/login"); return; }
                       addItem(product, quantity);
                       toast({ title: "✓ Produto adicionado ao carrinho!" });
+                      openCart();
                     }}
                   >
                     <ShoppingBag size={16} /> Adicionar ao carrinho
