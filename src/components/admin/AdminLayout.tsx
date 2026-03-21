@@ -27,6 +27,7 @@ const navItems = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/pedidos", label: "Pedidos", icon: ShoppingBag },
   { to: "/admin/trips", label: "Viagens", icon: Plane },
+  { to: "/admin/lista-compras", label: "Lista de Compras", icon: ShoppingCart },
   { to: "/admin/catalogo", label: "Catálogo", icon: Store },
   { to: "/admin/messages", label: "Mensagens", icon: MessageSquare },
   { to: "/admin/payments", label: "Pagamentos", icon: DollarSign },
