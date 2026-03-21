@@ -31,6 +31,7 @@ import { formatBRL, formatDate, formatDateTime, formatRelativeTime } from "@/lib
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import type { OrderStatus } from "@/types";
+import PurchaseGallery from "@/components/client/PurchaseGallery";
 
 // ── Status flow (ordered) ─────────────────────
 const STATUS_FLOW: OrderStatus[] = [
