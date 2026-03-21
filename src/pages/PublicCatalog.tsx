@@ -497,7 +497,7 @@ export default function PublicCatalog() {
                   </div>
                   {selectedProduct.availability_type === "esgotado" && (<div className="mt-2"><NotifyMeButton productId={selectedProduct.id} productName={selectedProduct.name} /></div>)}
                   <div className="flex gap-2 mt-2">
-                    <button onClick={() => { const added = handleAddToCart(selectedProduct); if (added) { setSelectedProduct(null); toast({ title: "Produto adicionado ao carrinho!" }); } }} className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]">{isLoggedIn ? <ShoppingBag size={16} /> : <LogIn size={16} />}{isLoggedIn ? "Adicionar ao carrinho" : "Login para comprar"}</button>
+                    <button onClick={() => { if (!isLoggedIn) { navigate("/login"); return; } handleAddToCart(selectedProduct); setSelectedProduct(null); toast({ title: "✓ Produto adicionado ao carrinho!" }); }} className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]">{isLoggedIn ? <ShoppingBag size={16} /> : <LogIn size={16} />}{isLoggedIn ? "Adicionar ao carrinho" : "Login para comprar"}</button>
                     <button onClick={() => shareProductWhatsApp(selectedProduct, brl)} className="flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-full py-2.5 px-4 font-medium text-sm transition-colors"><Share2 size={16} /></button>
                   </div>
                 </div>
