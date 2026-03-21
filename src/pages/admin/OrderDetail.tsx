@@ -83,6 +83,18 @@ const OrderDetail = () => {
 
   const isLoading = orderLoading || paymentsLoading;
 
+  // Build reverse map: status → template slug(s)
+  // MUST be before any conditional returns to respect Rules of Hooks
+  const statusToSlugs = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const [slug, status] of Object.entries(TEMPLATE_STATUS_MAP)) {
+      const list = map.get(status) ?? [];
+      list.push(slug);
+      map.set(status, list);
+    }
+    return map;
+  }, []);
+
   if (isLoading) {
     return (
       <div className="p-6 md:p-8 max-w-5xl mx-auto">
@@ -108,17 +120,6 @@ const OrderDetail = () => {
 
   const totalPaid = calculateTotalPaid(payments ?? []);
   const remaining = order.total_amount - totalPaid;
-
-  // Build reverse map: status → template slug(s)
-  const statusToSlugs = useMemo(() => {
-    const map = new Map<string, string[]>();
-    for (const [slug, status] of Object.entries(TEMPLATE_STATUS_MAP)) {
-      const list = map.get(status) ?? [];
-      list.push(slug);
-      map.set(status, list);
-    }
-    return map;
-  }, []);
 
   const handleChangeStatus = async () => {
     if (!newStatus) return;
@@ -458,7 +459,7 @@ const OrderDetail = () => {
                   <div className="flex justify-between">
                     <span className="font-medium text-sm">{trip.code}</span>
                     <span className="text-xs text-muted-foreground">
-                      {trip.allocated_weight_kg.toFixed(1)} / {trip.max_weight_kg} kg
+                      {(trip.allocated_weight_kg ?? 0).toFixed(1)} / {trip.max_weight_kg} kg
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">{trip.traveler_name}</p>
