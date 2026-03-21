@@ -459,7 +459,7 @@ const OrderDetail = () => {
                   <div className="flex justify-between">
                     <span className="font-medium text-sm">{trip.code}</span>
                     <span className="text-xs text-muted-foreground">
-                      {trip.allocated_weight_kg.toFixed(1)} / {trip.max_weight_kg} kg
+                      {(trip.allocated_weight_kg ?? 0).toFixed(1)} / {trip.max_weight_kg} kg
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">{trip.traveler_name}</p>
