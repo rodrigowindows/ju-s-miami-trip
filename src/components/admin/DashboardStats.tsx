@@ -56,8 +56,8 @@ export default function DashboardStats({ stats }: { stats: DashboardStatsData })
                 <div className={`w-10 h-10 rounded-lg ${item.bg} flex items-center justify-center shrink-0`}>
                   <item.icon size={20} className={item.iconColor} />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-lg font-bold truncate">
+                <div className="min-w-0 overflow-hidden">
+                  <p className="text-sm sm:text-lg font-bold truncate" title={item.isCurrency ? formatBRL(stats[item.key]) : String(stats[item.key])}>
                     {item.isCurrency ? formatBRL(stats[item.key]) : stats[item.key]}
                   </p>
                   <p className="text-[11px] text-muted-foreground">{item.label}</p>
