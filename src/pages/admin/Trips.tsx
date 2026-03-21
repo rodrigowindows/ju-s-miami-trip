@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Plane } from "lucide-react";
+import { Plus, Plane, CheckCircle2, Clock, ShoppingCart } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,9 +21,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useTrips, useCreateTrip } from "@/hooks/useTrips";
 import { useToast } from "@/hooks/use-toast";
 import { getWeightStatus } from "@/lib/calculations";
+import { supabase } from "@/integrations/supabase/client";
+import type { PurchasePhoto } from "@/hooks/usePurchasePhotos";
 
 const Trips = () => {
   const navigate = useNavigate();
