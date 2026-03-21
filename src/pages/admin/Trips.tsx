@@ -34,6 +34,44 @@ const Trips = () => {
   const { data: trips, isLoading } = useTrips();
   const createTrip = useCreateTrip();
   const [open, setOpen] = useState(false);
+
+  // Fetch shopping progress per trip
+  const { data: shoppingProgress } = useQuery({
+    queryKey: ["trips_shopping_progress"],
+    queryFn: async () => {
+      const tripIds = trips?.map((t) => t.id) ?? [];
+      if (!tripIds.length) return {};
+
+      const { data: orders } = await supabase
+        .from("orders")
+        .select("id, trip_id")
+        .in("trip_id", tripIds)
+        .in("status", ["aprovado", "comprando", "comprado"]);
+
+      if (!orders?.length) return {};
+
+      const orderIds = orders.map((o) => o.id);
+      const [{ data: items }, { data: photos }] = await Promise.all([
+        supabase.from("order_items").select("id, order_id").in("order_id", orderIds),
+        supabase.from("purchase_photos" as any).select("order_item_id, order_id").in("order_id", orderIds),
+      ]);
+
+      const result: Record<string, { total: number; purchased: number }> = {};
+      for (const tripId of tripIds) {
+        const tripOrderIds = orders.filter((o) => o.trip_id === tripId).map((o) => o.id);
+        const tripItems = (items ?? []).filter((i) => tripOrderIds.includes(i.order_id));
+        const photoItemIds = new Set(
+          ((photos ?? []) as unknown as PurchasePhoto[])
+            .filter((p) => tripOrderIds.includes(p.order_id) && p.order_item_id)
+            .map((p) => p.order_item_id)
+        );
+        result[tripId] = { total: tripItems.length, purchased: photoItemIds.size };
+      }
+      return result;
+    },
+    enabled: !!trips?.length,
+  });
+
   const [form, setForm] = useState({
     code: "",
     traveler_name: "",
