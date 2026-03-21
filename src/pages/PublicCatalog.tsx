@@ -20,7 +20,8 @@ import {
 import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
-import { useBuyAction } from "@/hooks/useBuyAction";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { useSearchTracker } from "@/hooks/useSearchTracker";
 import { useSettings } from "@/hooks/useSettings";
 import { usePageView, useAnalytics } from "@/hooks/useAnalytics";
