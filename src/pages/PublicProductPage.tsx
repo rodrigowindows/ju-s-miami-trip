@@ -21,6 +21,9 @@ import { useWhatsAppCheckout } from "@/hooks/useWhatsAppCheckout";
 import AIRecommendations from "@/components/catalog/AIRecommendations";
 import { slugify } from "@/lib/slugify";
 import { Input } from "@/components/ui/input";
+import { PublicHeader } from "@/components/catalog/PublicHeader";
+import { PublicCartDrawer } from "@/components/catalog/PublicCartDrawer";
+import AnnouncementBar from "@/components/AnnouncementBar";
 
 
 export default function PublicProductPage() {
@@ -90,6 +93,17 @@ export default function PublicProductPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AnnouncementBar />
+      <PublicHeader
+        products={products}
+        searchQuery=""
+        onSearchChange={() => {}}
+        activeCategory="Todos"
+        onCategoryChange={() => {}}
+        onResetHome={() => nav("/")}
+        topBrands={[]}
+      />
+      
       {/* Breadcrumbs */}
       <div className="bg-white border-b">
         <div className="max-w-6xl mx-auto px-4 py-3 text-sm text-gray-500 flex items-center gap-1 flex-wrap">
