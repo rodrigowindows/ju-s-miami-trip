@@ -28,7 +28,10 @@ export default function PublicProductPage() {
   const nav = useNavigate();
   const { toast } = useToast();
   const { track } = useAnalytics();
-  const { isLoggedIn, handleAddToCart, handleBuyNow, goToLogin } = useBuyAction();
+  const { user } = useAuth();
+  const { addItem, openCart } = useCart();
+  const { buyNowViaWhatsApp } = useWhatsAppCheckout();
+  const isLoggedIn = !!user;
   const { data: products = [] } = useCatalogProducts();
   const { data: settings } = useSettings();
   const [selectedImage, setSelectedImage] = useState(0);
