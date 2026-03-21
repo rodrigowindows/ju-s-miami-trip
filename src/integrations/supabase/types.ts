@@ -677,6 +677,54 @@ export type Database = {
           },
         ]
       }
+      purchase_photos: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          order_id: string
+          order_item_id: string | null
+          photo_url: string
+          purchased_at: string | null
+          store_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id: string
+          order_item_id?: string | null
+          photo_url: string
+          purchased_at?: string | null
+          store_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id?: string
+          order_item_id?: string | null
+          photo_url?: string
+          purchased_at?: string | null
+          store_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_photos_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_photos_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           created_at: string

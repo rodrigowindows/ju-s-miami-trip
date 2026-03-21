@@ -22,6 +22,7 @@ const AdminReviews = lazy(() => import("@/pages/admin/AdminReviews"));
 const AdminOrderDetail = lazy(() => import("@/pages/admin/OrderDetail"));
 const AdminAnalytics = lazy(() => import("@/pages/admin/AdminAnalytics"));
 const AdminChat = lazy(() => import("@/pages/admin/AdminChat"));
+const AdminShoppingList = lazy(() => import("@/pages/admin/AdminShoppingList"));
 
 export function adminRoutes() {
   return (
@@ -52,6 +53,7 @@ export function adminRoutes() {
         <Route path="chat" element={<Lazy><AdminChat /></Lazy>} />
         <Route path="alertas-produtos" element={<Lazy><AdminProductAlerts /></Lazy>} />
         <Route path="orders/:id" element={<Lazy><AdminOrderDetail /></Lazy>} />
+        <Route path="lista-compras" element={<Lazy><AdminShoppingList /></Lazy>} />
       </Route>
     </>
   );
