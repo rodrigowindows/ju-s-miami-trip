@@ -6,6 +6,7 @@ import AdminAISummary from "@/components/admin/AdminAISummary";
 import DashboardStats from "@/components/admin/DashboardStats";
 import DashboardCharts from "@/components/admin/DashboardCharts";
 import DashboardKanban from "@/components/admin/DashboardKanban";
+import ShoppingProgress from "@/components/admin/ShoppingProgress";
 import { ORDER_STATUS_CONFIG } from "@/lib/constants";
 import { useOrders } from "@/hooks/useOrders";
 import { usePayments } from "@/hooks/usePayments";
