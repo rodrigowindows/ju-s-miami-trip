@@ -265,19 +265,18 @@ export default function PublicProductPage() {
                   <Button
                     className="bg-rose-500 hover:bg-rose-600 text-white gap-2 h-12"
                     onClick={() => {
-                      if (!isLoggedIn) { nav("/login"); return; }
                       track("buy_click", { product_id: product.id, product_name: product.name, product_brand: product.brand, product_category: product.category, product_price_brl: brl });
                       buyNowViaWhatsApp(product, quantity, sizeInfo ? `Tamanho: ${sizeInfo}` : undefined);
                     }}
                   >
-                    <MessageCircle size={16} /> {isLoggedIn ? "Comprar via WhatsApp" : "Login para comprar"}
+                    <MessageCircle size={16} /> Comprar via WhatsApp
                   </Button>
                   <Button
                     variant="outline"
                     className="gap-2 h-12"
                     onClick={() => {
                       addItem(product, quantity);
-                      toast({ title: "✓ Produto adicionado ao carrinho!" });
+                      toast({ title: "✅ Produto adicionado ao carrinho!", description: product.name });
                       openCart();
                     }}
                   >
@@ -290,7 +289,8 @@ export default function PublicProductPage() {
                   </Button>
                   <Button variant="ghost" size="sm" className="flex-1 gap-1 text-gray-600" onClick={() => {
                     track("share_click", { product_id: product.id, product_name: product.name, product_brand: product.brand });
-                    const text = `Olha esse produto: ${product.name} - ${brl.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`;
+                    const productUrl = `${window.location.origin}/produto/${slugify(product.name)}`;
+                    const text = `Olha esse produto: ${product.name} - ${brl.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} 👉 ${productUrl}`;
                     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                   }}>
                     <Share2 size={14} /> Compartilhar

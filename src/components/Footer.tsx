@@ -1,4 +1,5 @@
 import { Instagram, MessageCircle, Mail, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
 import Newsletter from "./Newsletter";
 
 const Footer = () => {
@@ -18,7 +19,7 @@ const Footer = () => {
               </p>
               <div className="flex gap-3 mt-4">
                 <a
-                  href="https://instagram.com"
+                  href="https://instagram.com/ajuvaiparamiami"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors"
@@ -27,7 +28,7 @@ const Footer = () => {
                   <Instagram size={24} />
                 </a>
                 <a
-                  href="https://wa.me/5511999999999"
+                  href="https://wa.me/5579999999999"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors"
@@ -36,7 +37,7 @@ const Footer = () => {
                   <MessageCircle size={24} />
                 </a>
                 <a
-                  href="https://tiktok.com"
+                  href="https://tiktok.com/@ajuvaiparamiami"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors"
@@ -65,18 +66,18 @@ const Footer = () => {
               </h4>
               <ul className="space-y-2">
                 {[
-                  { label: "Sobre nós", href: "/sobre" },
-                  { label: "Como funciona", href: "/como-funciona" },
-                  { label: "Política de troca", href: "/politica-de-troca" },
-                  { label: "Política de privacidade", href: "/politica-de-privacidade" },
+                  { label: "Sobre nós", to: "/sobre" },
+                  { label: "Como funciona", to: "/como-funciona" },
+                  { label: "Política de troca", to: "/politica-de-troca" },
+                  { label: "Política de privacidade", to: "/politica-de-privacidade" },
                 ].map((item) => (
                   <li key={item.label}>
-                    <a
-                      href={item.href}
+                    <Link
+                      to={item.to}
                       className="text-muted-foreground hover:text-primary transition-colors text-[13px]"
                     >
                       {item.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
