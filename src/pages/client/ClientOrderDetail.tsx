@@ -408,6 +408,9 @@ export default function ClientOrderDetail() {
         </CardContent>
       </Card>
 
+      {/* ── Purchase Photos ────────────────────── */}
+      <PurchaseGallery orderId={order.id} />
+
       {/* ── Timeline ─────────────────────────────── */}
       {(events ?? []).length > 0 && (
         <Card>
