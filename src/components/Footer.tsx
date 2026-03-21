@@ -64,18 +64,21 @@ const Footer = () => {
                 Institucional
               </h4>
               <ul className="space-y-2">
-                {["Sobre nós", "Como funciona", "Política de troca", "Política de privacidade"].map(
-                  (item) => (
-                    <li key={item}>
-                      <a
-                        href="#"
-                        className="text-muted-foreground hover:text-primary transition-colors text-[13px]"
-                      >
-                        {item}
-                      </a>
-                    </li>
-                  )
-                )}
+                {[
+                  { label: "Sobre nós", href: "/sobre" },
+                  { label: "Como funciona", href: "/como-funciona" },
+                  { label: "Política de troca", href: "/politica-de-troca" },
+                  { label: "Política de privacidade", href: "/politica-de-privacidade" },
+                ].map((item) => (
+                  <li key={item.label}>
+                    <a
+                      href={item.href}
+                      className="text-muted-foreground hover:text-primary transition-colors text-[13px]"
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
 

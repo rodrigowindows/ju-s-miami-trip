@@ -11,6 +11,11 @@ const Rastreio = lazy(() => import("@/pages/Rastreio"));
 const Login = lazy(() => import("@/pages/Login"));
 const Register = lazy(() => import("@/pages/Register"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
+const Sobre = lazy(() => import("@/pages/Sobre"));
+const ComoFunciona = lazy(() => import("@/pages/ComoFunciona"));
+const PoliticaDeTroca = lazy(() => import("@/pages/PoliticaDeTroca"));
+const PoliticaDePrivacidade = lazy(() => import("@/pages/PoliticaDePrivacidade"));
+const Favoritos = lazy(() => import("@/pages/Favoritos"));
 
 export function publicRoutes() {
   return (
@@ -20,6 +25,11 @@ export function publicRoutes() {
       <Route path="/rastreio" element={<Lazy><Rastreio /></Lazy>} />
       <Route path="/produto/:slug" element={<Lazy><PublicProductPage /></Lazy>} />
       <Route path="/marca/:slug" element={<Lazy><BrandPage /></Lazy>} />
+      <Route path="/sobre" element={<Lazy><Sobre /></Lazy>} />
+      <Route path="/como-funciona" element={<Lazy><ComoFunciona /></Lazy>} />
+      <Route path="/politica-de-troca" element={<Lazy><PoliticaDeTroca /></Lazy>} />
+      <Route path="/politica-de-privacidade" element={<Lazy><PoliticaDePrivacidade /></Lazy>} />
+      <Route path="/favoritos" element={<Lazy><Favoritos /></Lazy>} />
       <Route path="/forgot-password" element={<Lazy><ForgotPassword /></Lazy>} />
       <Route
         path="/login"

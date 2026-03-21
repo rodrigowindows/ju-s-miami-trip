@@ -15,9 +15,12 @@ import { getMLComparison } from "@/lib/ml-prices";
 import StickyBuyBar from "@/components/catalog/StickyBuyBar";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { ProductImage } from "@/components/catalog/ProductImage";
-import { useBuyAction } from "@/hooks/useBuyAction";
+import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useWhatsAppCheckout } from "@/hooks/useWhatsAppCheckout";
 import AIRecommendations from "@/components/catalog/AIRecommendations";
 import { slugify } from "@/lib/slugify";
+import { Input } from "@/components/ui/input";
 
 
 export default function PublicProductPage() {
@@ -25,13 +28,17 @@ export default function PublicProductPage() {
   const nav = useNavigate();
   const { toast } = useToast();
   const { track } = useAnalytics();
-  const { isLoggedIn, handleAddToCart, handleBuyNow, goToLogin } = useBuyAction();
+  const { user } = useAuth();
+  const { addItem, openCart } = useCart();
+  const { buyNowViaWhatsApp } = useWhatsAppCheckout();
+  const isLoggedIn = !!user;
   const { data: products = [] } = useCatalogProducts();
   const { data: settings } = useSettings();
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState<"desc" | "details" | "shipping">("desc");
   const [quantity, setQuantity] = useState(1);
   const [zoomed, setZoomed] = useState(false);
+  const [sizeInfo, setSizeInfo] = useState("");
   const trackedRef = useRef<string | null>(null);
 
   const product = useMemo(
@@ -172,6 +179,7 @@ export default function PublicProductPage() {
               <p className="text-3xl font-bold text-gray-900">
                 {brl.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </p>
+              <p className="text-sm text-gray-500 mt-0.5">Preço estimado com taxas</p>
               <p className="text-sm text-emerald-600 font-medium mt-1">
                 à vista no PIX
               </p>
@@ -226,16 +234,44 @@ export default function PublicProductPage() {
                   </div>
                 </div>
 
+                {/* Size / variant selector */}
+                {(product.category === "Calçados" || product.category === "Roupas" || product.category === "Moda" || product.category === "Tênis") && (
+                  <div>
+                    <label className="text-sm text-gray-600 block mb-1">Tamanho desejado:</label>
+                    <Input
+                      placeholder="Ex: 38, M, 9 US..."
+                      value={sizeInfo}
+                      onChange={(e) => setSizeInfo(e.target.value)}
+                      className="h-10"
+                    />
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <Button className="bg-rose-500 hover:bg-rose-600 text-white gap-2 h-12" onClick={() => { track("buy_click", { product_id: product.id, product_name: product.name, product_brand: product.brand, product_category: product.category, product_price_brl: brl }); handleBuyNow(product, { quantity }); }}>
-                    <ShoppingBag size={16} /> {isLoggedIn ? "Comprar agora" : "Login para comprar"}
+                  <Button
+                    className="bg-rose-500 hover:bg-rose-600 text-white gap-2 h-12"
+                    onClick={() => {
+                      if (!isLoggedIn) { nav("/login"); return; }
+                      track("buy_click", { product_id: product.id, product_name: product.name, product_brand: product.brand, product_category: product.category, product_price_brl: brl });
+                      buyNowViaWhatsApp(product, quantity, sizeInfo ? `Tamanho: ${sizeInfo}` : undefined);
+                    }}
+                  >
+                    <MessageCircle size={16} /> {isLoggedIn ? "Comprar via WhatsApp" : "Login para comprar"}
                   </Button>
-                  <Button variant="outline" className="gap-2 h-12" onClick={() => { if (handleAddToCart(product, { quantity })) { toast({ title: "Produto adicionado ao carrinho!" }); } }}>
-                    {isLoggedIn ? "Adicionar ao carrinho" : "Criar conta"}
+                  <Button
+                    variant="outline"
+                    className="gap-2 h-12"
+                    onClick={() => {
+                      if (!isLoggedIn) { nav("/login"); return; }
+                      addItem(product, quantity);
+                      toast({ title: "✓ Produto adicionado ao carrinho!" });
+                    }}
+                  >
+                    <ShoppingBag size={16} /> Adicionar ao carrinho
                   </Button>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" className="flex-1 gap-1 text-gray-600" onClick={() => isLoggedIn ? toast({ title: "Em breve!" }) : goToLogin()}>
+                  <Button variant="ghost" size="sm" className="flex-1 gap-1 text-gray-600" onClick={() => isLoggedIn ? nav("/favoritos") : nav("/login")}>
                     <Heart size={14} /> Favoritar
                   </Button>
                   <Button variant="ghost" size="sm" className="flex-1 gap-1 text-gray-600" onClick={() => {

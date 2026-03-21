@@ -16,23 +16,23 @@ import {
   Zap, Timer, Flame, Share2,
   MessageSquare,
 } from "lucide-react";
-import Logo from "@/components/shared/Logo";
 
 import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
-import { useBuyAction } from "@/hooks/useBuyAction";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { useSearchTracker } from "@/hooks/useSearchTracker";
 import { useSettings } from "@/hooks/useSettings";
 import { usePageView, useAnalytics } from "@/hooks/useAnalytics";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
-import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
 import { fakeRating, isBestSeller, CATEGORY_LIST, groupSimilarProducts, isProductGroup } from "@/components/catalog/catalog-utils";
 import { GroupedProductCard } from "@/components/catalog/GroupedProductCard";
 import SearchAutocomplete from "@/components/catalog/SearchAutocomplete";
+import { PublicHeader } from "@/components/catalog/PublicHeader";
 
 import NotifyMeButton from "@/components/catalog/NotifyMeButton";
 import Footer from "@/components/Footer";
@@ -207,7 +207,7 @@ export default function PublicCatalog() {
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchFocused, setSearchFocused] = useState(false);
+  
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [showAllFlat, setShowAllFlat] = useState(false);
   const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "pronta_entrega" | "sob_encomenda">("all");
@@ -218,7 +218,9 @@ export default function PublicCatalog() {
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { reviews: productReviews, loading: reviewsLoading } = useProductReviewsLocal(selectedProduct?.id ?? null);
   const { toast } = useToast();
-  const { isLoggedIn, handleAddToCart } = useBuyAction();
+  const { user } = useAuth();
+  const { addItem: handleAddToCart } = useCart();
+  const isLoggedIn = !!user;
   const trackSearch = useSearchTracker("public");
 
   const [askName, setAskName] = useState("");
@@ -286,46 +288,15 @@ export default function PublicCatalog() {
   return (
     <div className="min-h-screen bg-white">
       <AnnouncementBar />
-      <header className="sticky top-0 z-40 bg-white border-b border-rose-100">
-        <div className="px-4 py-3 flex items-center gap-3">
-          {!searchFocused && (
-            <button onClick={() => { setSearchQuery(""); setActiveCategory("Todos"); setShowAllFlat(false); window.scrollTo(0, 0); }} className="shrink-0"><Logo size="sm" /></button>
-          )}
-          <div className="flex-1 relative max-w-xl mx-auto">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input
-              placeholder="Buscar skincare, maquiagem, perfumes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => { if (!searchQuery.trim()) setTimeout(() => setSearchFocused(false), 150); }}
-              className="w-full pl-9 pr-3 h-11 rounded-full bg-white text-gray-900 border border-rose-200 text-base focus-visible:ring-2 focus-visible:ring-[#F43F5E]"
-            />
-            <SearchAutocomplete query={searchQuery} products={products} onSelect={(p) => { setSearchFocused(false); navigate(`/produto/${slugify(p.name)}`); }} />
-          </div>
-          {searchFocused ? (
-            <button onClick={() => { setSearchQuery(""); setSearchFocused(false); }} className="shrink-0 text-sm text-gray-500 hover:text-gray-800 font-medium">Cancelar</button>
-          ) : (
-            <>
-              <Link to="/login" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><LogIn size={18} /></Link>
-              <Link to="/client/wishlist" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><Heart size={18} /></Link>
-              <Link to="/login" className="shrink-0 text-gray-700 hover:text-[#F43F5E]"><ShoppingBag size={18} /></Link>
-            </>
-          )}
-        </div>
-        <CategoryNav active={activeCategory} onSelect={setActiveCategory} variant="light" />
-
-        {/* Brand tags — inside header, below categories */}
-        {topBrands.length > 0 && (
-          <div className="border-t border-gray-100 px-4 py-1.5 bg-gray-50/60">
-            <div className="max-w-6xl mx-auto flex gap-2 overflow-x-auto scrollbar-hide">
-              {topBrands.map((b) => (
-                <button key={b} onClick={() => navigate(`/marca/${slugify(b)}`)} className="shrink-0 bg-white border border-gray-200 rounded-full px-3.5 py-1 text-xs font-medium text-gray-700 hover:shadow-sm hover:border-gray-300 transition-all">{b}</button>
-              ))}
-            </div>
-          </div>
-        )}
-      </header>
+      <PublicHeader
+        products={products}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        activeCategory={activeCategory}
+        onCategoryChange={setActiveCategory}
+        onResetHome={() => { setSearchQuery(""); setActiveCategory("Todos"); setShowAllFlat(false); window.scrollTo(0, 0); }}
+        topBrands={topBrands}
+      />
 
       {/* Trip Countdown Banner */}
       <TripCountdown />
@@ -526,7 +497,7 @@ export default function PublicCatalog() {
                   </div>
                   {selectedProduct.availability_type === "esgotado" && (<div className="mt-2"><NotifyMeButton productId={selectedProduct.id} productName={selectedProduct.name} /></div>)}
                   <div className="flex gap-2 mt-2">
-                    <button onClick={() => { const added = handleAddToCart(selectedProduct); if (added) { setSelectedProduct(null); toast({ title: "Produto adicionado ao carrinho!" }); } }} className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]">{isLoggedIn ? <ShoppingBag size={16} /> : <LogIn size={16} />}{isLoggedIn ? "Adicionar ao carrinho" : "Login para comprar"}</button>
+                    <button onClick={() => { if (!isLoggedIn) { navigate("/login"); return; } handleAddToCart(selectedProduct); setSelectedProduct(null); toast({ title: "✓ Produto adicionado ao carrinho!" }); }} className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]">{isLoggedIn ? <ShoppingBag size={16} /> : <LogIn size={16} />}{isLoggedIn ? "Adicionar ao carrinho" : "Login para comprar"}</button>
                     <button onClick={() => shareProductWhatsApp(selectedProduct, brl)} className="flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-full py-2.5 px-4 font-medium text-sm transition-colors"><Share2 size={16} /></button>
                   </div>
                 </div>
