@@ -38,6 +38,7 @@ export default function PublicProductPage() {
   const [activeTab, setActiveTab] = useState<"desc" | "details" | "shipping">("desc");
   const [quantity, setQuantity] = useState(1);
   const [zoomed, setZoomed] = useState(false);
+  const [sizeInfo, setSizeInfo] = useState("");
   const trackedRef = useRef<string | null>(null);
 
   const product = useMemo(
