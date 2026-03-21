@@ -158,7 +158,7 @@ export function PublicHeader({ products, searchQuery, onSearchChange, activeCate
         )}
       </header>
 
-      <PublicCartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <PublicCartDrawer open={effectiveCartOpen} onClose={handleCloseCart} />
     </>
   );
 }
