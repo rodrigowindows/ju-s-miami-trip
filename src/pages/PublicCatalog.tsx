@@ -16,7 +16,6 @@ import {
   Zap, Timer, Flame, Share2,
   MessageSquare,
 } from "lucide-react";
-import Logo from "@/components/shared/Logo";
 
 import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
@@ -28,11 +27,11 @@ import { usePageView, useAnalytics } from "@/hooks/useAnalytics";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortDropdown } from "@/components/catalog/SortDropdown";
 import { StarRating } from "@/components/catalog/StarRating";
-import { CategoryNav } from "@/components/catalog/CategoryNav";
 import { ThemedProductSections } from "@/components/catalog/ThemedProductSections";
 import { fakeRating, isBestSeller, CATEGORY_LIST, groupSimilarProducts, isProductGroup } from "@/components/catalog/catalog-utils";
 import { GroupedProductCard } from "@/components/catalog/GroupedProductCard";
 import SearchAutocomplete from "@/components/catalog/SearchAutocomplete";
+import { PublicHeader } from "@/components/catalog/PublicHeader";
 
 import NotifyMeButton from "@/components/catalog/NotifyMeButton";
 import Footer from "@/components/Footer";
