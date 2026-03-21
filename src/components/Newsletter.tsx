@@ -8,9 +8,17 @@ const Newsletter = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !email.trim()) {
+      toast({ title: "Informe seu e-mail", description: "Digite um e-mail válido para se cadastrar.", variant: "destructive" });
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast({ title: "E-mail inválido", description: "Por favor, digite um e-mail válido.", variant: "destructive" });
+      return;
+    }
     toast({
-      title: "Cadastro realizado!",
+      title: "Cadastro realizado! 🎉",
       description: "Você receberá nossas ofertas exclusivas em breve.",
     });
     setEmail("");
@@ -44,7 +52,6 @@ const Newsletter = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full h-12 pl-10 pr-4 bg-white text-sm text-gray-800 placeholder:text-gray-400 outline-none border-none rounded-l-full"
-                required
               />
             </div>
             <button

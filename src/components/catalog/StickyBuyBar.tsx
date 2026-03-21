@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
-import { MessageCircle, ShoppingBag } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { MessageCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWhatsAppCheckout } from "@/hooks/useWhatsAppCheckout";
-import { useNavigate } from "react-router-dom";
 import type { CatalogProduct } from "@/types";
 
 interface StickyBuyBarProps {
@@ -15,10 +13,7 @@ interface StickyBuyBarProps {
 
 export default function StickyBuyBar({ productName, priceBrl, isSoldOut, product }: StickyBuyBarProps) {
   const [visible, setVisible] = useState(false);
-  const { user } = useAuth();
-  const { addItem } = useCart();
   const { buyNowViaWhatsApp } = useWhatsAppCheckout();
-  const nav = useNavigate();
 
   useEffect(() => {
     function onScroll() {
@@ -31,7 +26,6 @@ export default function StickyBuyBar({ productName, priceBrl, isSoldOut, product
   if (!visible) return null;
 
   const handleClick = () => {
-    if (!user) { nav("/login"); return; }
     if (product) {
       buyNowViaWhatsApp(product, 1);
     }
@@ -52,7 +46,7 @@ export default function StickyBuyBar({ productName, priceBrl, isSoldOut, product
           className="shrink-0 bg-[#F43F5E] text-white rounded-lg font-semibold text-sm flex items-center gap-2 px-5 py-3 hover:opacity-90 transition-colors disabled:opacity-50"
         >
           <MessageCircle size={16} />
-          {isSoldOut ? "Esgotado" : user ? "Comprar" : "Login"}
+          {isSoldOut ? "Esgotado" : "Comprar"}
         </button>
       </div>
     </div>
