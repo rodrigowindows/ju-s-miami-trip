@@ -206,7 +206,7 @@ export default function PublicCatalog() {
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchFocused, setSearchFocused] = useState(false);
+  
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [showAllFlat, setShowAllFlat] = useState(false);
   const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "pronta_entrega" | "sob_encomenda">("all");

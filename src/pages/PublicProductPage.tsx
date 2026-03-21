@@ -15,9 +15,12 @@ import { getMLComparison } from "@/lib/ml-prices";
 import StickyBuyBar from "@/components/catalog/StickyBuyBar";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { ProductImage } from "@/components/catalog/ProductImage";
-import { useBuyAction } from "@/hooks/useBuyAction";
+import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useWhatsAppCheckout } from "@/hooks/useWhatsAppCheckout";
 import AIRecommendations from "@/components/catalog/AIRecommendations";
 import { slugify } from "@/lib/slugify";
+import { Input } from "@/components/ui/input";
 
 
 export default function PublicProductPage() {
