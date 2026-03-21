@@ -126,6 +126,7 @@ export default function Dashboard() {
       </div>
 
       <DashboardStats stats={stats} />
+      <ShoppingProgress />
       <DashboardCharts
         revenueByMonth={revenueByMonth}
         ordersByStatus={ordersByStatus}
