@@ -21,6 +21,9 @@ import { useWhatsAppCheckout } from "@/hooks/useWhatsAppCheckout";
 import AIRecommendations from "@/components/catalog/AIRecommendations";
 import { slugify } from "@/lib/slugify";
 import { Input } from "@/components/ui/input";
+import { PublicHeader } from "@/components/catalog/PublicHeader";
+import { PublicCartDrawer } from "@/components/catalog/PublicCartDrawer";
+import { AnnouncementBar } from "@/components/AnnouncementBar";
 
 
 export default function PublicProductPage() {
