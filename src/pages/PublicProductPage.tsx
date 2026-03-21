@@ -23,7 +23,7 @@ import { slugify } from "@/lib/slugify";
 import { Input } from "@/components/ui/input";
 import { PublicHeader } from "@/components/catalog/PublicHeader";
 import { PublicCartDrawer } from "@/components/catalog/PublicCartDrawer";
-import { AnnouncementBar } from "@/components/AnnouncementBar";
+import AnnouncementBar from "@/components/AnnouncementBar";
 
 
 export default function PublicProductPage() {
