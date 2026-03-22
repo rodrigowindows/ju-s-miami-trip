@@ -116,10 +116,10 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground mt-1">Visão geral do AjuVaiParaMiami</p>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={() => navigate("/admin/orders")}>
+          <Button size="sm" variant="outline" onClick={() => navigate("/admin/pedidos")}>
             <ShoppingBag size={14} className="mr-1" /> Pedidos
           </Button>
-          <Button size="sm" onClick={() => navigate("/admin/catalog")}>
+          <Button size="sm" onClick={() => navigate("/admin/catalogo")}>
             <TrendingUp size={14} className="mr-1" /> Catálogo
           </Button>
         </div>

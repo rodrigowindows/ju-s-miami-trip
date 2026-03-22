@@ -37,7 +37,7 @@ export default function DashboardKanban({ orders }: DashboardKanbanProps) {
                   </div>
                 ) : (
                   colOrders.map((order) => (
-                    <Card key={order.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/admin/orders/${order.id}`)}>
+                    <Card key={order.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/admin/pedidos/${order.id}`)}>
                       <CardContent className="p-3 space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-mono font-bold">{order.order_number}</span>
