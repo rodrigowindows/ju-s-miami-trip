@@ -235,7 +235,7 @@ const TripDetail = () => {
               </TableHeader>
               <TableBody>
                 {orders.map((order) => (
-                  <TableRow key={order.id} className="cursor-pointer" onClick={() => navigate(`/admin/orders/${order.id}`)}>
+                  <TableRow key={order.id} className="cursor-pointer" onClick={() => navigate(`/admin/pedidos/${order.id}`)}>
                     <TableCell className="font-mono font-medium">{order.order_number}</TableCell>
                     <TableCell>{order.client_name ?? "—"}</TableCell>
                     <TableCell>{order.estimated_weight_kg ? `${order.estimated_weight_kg} kg` : "—"}</TableCell>

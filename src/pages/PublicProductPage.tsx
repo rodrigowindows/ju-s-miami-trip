@@ -193,7 +193,7 @@ export default function PublicProductPage() {
               <p className="text-3xl font-bold text-gray-900">
                 {brl.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </p>
-              <p className="text-sm text-gray-500 mt-0.5">Preço estimado com taxas</p>
+              <p className="text-sm text-gray-500 mt-0.5">Preço estimado (câmbio + taxas de serviço)</p>
               <p className="text-sm text-emerald-600 font-medium mt-1">
                 à vista no PIX
               </p>
@@ -206,6 +206,9 @@ export default function PublicProductPage() {
                   priceUsd={product.price_usd}
                   category={product.category}
                 />
+                <p className="text-[10px] text-gray-400 mt-1">
+                  * Use "Estimar preço final" para ver o detalhamento com frete incluso.
+                </p>
               </div>
             </div>
 

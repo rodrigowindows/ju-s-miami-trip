@@ -92,7 +92,7 @@ export default function OrdersList() {
                   <TableRow
                     key={order.id}
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => navigate(`/admin/orders/${order.id}`)}
+                    onClick={() => navigate(`/admin/pedidos/${order.id}`)}
                   >
                     <TableCell className="font-mono font-bold text-sm">
                       {order.order_number}

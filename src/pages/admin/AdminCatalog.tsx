@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Loader2, Store, Pencil, Trash2, Download, Sparkles } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { ProductImage } from "@/components/catalog/ProductImage";
+import { filterVisibleProducts } from "@/lib/transforms";
 
 import { slugify } from "@/lib/slugify";
 function AIDescriptionButton({ name, brand, category, priceUsd, description, onGenerated }: {
@@ -102,7 +103,7 @@ export default function AdminCatalog() {
       .from("catalog_products")
       .select("*")
       .order("created_at", { ascending: false });
-    setProducts((data as CatalogProduct[]) ?? []);
+    setProducts(filterVisibleProducts((data as CatalogProduct[]) ?? []));
     setLoading(false);
   }
 

@@ -104,7 +104,7 @@ const Payments = () => {
                   </TableCell>
                   <TableCell>
                     <button
-                      onClick={() => navigate(`/admin/orders/${payment.order_id}`)}
+                      onClick={() => navigate(`/admin/pedidos/${payment.order_id}`)}
                       className="text-sm font-medium text-primary hover:underline"
                     >
                       {payment.order?.order_number ?? "—"}

@@ -53,10 +53,11 @@ const OrderDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { data: order, isLoading: orderLoading } = useOrder(id!);
-  const { data: items } = useOrderItems(id!);
-  const { data: events } = useOrderEvents(id!);
-  const { data: payments, isLoading: paymentsLoading } = useOrderPayments(id!);
+  const orderId = id ?? "";
+  const { data: order, isLoading: orderLoading } = useOrder(orderId);
+  const { data: items } = useOrderItems(orderId);
+  const { data: events } = useOrderEvents(orderId);
+  const { data: payments, isLoading: paymentsLoading } = useOrderPayments(orderId);
   const { data: trips } = useTrips();
   const createPayment = useCreatePayment();
   const updateStatus = useUpdateOrderStatus();
@@ -119,7 +120,8 @@ const OrderDetail = () => {
   }
 
   const totalPaid = calculateTotalPaid(payments ?? []);
-  const remaining = order.total_amount - totalPaid;
+  const totalAmount = order.total_amount ?? 0;
+  const remaining = totalAmount - totalPaid;
 
   const handleChangeStatus = async () => {
     if (!newStatus) return;
@@ -264,7 +266,7 @@ const OrderDetail = () => {
             <div>
               <span className="text-muted-foreground block">Total BRL</span>
               <span className="font-medium">
-                {formatBRL(order.total_amount)}
+                {formatBRL(totalAmount)}
               </span>
             </div>
             <div>
@@ -276,7 +278,7 @@ const OrderDetail = () => {
             <div>
               <span className="text-muted-foreground block">Criado em</span>
               <span className="font-medium">
-                {formatDate(order.created_at)}
+                {order.created_at ? formatDate(order.created_at) : "—"}
               </span>
             </div>
           </div>
@@ -360,7 +362,7 @@ const OrderDetail = () => {
             <div className="text-center">
               <span className="text-xs text-muted-foreground block">Total</span>
               <span className="font-bold text-sm">
-                {formatBRL(order.total_amount)}
+                {formatBRL(totalAmount)}
               </span>
             </div>
             <div className="text-center">

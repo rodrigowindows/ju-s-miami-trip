@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Route } from "react-router-dom";
+import { Route, Navigate } from "react-router-dom";
 import { RedirectIfAuthed } from "@/routes/guards";
 import { Lazy } from "@/routes/LazyRoute";
 
@@ -30,6 +30,8 @@ export function publicRoutes() {
       <Route path="/politica-de-troca" element={<Lazy><PoliticaDeTroca /></Lazy>} />
       <Route path="/politica-de-privacidade" element={<Lazy><PoliticaDePrivacidade /></Lazy>} />
       <Route path="/favoritos" element={<Lazy><Favoritos /></Lazy>} />
+      <Route path="/cart" element={<Navigate to="/" replace />} />
+      <Route path="/checkout" element={<Navigate to="/" replace />} />
       <Route path="/forgot-password" element={<Lazy><ForgotPassword /></Lazy>} />
       <Route
         path="/login"

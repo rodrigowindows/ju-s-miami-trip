@@ -52,7 +52,7 @@ export function adminRoutes() {
         <Route path="settings" element={<Lazy><AdminSettings /></Lazy>} />
         <Route path="chat" element={<Lazy><AdminChat /></Lazy>} />
         <Route path="alertas-produtos" element={<Lazy><AdminProductAlerts /></Lazy>} />
-        <Route path="orders/:id" element={<Lazy><AdminOrderDetail /></Lazy>} />
+        <Route path="pedidos/:id" element={<Lazy><AdminOrderDetail /></Lazy>} />
         <Route path="lista-compras" element={<Lazy><AdminShoppingList /></Lazy>} />
       </Route>
     </>
