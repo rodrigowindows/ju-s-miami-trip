@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { fixImageUrl } from "@/lib/fix-image-urls";
 import { useCatalogProducts } from "@/hooks/useCatalog";
@@ -11,17 +11,17 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Loader2, X, LogIn, Search, Star, Truck, Heart, ShoppingBag,
+  Loader2, X, Search, Star, Truck, Heart, ShoppingBag,
   HelpCircle, Send, User, CheckCircle2,
   Zap, Timer, Flame, Share2,
-  MessageSquare,
+  MessageSquare, MessageCircle,
 } from "lucide-react";
 
 import HowItWorks from "@/components/HowItWorks";
 import { shareProductWhatsApp } from "@/lib/share";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
+import { useWhatsAppCheckout } from "@/hooks/useWhatsAppCheckout";
 import { useSearchTracker } from "@/hooks/useSearchTracker";
 import { useSettings } from "@/hooks/useSettings";
 import { usePageView, useAnalytics } from "@/hooks/useAnalytics";
@@ -200,11 +200,15 @@ export default function PublicCatalog() {
   const { track } = useAnalytics();
   const { products, loading } = useCatalogLocal();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { convert } = useExchangeRate();
   const { data: settings } = useSettings();
   const { deals, loading: dealsLoading } = useDeals();
+  const { buyNowViaWhatsApp } = useWhatsAppCheckout();
 
-  const [activeCategory, setActiveCategory] = useState<string>("Todos");
+  // Initialize category from URL param (e.g. /catalog?cat=Kits)
+  const initialCat = searchParams.get("cat") || "Todos";
+  const [activeCategory, setActiveCategory] = useState<string>(initialCat);
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -215,12 +219,16 @@ export default function PublicCatalog() {
   const [maxPrice, setMaxPrice] = useState(0);
   const [aiSearchIds, setAiSearchIds] = useState<string[] | null>(null);
 
+  // Sync category when URL params change (e.g. breadcrumb links)
+  useEffect(() => {
+    const cat = searchParams.get("cat");
+    if (cat && cat !== activeCategory) setActiveCategory(cat);
+  }, [searchParams]);
+
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
   const { reviews: productReviews, loading: reviewsLoading } = useProductReviewsLocal(selectedProduct?.id ?? null);
   const { toast } = useToast();
-  const { user } = useAuth();
   const { addItem: handleAddToCart } = useCart();
-  const isLoggedIn = !!user;
   const trackSearch = useSearchTracker("public");
 
   const [askName, setAskName] = useState("");
@@ -373,7 +381,7 @@ export default function PublicCatalog() {
               </a>
             </div>
           </div>
-        ) : activeCategory === "Todos" && !searchQuery.trim() && !showAllFlat ? (
+        ) : activeCategory === "Todos" && !searchQuery.trim() && !showAllFlat && sortBy === "relevance" && availabilityFilter === "all" ? (
           <>
             <ThemedProductSections products={products} deals={deals.map((d) => ({ product_id: d.product_id, discount_percent: d.discount_percent, deal_type: d.deal_type, ends_at: d.ends_at }))} convert={convert} onSelectProduct={setSelectedProduct} onViewAll={() => setShowAllFlat(true)} />
             <div className="mt-10">
@@ -397,7 +405,7 @@ export default function PublicCatalog() {
                   );
                 }
                 const activeDeal = deals.find((d) => d.product_id === item.id);
-                return (<ProductCard key={item.id} product={item} brl={convert(item.price_usd)} onClick={() => { track("product_click", { product_id: item.id, product_name: item.name, product_brand: item.brand, product_category: item.category, product_price_brl: convert(item.price_usd) }); navigate(`/produto/${slugify(item.name)}`); }} activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null} />);
+                return (<ProductCard key={item.id} product={item} brl={convert(item.price_usd)} onClick={() => { track("product_click", { product_id: item.id, product_name: item.name, product_brand: item.brand, product_category: item.category, product_price_brl: convert(item.price_usd) }); navigate(`/produto/${slugify(item.name)}`); }} onAddToCart={(e) => { e.stopPropagation(); handleAddToCart(item); toast({ title: "Adicionado ao carrinho!", description: item.name }); }} activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null} />);
               })}
             </div>
             {/* WhatsApp CTA after grid */}
@@ -496,9 +504,14 @@ export default function PublicCatalog() {
                     )}
                   </div>
                   {selectedProduct.availability_type === "esgotado" && (<div className="mt-2"><NotifyMeButton productId={selectedProduct.id} productName={selectedProduct.name} /></div>)}
-                  <div className="flex gap-2 mt-2">
-                    <button onClick={() => { if (!isLoggedIn) { navigate("/login"); return; } handleAddToCart(selectedProduct); setSelectedProduct(null); toast({ title: "✓ Produto adicionado ao carrinho!" }); }} className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]">{isLoggedIn ? <ShoppingBag size={16} /> : <LogIn size={16} />}{isLoggedIn ? "Adicionar ao carrinho" : "Login para comprar"}</button>
-                    <button onClick={() => shareProductWhatsApp(selectedProduct, brl)} className="flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-full py-2.5 px-4 font-medium text-sm transition-colors"><Share2 size={16} /></button>
+                  <div className="space-y-2 mt-2">
+                    <div className="flex gap-2">
+                      <button onClick={() => { buyNowViaWhatsApp(selectedProduct, 1); setSelectedProduct(null); }} className="flex-1 flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full py-2.5 px-4 font-medium text-sm transition-colors"><MessageCircle size={16} /> Comprar via WhatsApp</button>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => { handleAddToCart(selectedProduct); setSelectedProduct(null); toast({ title: "Adicionado ao carrinho!", description: selectedProduct.name }); }} className="flex-1 flex items-center justify-center gap-2 bg-[#FFD814] hover:bg-[#F7CA00] text-gray-900 rounded-full py-2.5 px-4 font-medium text-sm transition-colors border border-[#FCD200]"><ShoppingBag size={16} /> Adicionar ao carrinho</button>
+                      <button onClick={() => shareProductWhatsApp(selectedProduct, brl)} className="flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-full py-2.5 px-4 font-medium text-sm transition-colors"><Share2 size={16} /></button>
+                    </div>
                   </div>
                 </div>
               </>

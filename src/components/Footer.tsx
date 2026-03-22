@@ -1,8 +1,12 @@
 import { Instagram, MessageCircle, Mail, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import Newsletter from "./Newsletter";
+import { useSettings } from "@/hooks/useSettings";
 
 const Footer = () => {
+  const { data: settings } = useSettings();
+  const whatsappNumber = settings?.whatsapp_number || "5579988070350";
+
   return (
     <>
       <Newsletter />
@@ -28,7 +32,7 @@ const Footer = () => {
                   <Instagram size={24} />
                 </a>
                 <a
-                  href="https://wa.me/5579999999999"
+                  href={`https://wa.me/${whatsappNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors"

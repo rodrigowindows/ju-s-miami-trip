@@ -119,7 +119,7 @@ export function ProductCard({ product, brl, onClick, onAddToCart, activeDeal, wi
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
           <ShoppingBag size={14} />
-          {isSoldOut ? "AVISE-ME" : "COMPRAR"}
+          {isSoldOut ? "AVISE-ME" : "ADICIONAR"}
         </button>
       </div>
     </div>
