@@ -17,6 +17,7 @@ export function useBuyAction() {
     (product: CatalogProduct, opts?: { quantity?: number; showCart?: boolean }) => {
       const qty = opts?.quantity ?? 1;
       addItem(product, qty);
+      toast({ title: "✅ Adicionado ao carrinho!", description: product.name });
       if (opts?.showCart !== false) {
         openCart();
       }
