@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useWhatsAppCheckout } from "@/hooks/useWhatsAppCheckout";
+import { toast } from "@/hooks/use-toast";
 import type { CatalogProduct } from "@/types";
 
 /**
@@ -16,6 +17,7 @@ export function useBuyAction() {
     (product: CatalogProduct, opts?: { quantity?: number; showCart?: boolean }) => {
       const qty = opts?.quantity ?? 1;
       addItem(product, qty);
+      toast({ title: "✅ Adicionado ao carrinho!", description: product.name });
       if (opts?.showCart !== false) {
         openCart();
       }
