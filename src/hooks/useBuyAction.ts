@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useWhatsAppCheckout } from "@/hooks/useWhatsAppCheckout";
+import { toast } from "@/hooks/use-toast";
 import type { CatalogProduct } from "@/types";
 
 /**
