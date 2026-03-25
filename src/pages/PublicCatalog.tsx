@@ -222,7 +222,13 @@ export default function PublicCatalog() {
   // Sync category when URL params change (e.g. breadcrumb links)
   useEffect(() => {
     const cat = searchParams.get("cat");
-    if (cat && cat !== activeCategory) setActiveCategory(cat);
+    if (cat) {
+      setActiveCategory(cat);
+      setShowAllFlat(false);
+      setSearchQuery("");
+      setAiSearchIds(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const { questions, loading: questionsLoading, reload: reloadQuestions } = useQuestions(selectedProduct?.id ?? null);
