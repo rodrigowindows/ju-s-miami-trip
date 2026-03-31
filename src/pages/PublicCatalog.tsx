@@ -335,6 +335,27 @@ export default function PublicCatalog() {
         </div>
       </div>
 
+      {/* Active Filters Indicator */}
+      <ActiveFilters
+        activeCategory={activeCategory}
+        searchQuery={searchQuery}
+        sortBy={sortBy}
+        availabilityFilter={availabilityFilter}
+        minPrice={minPrice}
+        maxPrice={maxPrice}
+        aiSearchIds={aiSearchIds}
+        onClearCategory={() => setActiveCategory("Todos")}
+        onClearSearch={() => setSearchQuery("")}
+        onClearSort={() => setSortBy("relevance")}
+        onClearAvailability={() => setAvailabilityFilter("all")}
+        onClearPrice={() => { setMinPrice(0); setMaxPrice(0); }}
+        onClearAiSearch={() => setAiSearchIds(null)}
+        onClearAll={() => {
+          setActiveCategory("Todos"); setSearchQuery(""); setSortBy("relevance");
+          setAvailabilityFilter("all"); setMinPrice(0); setMaxPrice(0); setAiSearchIds(null);
+        }}
+      />
+
       {/* Deals Section */}
       {!dealsLoading && deals.length > 0 && (
         <div className="bg-white border-b border-gray-200">
