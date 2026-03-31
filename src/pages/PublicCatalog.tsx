@@ -44,6 +44,7 @@ import TrendingSection from "@/components/catalog/TrendingSection";
 import { ProductGridSkeleton } from "@/components/catalog/ProductCardSkeleton";
 import ReviewDistribution from "@/components/catalog/ReviewDistribution";
 import AISmartSearch from "@/components/catalog/AISmartSearch";
+import ActiveFilters from "@/components/catalog/ActiveFilters";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
@@ -333,6 +334,27 @@ export default function PublicCatalog() {
           <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
         </div>
       </div>
+
+      {/* Active Filters Indicator */}
+      <ActiveFilters
+        activeCategory={activeCategory}
+        searchQuery={searchQuery}
+        sortBy={sortBy}
+        availabilityFilter={availabilityFilter}
+        minPrice={minPrice}
+        maxPrice={maxPrice}
+        aiSearchIds={aiSearchIds}
+        onClearCategory={() => setActiveCategory("Todos")}
+        onClearSearch={() => setSearchQuery("")}
+        onClearSort={() => setSortBy("relevance")}
+        onClearAvailability={() => setAvailabilityFilter("all")}
+        onClearPrice={() => { setMinPrice(0); setMaxPrice(0); }}
+        onClearAiSearch={() => setAiSearchIds(null)}
+        onClearAll={() => {
+          setActiveCategory("Todos"); setSearchQuery(""); setSortBy("relevance");
+          setAvailabilityFilter("all"); setMinPrice(0); setMaxPrice(0); setAiSearchIds(null);
+        }}
+      />
 
       {/* Deals Section */}
       {!dealsLoading && deals.length > 0 && (
