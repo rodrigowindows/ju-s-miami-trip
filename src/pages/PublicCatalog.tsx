@@ -44,6 +44,7 @@ import TrendingSection from "@/components/catalog/TrendingSection";
 import { ProductGridSkeleton } from "@/components/catalog/ProductCardSkeleton";
 import ReviewDistribution from "@/components/catalog/ReviewDistribution";
 import AISmartSearch from "@/components/catalog/AISmartSearch";
+import ActiveFilters from "@/components/catalog/ActiveFilters";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
