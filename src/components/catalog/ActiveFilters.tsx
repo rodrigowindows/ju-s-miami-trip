@@ -54,6 +54,8 @@ export default function ActiveFilters({
     if (maxPrice > 0) parts.push(`máx R$${maxPrice}`);
     chips.push({ label: `Preço: ${parts.join(" – ")}`, onRemove: onClearPrice });
   }
+  if (brandFilter && brandFilter !== "all")
+    chips.push({ label: `Marca: ${brandFilter}`, onRemove: onClearBrand ?? (() => {}) });
   if (aiSearchIds)
     chips.push({ label: "Busca IA", onRemove: onClearAiSearch });
 
