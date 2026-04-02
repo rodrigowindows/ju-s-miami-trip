@@ -10,12 +10,14 @@ interface Props {
   minPrice: number;
   maxPrice: number;
   aiSearchIds: string[] | null;
+  brandFilter?: string;
   onClearCategory: () => void;
   onClearSearch: () => void;
   onClearSort: () => void;
   onClearAvailability: () => void;
   onClearPrice: () => void;
   onClearAiSearch: () => void;
+  onClearBrand?: () => void;
   onClearAll: () => void;
 }
 
