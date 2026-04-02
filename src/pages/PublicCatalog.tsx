@@ -219,6 +219,7 @@ export default function PublicCatalog() {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
   const [aiSearchIds, setAiSearchIds] = useState<string[] | null>(null);
+  const [brandFilter, setBrandFilter] = useState<string>("all");
 
   // Sync category when URL params change (e.g. breadcrumb links)
   useEffect(() => {
@@ -260,6 +261,12 @@ export default function PublicCatalog() {
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([name]) => name);
   }, [products]);
 
+  const allBrands = useMemo(() => {
+    const set = new Set<string>();
+    products.forEach((p) => { if (p.brand) set.add(p.brand); });
+    return [...set].sort((a, b) => a.localeCompare(b));
+  }, [products]);
+
   const filtered = useMemo(() => {
     let list = activeCategory === "Todos"
       ? products
@@ -279,6 +286,10 @@ export default function PublicCatalog() {
       list = list.filter((p) => p.availability_type === availabilityFilter);
     }
 
+    if (brandFilter !== "all") {
+      list = list.filter((p) => p.brand === brandFilter);
+    }
+
     // AI smart search filter
     if (aiSearchIds) {
       const idSet = new Set(aiSearchIds);
@@ -296,7 +307,7 @@ export default function PublicCatalog() {
       case "name": return [...list].sort((a, b) => a.name.localeCompare(b.name));
       default: return list;
     }
-  }, [products, activeCategory, searchQuery, availabilityFilter, minPrice, maxPrice, sortBy, convert, aiSearchIds]);
+  }, [products, activeCategory, searchQuery, availabilityFilter, brandFilter, minPrice, maxPrice, sortBy, convert, aiSearchIds]);
 
   useEffect(() => { if (searchQuery.trim()) trackSearch(searchQuery, filtered.length); }, [searchQuery, filtered.length, trackSearch]);
 
@@ -331,6 +342,7 @@ export default function PublicCatalog() {
         </p>
         <div className="flex items-center gap-1.5">
           <select aria-label="Filtrar por disponibilidade" value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "pronta_entrega" | "sob_encomenda")} className="h-7 rounded-md border border-gray-300 bg-white px-1.5 text-[11px]"><option value="all">Todos</option><option value="pronta_entrega">Pronta Entrega</option><option value="sob_encomenda">Sob Encomenda</option></select>
+          <select aria-label="Filtrar por marca" value={brandFilter} onChange={(e) => setBrandFilter(e.target.value)} className="h-7 rounded-md border border-gray-300 bg-white px-1.5 text-[11px] max-w-[140px]"><option value="all">Todas as Marcas</option>{allBrands.map((b) => (<option key={b} value={b}>{b}</option>))}</select>
           <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
         </div>
       </div>
@@ -350,9 +362,11 @@ export default function PublicCatalog() {
         onClearAvailability={() => setAvailabilityFilter("all")}
         onClearPrice={() => { setMinPrice(0); setMaxPrice(0); }}
         onClearAiSearch={() => setAiSearchIds(null)}
+        brandFilter={brandFilter}
+        onClearBrand={() => setBrandFilter("all")}
         onClearAll={() => {
           setActiveCategory("Todos"); setSearchQuery(""); setSortBy("relevance");
-          setAvailabilityFilter("all"); setMinPrice(0); setMaxPrice(0); setAiSearchIds(null);
+          setAvailabilityFilter("all"); setBrandFilter("all"); setMinPrice(0); setMaxPrice(0); setAiSearchIds(null);
         }}
       />
 
@@ -409,7 +423,7 @@ export default function PublicCatalog() {
               </a>
             </div>
           </div>
-        ) : activeCategory === "Todos" && !searchQuery.trim() && !showAllFlat && sortBy === "relevance" && availabilityFilter === "all" && !aiSearchIds && minPrice === 0 && maxPrice === 0 ? (
+        ) : activeCategory === "Todos" && !searchQuery.trim() && !showAllFlat && sortBy === "relevance" && availabilityFilter === "all" && brandFilter === "all" && !aiSearchIds && minPrice === 0 && maxPrice === 0 ? (
           <>
             <ThemedProductSections products={products} deals={deals.map((d) => ({ product_id: d.product_id, discount_percent: d.discount_percent, deal_type: d.deal_type, ends_at: d.ends_at }))} convert={convert} onSelectProduct={setSelectedProduct} onViewAll={() => setShowAllFlat(true)} />
             <div className="mt-10">

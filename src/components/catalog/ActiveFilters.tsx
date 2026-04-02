@@ -10,12 +10,14 @@ interface Props {
   minPrice: number;
   maxPrice: number;
   aiSearchIds: string[] | null;
+  brandFilter?: string;
   onClearCategory: () => void;
   onClearSearch: () => void;
   onClearSort: () => void;
   onClearAvailability: () => void;
   onClearPrice: () => void;
   onClearAiSearch: () => void;
+  onClearBrand?: () => void;
   onClearAll: () => void;
 }
 
@@ -32,9 +34,9 @@ const AVAIL_LABELS: Record<string, string> = {
 
 export default function ActiveFilters({
   activeCategory, searchQuery, sortBy, availabilityFilter,
-  minPrice, maxPrice, aiSearchIds,
+  minPrice, maxPrice, aiSearchIds, brandFilter,
   onClearCategory, onClearSearch, onClearSort,
-  onClearAvailability, onClearPrice, onClearAiSearch, onClearAll,
+  onClearAvailability, onClearPrice, onClearAiSearch, onClearBrand, onClearAll,
 }: Props) {
   const chips: { label: string; onRemove: () => void }[] = [];
 
@@ -52,6 +54,8 @@ export default function ActiveFilters({
     if (maxPrice > 0) parts.push(`máx R$${maxPrice}`);
     chips.push({ label: `Preço: ${parts.join(" – ")}`, onRemove: onClearPrice });
   }
+  if (brandFilter && brandFilter !== "all")
+    chips.push({ label: `Marca: ${brandFilter}`, onRemove: onClearBrand ?? (() => {}) });
   if (aiSearchIds)
     chips.push({ label: "Busca IA", onRemove: onClearAiSearch });
 
