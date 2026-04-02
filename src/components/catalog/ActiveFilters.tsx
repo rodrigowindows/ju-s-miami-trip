@@ -34,9 +34,9 @@ const AVAIL_LABELS: Record<string, string> = {
 
 export default function ActiveFilters({
   activeCategory, searchQuery, sortBy, availabilityFilter,
-  minPrice, maxPrice, aiSearchIds,
+  minPrice, maxPrice, aiSearchIds, brandFilter,
   onClearCategory, onClearSearch, onClearSort,
-  onClearAvailability, onClearPrice, onClearAiSearch, onClearAll,
+  onClearAvailability, onClearPrice, onClearAiSearch, onClearBrand, onClearAll,
 }: Props) {
   const chips: { label: string; onRemove: () => void }[] = [];
 
