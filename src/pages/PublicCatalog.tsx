@@ -261,6 +261,12 @@ export default function PublicCatalog() {
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([name]) => name);
   }, [products]);
 
+  const allBrands = useMemo(() => {
+    const set = new Set<string>();
+    products.forEach((p) => { if (p.brand) set.add(p.brand); });
+    return [...set].sort((a, b) => a.localeCompare(b));
+  }, [products]);
+
   const filtered = useMemo(() => {
     let list = activeCategory === "Todos"
       ? products
