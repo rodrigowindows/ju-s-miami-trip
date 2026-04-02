@@ -286,6 +286,10 @@ export default function PublicCatalog() {
       list = list.filter((p) => p.availability_type === availabilityFilter);
     }
 
+    if (brandFilter !== "all") {
+      list = list.filter((p) => p.brand === brandFilter);
+    }
+
     // AI smart search filter
     if (aiSearchIds) {
       const idSet = new Set(aiSearchIds);
