@@ -219,6 +219,7 @@ export default function PublicCatalog() {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
   const [aiSearchIds, setAiSearchIds] = useState<string[] | null>(null);
+  const [brandFilter, setBrandFilter] = useState<string>("all");
 
   // Sync category when URL params change (e.g. breadcrumb links)
   useEffect(() => {
