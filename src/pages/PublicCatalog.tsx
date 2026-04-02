@@ -423,7 +423,7 @@ export default function PublicCatalog() {
               </a>
             </div>
           </div>
-        ) : activeCategory === "Todos" && !searchQuery.trim() && !showAllFlat && sortBy === "relevance" && availabilityFilter === "all" && !aiSearchIds && minPrice === 0 && maxPrice === 0 ? (
+        ) : activeCategory === "Todos" && !searchQuery.trim() && !showAllFlat && sortBy === "relevance" && availabilityFilter === "all" && brandFilter === "all" && !aiSearchIds && minPrice === 0 && maxPrice === 0 ? (
           <>
             <ThemedProductSections products={products} deals={deals.map((d) => ({ product_id: d.product_id, discount_percent: d.discount_percent, deal_type: d.deal_type, ends_at: d.ends_at }))} convert={convert} onSelectProduct={setSelectedProduct} onViewAll={() => setShowAllFlat(true)} />
             <div className="mt-10">
