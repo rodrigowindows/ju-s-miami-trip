@@ -362,9 +362,11 @@ export default function PublicCatalog() {
         onClearAvailability={() => setAvailabilityFilter("all")}
         onClearPrice={() => { setMinPrice(0); setMaxPrice(0); }}
         onClearAiSearch={() => setAiSearchIds(null)}
+        brandFilter={brandFilter}
+        onClearBrand={() => setBrandFilter("all")}
         onClearAll={() => {
           setActiveCategory("Todos"); setSearchQuery(""); setSortBy("relevance");
-          setAvailabilityFilter("all"); setMinPrice(0); setMaxPrice(0); setAiSearchIds(null);
+          setAvailabilityFilter("all"); setBrandFilter("all"); setMinPrice(0); setMaxPrice(0); setAiSearchIds(null);
         }}
       />
 
