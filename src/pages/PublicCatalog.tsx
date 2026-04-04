@@ -343,7 +343,7 @@ export default function PublicCatalog() {
         </p>
         <div className="flex items-center gap-1.5">
           <select aria-label="Filtrar por disponibilidade" value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "pronta_entrega" | "sob_encomenda")} className="h-7 rounded-md border border-gray-300 bg-white px-1.5 text-[11px]"><option value="all">Todos</option><option value="pronta_entrega">Pronta Entrega</option><option value="sob_encomenda">Sob Encomenda</option></select>
-          <select aria-label="Filtrar por marca" value={brandFilter} onChange={(e) => setBrandFilter(e.target.value)} className="h-7 rounded-md border border-gray-300 bg-white px-1.5 text-[11px] max-w-[140px]"><option value="all">Todas as Marcas</option>{allBrands.map((b) => (<option key={b} value={b}>{b}</option>))}</select>
+          <select aria-label="Filtrar por marca" value={brandFilter} onChange={(e) => setBrandFilter(e.target.value)} className="h-7 rounded-md border border-gray-300 bg-white px-1.5 text-[11px] max-w-[180px]"><option value="all">Todas as Marcas</option>{allBrands.map(([name, count]) => (<option key={name} value={name}>{name} ({count})</option>))}</select>
           <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
           <PriceRangeSlider products={products} convert={convert} minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} />
         </div>
