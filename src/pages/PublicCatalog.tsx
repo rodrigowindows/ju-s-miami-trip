@@ -45,6 +45,7 @@ import { ProductGridSkeleton } from "@/components/catalog/ProductCardSkeleton";
 import ReviewDistribution from "@/components/catalog/ReviewDistribution";
 import AISmartSearch from "@/components/catalog/AISmartSearch";
 import ActiveFilters from "@/components/catalog/ActiveFilters";
+import PriceRangeSlider from "@/components/catalog/PriceRangeSlider";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
