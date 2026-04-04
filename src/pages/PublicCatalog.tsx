@@ -263,9 +263,9 @@ export default function PublicCatalog() {
   }, [products]);
 
   const allBrands = useMemo(() => {
-    const set = new Set<string>();
-    products.forEach((p) => { if (p.brand) set.add(p.brand); });
-    return [...set].sort((a, b) => a.localeCompare(b));
+    const counts = new Map<string, number>();
+    products.forEach((p) => { if (p.brand) counts.set(p.brand, (counts.get(p.brand) ?? 0) + 1); });
+    return [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
   }, [products]);
 
   const filtered = useMemo(() => {
