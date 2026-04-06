@@ -434,7 +434,7 @@ export default function PublicCatalog() {
           </>
         ) : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div key={filtered.length + activeCategory + brandFilter} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 animate-fade-in">
               {groupSimilarProducts(filtered).map((item) => {
                 if (isProductGroup(item)) {
                   const dealMap = new Map(deals.map((d) => [d.product_id, { discount_percent: d.discount_percent, deal_type: d.deal_type }]));
