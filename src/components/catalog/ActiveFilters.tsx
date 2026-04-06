@@ -62,12 +62,13 @@ export default function ActiveFilters({
   if (chips.length === 0) return null;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap items-center gap-2">
-      {chips.map((chip) => (
+    <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap items-center gap-2 animate-fade-in">
+      {chips.map((chip, i) => (
         <Badge
           key={chip.label}
           variant="secondary"
-          className="gap-1 pl-2.5 pr-1.5 py-1 text-xs font-medium cursor-pointer hover:bg-destructive/10"
+          className="gap-1 pl-2.5 pr-1.5 py-1 text-xs font-medium cursor-pointer hover:bg-destructive/10 animate-scale-in transition-all duration-200 hover:scale-105"
+          style={{ animationDelay: `${i * 50}ms`, animationFillMode: "backwards" }}
           onClick={chip.onRemove}
         >
           {chip.label}
@@ -75,7 +76,7 @@ export default function ActiveFilters({
         </Badge>
       ))}
       {chips.length > 1 && (
-        <Button variant="ghost" size="sm" onClick={onClearAll} className="text-xs h-7 text-muted-foreground hover:text-destructive">
+        <Button variant="ghost" size="sm" onClick={onClearAll} className="text-xs h-7 text-muted-foreground hover:text-destructive animate-fade-in transition-colors duration-200">
           Limpar todos
         </Button>
       )}
