@@ -339,7 +339,7 @@ export default function PublicCatalog() {
       {/* Compact results + filters bar */}
       <div className="bg-white border-b border-gray-200 px-4 py-1.5 flex items-center justify-between max-w-6xl mx-auto">
         <p className="text-xs sm:text-sm text-gray-700">
-          {loading ? "Carregando..." : (<><span className="font-bold text-[#C45500]">{filtered.length}</span> resultado{filtered.length !== 1 ? "s" : ""}</>)}
+          {loading ? "Carregando..." : (<><AnimatedCounter value={filtered.length} className="font-bold text-[#C45500]" /> resultado{filtered.length !== 1 ? "s" : ""}</>)}
         </p>
         <div className="flex items-center gap-1.5">
           <select aria-label="Filtrar por disponibilidade" value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "pronta_entrega" | "sob_encomenda")} className="h-7 rounded-md border border-gray-300 bg-white px-1.5 text-[11px]"><option value="all">Todos</option><option value="pronta_entrega">Pronta Entrega</option><option value="sob_encomenda">Sob Encomenda</option></select>
