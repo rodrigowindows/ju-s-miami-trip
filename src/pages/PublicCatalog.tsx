@@ -46,6 +46,7 @@ import ReviewDistribution from "@/components/catalog/ReviewDistribution";
 import AISmartSearch from "@/components/catalog/AISmartSearch";
 import ActiveFilters from "@/components/catalog/ActiveFilters";
 import PriceRangeSlider from "@/components/catalog/PriceRangeSlider";
+import AnimatedCounter from "@/components/catalog/AnimatedCounter";
 
 type ProductDeal = Tables<"product_deals">;
 type DealWithProduct = ProductDeal & { product: CatalogProduct };
