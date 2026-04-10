@@ -343,8 +343,27 @@ export default function PublicCatalog() {
           {loading ? "Carregando..." : (<><AnimatedCounter value={filtered.length} className="font-bold text-[#C45500]" /> resultado{filtered.length !== 1 ? "s" : ""}</>)}
         </p>
         <div className="flex items-center gap-1.5">
-          <select aria-label="Filtrar por disponibilidade" value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value as "all" | "pronta_entrega" | "sob_encomenda")} className="h-7 rounded-md border border-gray-300 bg-white px-1.5 text-[11px]"><option value="all">Todos</option><option value="pronta_entrega">Pronta Entrega</option><option value="sob_encomenda">Sob Encomenda</option></select>
-          <select aria-label="Filtrar por marca" value={brandFilter} onChange={(e) => setBrandFilter(e.target.value)} className="h-7 rounded-md border border-gray-300 bg-white px-1.5 text-[11px] max-w-[180px]"><option value="all">Todas as Marcas</option>{allBrands.map(([name, count]) => (<option key={name} value={name}>{name} ({count})</option>))}</select>
+          <Select value={availabilityFilter} onValueChange={(v) => setAvailabilityFilter(v as "all" | "pronta_entrega" | "sob_encomenda")}>
+            <SelectTrigger className="h-7 w-auto min-w-[100px] text-[11px] border-border bg-background px-2 gap-1">
+              <SelectValue placeholder="Todos" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="pronta_entrega">Pronta Entrega</SelectItem>
+              <SelectItem value="sob_encomenda">Sob Encomenda</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={brandFilter} onValueChange={setBrandFilter}>
+            <SelectTrigger className="h-7 w-auto min-w-[120px] max-w-[180px] text-[11px] border-border bg-background px-2 gap-1">
+              <SelectValue placeholder="Todas as Marcas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as Marcas</SelectItem>
+              {allBrands.map(([name, count]) => (
+                <SelectItem key={name} value={name}>{name} ({count})</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
           <PriceRangeSlider products={products} convert={convert} minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} />
         </div>
