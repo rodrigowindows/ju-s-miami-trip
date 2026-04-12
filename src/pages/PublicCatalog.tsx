@@ -350,9 +350,9 @@ export default function PublicCatalog() {
               <SelectValue placeholder="Todos" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="pronta_entrega">Pronta Entrega</SelectItem>
-              <SelectItem value="sob_encomenda">Sob Encomenda</SelectItem>
+              <SelectItem value="all"><span className="flex items-center gap-2"><Layers size={14} className="text-muted-foreground" />Todos</span></SelectItem>
+              <SelectItem value="pronta_entrega"><span className="flex items-center gap-2"><Package size={14} className="text-emerald-500" />Pronta Entrega</span></SelectItem>
+              <SelectItem value="sob_encomenda"><span className="flex items-center gap-2"><Clock size={14} className="text-amber-500" />Sob Encomenda</span></SelectItem>
             </SelectContent>
           </Select>
           <Select value={brandFilter} onValueChange={setBrandFilter}>
@@ -360,9 +360,9 @@ export default function PublicCatalog() {
               <SelectValue placeholder="Todas as Marcas" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas as Marcas</SelectItem>
+              <SelectItem value="all"><span className="flex items-center gap-2"><Layers size={14} className="text-muted-foreground" />Todas as Marcas</span></SelectItem>
               {allBrands.map(([name, count]) => (
-                <SelectItem key={name} value={name}>{name} ({count})</SelectItem>
+                <SelectItem key={name} value={name}><span className="flex items-center gap-2"><Tag size={14} className="text-muted-foreground" />{name} ({count})</span></SelectItem>
               ))}
             </SelectContent>
           </Select>
