@@ -16,6 +16,7 @@ import {
   HelpCircle, Send, User, CheckCircle2,
   Zap, Timer, Flame, Share2,
   MessageSquare, MessageCircle,
+  Package, Clock, Tag, Layers,
 } from "lucide-react";
 
 import HowItWorks from "@/components/HowItWorks";
