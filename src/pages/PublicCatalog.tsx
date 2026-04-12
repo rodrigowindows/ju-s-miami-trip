@@ -456,22 +456,28 @@ export default function PublicCatalog() {
           </>
         ) : (
           <>
-            <div key={filtered.length + activeCategory + brandFilter} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 animate-fade-in">
-              {groupSimilarProducts(filtered).map((item) => {
+            <div key={filtered.length + activeCategory + brandFilter + availabilityFilter + sortBy + searchQuery} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {groupSimilarProducts(filtered).map((item, idx) => {
+                const staggerStyle = { animationDelay: `${Math.min(idx * 30, 300)}ms` } as React.CSSProperties;
                 if (isProductGroup(item)) {
                   const dealMap = new Map(deals.map((d) => [d.product_id, { discount_percent: d.discount_percent, deal_type: d.deal_type }]));
                   return (
-                    <GroupedProductCard
-                      key={item.groupName}
-                      group={item}
-                      convert={convert}
-                      onClick={(p) => { track("product_click", { product_id: p.id, product_name: p.name, product_brand: p.brand, product_category: p.category, product_price_brl: convert(p.price_usd) }); navigate(`/produto/${slugify(p.name)}`); }}
-                      activeDealMap={dealMap}
-                    />
+                    <div key={item.groupName} className="opacity-0 animate-fade-in" style={staggerStyle}>
+                      <GroupedProductCard
+                        group={item}
+                        convert={convert}
+                        onClick={(p) => { track("product_click", { product_id: p.id, product_name: p.name, product_brand: p.brand, product_category: p.category, product_price_brl: convert(p.price_usd) }); navigate(`/produto/${slugify(p.name)}`); }}
+                        activeDealMap={dealMap}
+                      />
+                    </div>
                   );
                 }
                 const activeDeal = deals.find((d) => d.product_id === item.id);
-                return (<ProductCard key={item.id} product={item} brl={convert(item.price_usd)} onClick={() => { track("product_click", { product_id: item.id, product_name: item.name, product_brand: item.brand, product_category: item.category, product_price_brl: convert(item.price_usd) }); navigate(`/produto/${slugify(item.name)}`); }} onAddToCart={(e) => { e.stopPropagation(); handleAddToCart(item); toast({ title: "Adicionado ao carrinho!", description: item.name }); }} activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null} />);
+                return (
+                  <div key={item.id} className="opacity-0 animate-fade-in" style={staggerStyle}>
+                    <ProductCard product={item} brl={convert(item.price_usd)} onClick={() => { track("product_click", { product_id: item.id, product_name: item.name, product_brand: item.brand, product_category: item.category, product_price_brl: convert(item.price_usd) }); navigate(`/produto/${slugify(item.name)}`); }} onAddToCart={(e) => { e.stopPropagation(); handleAddToCart(item); toast({ title: "Adicionado ao carrinho!", description: item.name }); }} activeDeal={activeDeal ? { discount_percent: activeDeal.discount_percent, deal_type: activeDeal.deal_type } : null} />
+                  </div>
+                );
               })}
             </div>
             {/* WhatsApp CTA after grid */}
